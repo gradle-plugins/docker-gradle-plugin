@@ -31,4 +31,5 @@ dependencies {
 
 wrapper {
   gradleVersion = gradleVersion
+  distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
