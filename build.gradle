@@ -1,3 +1,7 @@
+//plugins { 
+//  id "de.gesellix.docker" version "${gradleDockerPluginVersion}" 
+//}
+
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
@@ -16,6 +20,8 @@ dependencies {
   compile localGroovy()
   compile "de.gesellix:gradle-docker-plugin:$gradleDockerPluginVersion"
 }
+
+sourceCompatibility = javaVersion
 
 wrapper {
   gradleVersion = gradleVersion
