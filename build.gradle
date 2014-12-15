@@ -1,6 +1,4 @@
-plugins {
-  id "de.gesellix.docker" version "2014-12-10T08-46-18"
-}
+plugins { id "de.gesellix.docker" version "2014-12-10T08-46-18" }
 
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
@@ -8,16 +6,14 @@ apply plugin: 'maven-publish'
 apply plugin: 'eclipse'
 
 repositories {
-    mavenLocal()
-    mavenCentral()
+  mavenLocal()
+  mavenCentral()
 }
 
 group = 'com.devbliss.docker'
 version = "0.0.1-SNAPSHOT"
 
-dependencies {
-  compile localGroovy()
-}
+dependencies { compile localGroovy() }
 
 wrapper {
   gradleVersion = gradleVersion
@@ -25,22 +21,22 @@ wrapper {
 }
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId 'com.devbliss'
-            artifactId 'docker-gradle-plugin'
-            version '0.0.1-SNAPSHOT~1418642296'
+  publications {
+    maven(MavenPublication) {
+      groupId 'com.devbliss'
+      artifactId 'docker-gradle-plugin'
+      version '0.0.1-SNAPSHOT~1418642296'
 
-            from components.java
-        }
+      from components.java
     }
-    repositories {
-        maven {
-            credentials {
-                username 'deployment'
-                password 'deployment'
-            }
-            url "http://nexus.devbliss.com/content/repositories/releases/"
-        }
+  }
+  repositories {
+    maven {
+      credentials {
+        username 'deployment'
+        password 'deployment'
+      }
+      url "http://nexus.devbliss.com/content/repositories/releases/"
     }
+  }
 }
