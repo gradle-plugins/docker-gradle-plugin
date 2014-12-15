@@ -8,6 +8,7 @@ buildscript {
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
+apply plugin: 'maven'
 
 sourceCompatibility = '1.8'
 

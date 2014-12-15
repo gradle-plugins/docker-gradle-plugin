@@ -1,5 +1,6 @@
 package com.devbliss.docker
 
+// TODO: imports aufräumen
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -13,15 +14,11 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginConvention
 import java.util.concurrent.Callable
 
-/**
- *
- * @author Dennis Schumann <dennis.schumann@devbliss.com>
- */
-class MultipleDockerPlugin implements Plugin<Project> {
+class DockerPlugin implements Plugin<Project> {
 	
   @Override
   public void apply(Project project) {
-    project.getPlugins().apply()
+    project.getPlugins().apply() // TODO: muss das so oder muss da noch was in apply rein?
   }
 }
 
