@@ -1,7 +1,3 @@
-//plugins { 
-//  id "de.gesellix.docker" version "${gradleDockerPluginVersion}" 
-//}
-
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
 apply plugin: 'maven-publish'
