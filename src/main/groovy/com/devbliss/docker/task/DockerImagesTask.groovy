@@ -10,11 +10,6 @@ class DockerImagesTask extends AbstractDockerTask {
 
   def images
 
-  DockerImagesTask() {
-    description = "lists all images"
-    group = "Docker"
-  }
-
   @TaskAction
   def images() {
     logger.info "running images..."

@@ -1,6 +1,8 @@
 package com.devbliss.docker
 
 import com.devbliss.docker.task.AbstractDockerTask
+import com.devbliss.docker.task.DockerImagesTask
+import com.devbliss.docker.task.DockerPsTask
 import com.devbliss.docker.task.DockerPullTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -30,6 +32,19 @@ class DockerPlugin implements Plugin<Project> {
         type: DockerPullTask
     )
 
+    project.task(
+        'psDockerContainers',
+        description: 'Shows all docker containers',
+        group: 'Docker',
+        type: DockerPsTask
+    )
+
+    project.task(
+        'showDockerImages',
+        description: 'Shows all docker containers',
+        group: 'Docker',
+        type: DockerImagesTask
+    )
   }
 }
 
