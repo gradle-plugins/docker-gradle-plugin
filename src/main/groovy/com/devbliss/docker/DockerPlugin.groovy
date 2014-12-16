@@ -1,6 +1,7 @@
 package com.devbliss.docker
 
 import com.devbliss.docker.task.AbstractDockerTask
+import com.devbliss.docker.task.DockerPullTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -15,6 +16,20 @@ class DockerPlugin implements Plugin<Project> {
       task.authConfigPlain = extension.authConfigPlain
       task.authConfigEncoded = extension.authConfigEncoded
     }
+
+    project.tasks.withType(DockerPullTask) { task ->
+      task.registry = extension.registryName
+      task.imageName = extension.repositoryName + '/' + extension.imageName
+      task.tag = extension.tag
+    }
+
+    project.task(
+        'pullDockerImage',
+        description: 'Pulls a docker image from the registry',
+        group: 'Docker',
+        type: DockerPullTask
+    )
+
   }
 }
 

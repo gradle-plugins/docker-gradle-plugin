@@ -11,9 +11,11 @@ abstract class AbstractDockerTask extends DefaultTask {
   @Input
   @Optional
   def dockerHost
+
   @Input
   @Optional
   def authConfigPlain
+
   @Input
   @Optional
   def authConfigEncoded
