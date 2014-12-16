@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
   compile localGroovy()
-  compile "de.gesellix:gradle-docker-plugin:$gradleDockerPluginVersion"
+  compile "de.gesellix:docker-client:$dockerClientVersion"
 }
 
 sourceCompatibility = javaVersion
@@ -28,6 +28,7 @@ wrapper {
   distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
+// TODO
 publishing {
   publications {
     maven(MavenPublication) {
