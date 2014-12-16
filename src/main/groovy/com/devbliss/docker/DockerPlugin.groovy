@@ -25,26 +25,9 @@ class DockerPlugin implements Plugin<Project> {
       task.tag = extension.tag
     }
 
-    project.task(
-        'pullDockerImage',
-        description: 'Pulls a docker image from the registry',
-        group: 'Docker',
-        type: DockerPullTask
-    )
-
-    project.task(
-        'psDockerContainers',
-        description: 'Shows all docker containers',
-        group: 'Docker',
-        type: DockerPsTask
-    )
-
-    project.task(
-        'showDockerImages',
-        description: 'Shows all docker containers',
-        group: 'Docker',
-        type: DockerImagesTask
-    )
+    project.task('pullDockerImage', type: DockerPullTask)
+    project.task('psDockerContainers', type: DockerPsTask)
+    project.task('showDockerImages', type: DockerImagesTask)
   }
 }
 

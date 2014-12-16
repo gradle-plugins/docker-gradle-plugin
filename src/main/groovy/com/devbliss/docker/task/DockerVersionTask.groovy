@@ -11,8 +11,7 @@ class DockerVersionTask extends AbstractDockerTask {
   def version
 
   DockerVersionTask() {
-    description = "get the docker version information"
-    group = "Docker"
+    super("get the docker version information")
   }
 
   @TaskAction

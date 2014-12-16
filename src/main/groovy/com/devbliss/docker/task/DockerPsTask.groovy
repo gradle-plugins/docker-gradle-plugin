@@ -10,6 +10,10 @@ class DockerPsTask extends AbstractDockerTask {
 
   def containers
 
+  DockerPsTask() {
+    super('Shows all docker containers')
+  }
+
   @TaskAction
   def ps() {
     logger.info "running ps..."

@@ -30,8 +30,7 @@ class DockerPublishTask extends AbstractDockerTask {
   def targetRegistries
 
   DockerPublishTask() {
-    description = "builds and publishes an image"
-    group = "Docker"
+    super("builds and publishes an image")
   }
 
   @Override

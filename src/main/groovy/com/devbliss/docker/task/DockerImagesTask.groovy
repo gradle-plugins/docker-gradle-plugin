@@ -10,6 +10,10 @@ class DockerImagesTask extends AbstractDockerTask {
 
   def images
 
+  DockerImagesTask() {
+    super('Shows all docker containers')
+  }
+
   @TaskAction
   def images() {
     logger.info "running images..."

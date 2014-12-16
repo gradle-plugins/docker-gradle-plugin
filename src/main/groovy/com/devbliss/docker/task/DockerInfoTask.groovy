@@ -11,8 +11,7 @@ class DockerInfoTask extends AbstractDockerTask {
   def info
 
   DockerInfoTask() {
-    description = "get system-wide information"
-    group = "Docker"
+    super("get system-wide information")
   }
 
   @TaskAction

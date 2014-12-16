@@ -15,8 +15,7 @@ class DockerTagTask extends AbstractDockerTask {
   def tag
 
   DockerTagTask() {
-    description = "tag an image into a repository"
-    group = "Docker"
+    super("tag an image into a repository")
   }
 
   @TaskAction

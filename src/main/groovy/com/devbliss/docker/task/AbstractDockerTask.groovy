@@ -8,6 +8,8 @@ import org.gradle.api.tasks.Optional
 
 abstract class AbstractDockerTask extends DefaultTask {
 
+  final static String TASK_GROUP = 'Docker'
+
   @Input
   @Optional
   def dockerHost
@@ -21,6 +23,11 @@ abstract class AbstractDockerTask extends DefaultTask {
   def authConfigEncoded
 
   DockerClient dockerClient
+
+  AbstractDockerTask(description) {
+    group = TASK_GROUP
+    this.description = description
+  }
 
   def getDockerClient() {
     if (!dockerClient) {

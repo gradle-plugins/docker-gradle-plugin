@@ -13,8 +13,7 @@ class DockerRmiTask extends AbstractDockerTask {
   def imageId
 
   DockerRmiTask() {
-    description = "removes an image or tag"
-    group = "Docker"
+    super("removes an image or tag")
   }
 
   @TaskAction

@@ -13,8 +13,7 @@ class DockerRmTask extends AbstractDockerTask {
   def containerId
 
   DockerRmTask() {
-    description = "removes a container"
-    group = "Docker"
+    super("removes a container")
   }
 
   @TaskAction

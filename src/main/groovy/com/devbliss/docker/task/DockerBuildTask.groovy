@@ -28,8 +28,7 @@ class DockerBuildTask extends AbstractDockerTask {
   def tarOfBuildcontextTask
 
   DockerBuildTask() {
-    description = "builds an image from the given build context"
-    group = "Docker"
+    super("builds an image from the given build context")
   }
 
   @Override

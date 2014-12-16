@@ -13,8 +13,7 @@ class DockerStopTask extends AbstractDockerTask {
   def containerId
 
   DockerStopTask() {
-    description = "stops a container"
-    group = "Docker"
+    super("stops a container")
   }
 
   @TaskAction
