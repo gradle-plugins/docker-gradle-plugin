@@ -11,18 +11,18 @@ class DockerPushTask extends AbstractDockerTask {
   private static Logger logger = LoggerFactory.getLogger(DockerPushTask)
 
   @Input
-  def repositoryName
+  def imageName
   @Input
   @Optional
   def registry
 
   DockerPushTask() {
-    super("pushes a repository to a registry")
+    super('Pushes a docker image to the registry')
   }
 
   @TaskAction
   def push() {
     logger.info "running push..."
-    dockerClient.push(getRepositoryName(), getAuthConfig(), getRegistry())
+    dockerClient.push(getImageName(), getAuthConfig(), getRegistry())
   }
 }
