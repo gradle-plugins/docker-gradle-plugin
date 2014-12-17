@@ -3,6 +3,7 @@
 ### Gradle ###
 .gradle
 build/
+gradlew.bat
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -148,4 +149,3 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-gradlew.bat

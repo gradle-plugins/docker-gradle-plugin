@@ -1,26 +1,35 @@
 package com.devbliss.docker
 
-import com.devbliss.docker.task.StartDependenciesTask
-import de.gesellix.gradle.docker.tasks.AbstractDockerTask
+import com.devbliss.docker.task.AbstractDockerTask
+import com.devbliss.docker.task.DockerPullTask
+import com.devbliss.docker.task.DockerPushTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
 class DockerPlugin implements Plugin<Project> {
 
-  def existingContainers = []
-
-  def void apply(Project project) {
-    project.getPlugins().apply('de.gesellix.docker')
-
-    project.task("startDependencies",
-            description: 'Runs all configured docker containers',
-            group: 'Docker',
-            type: StartDependenciesTask
-    )
+  @Override
+  public void apply(Project project) {
+    def extension = project.extensions.create('docker', DockerPluginExtension)
 
     project.tasks.withType(AbstractDockerTask) { task ->
-      task.existingContainers = existingContainers
+      task.dockerHost = extension.dockerHost
+      task.authConfigPlain = extension.authConfigPlain
+      task.authConfigEncoded = extension.authConfigEncoded
     }
+
+    project.tasks.withType(DockerPullTask) { task ->
+      task.registry = extension.registryName
+      task.imageName = extension.repositoryName + '/' + extension.imageName
+      task.tag = extension.tag
+    }
+
+    project.tasks.withType(DockerPushTask) { task ->
+      task.registry = extension.registryName
+      task.imageName = extension.repositoryName + '/' + extension.imageName
+    }
+
+    project.task('pullDockerImage', type: DockerPullTask)
+    project.task('pushDockerImage', type: DockerPushTask)
   }
 }
-
