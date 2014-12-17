@@ -10,4 +10,6 @@ class DockerPluginExtension {
   def registryName
   def repositoryName
   def tag
+
+  def buildContextDirectory
 }

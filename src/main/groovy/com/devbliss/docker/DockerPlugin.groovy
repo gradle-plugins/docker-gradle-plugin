@@ -1,12 +1,19 @@
 package com.devbliss.docker
 
 import com.devbliss.docker.task.AbstractDockerTask
+import com.devbliss.docker.task.DockerBuildTask
+import com.devbliss.docker.task.DockerImagesTask
+import com.devbliss.docker.task.DockerPsTask
 import com.devbliss.docker.task.DockerPullTask
 import com.devbliss.docker.task.DockerPushTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class DockerPlugin implements Plugin<Project> {
+
+  private static Logger logger = LoggerFactory.getLogger(DockerPlugin)
 
   @Override
   public void apply(Project project) {
@@ -29,7 +36,13 @@ class DockerPlugin implements Plugin<Project> {
       task.imageName = extension.repositoryName + '/' + extension.imageName
     }
 
+    project.tasks.withType(DockerBuildTask) { task ->
+      task.buildContextDirectory = extension.buildContextDirectory
+      task.imageName = extension.repositoryName + '/' + extension.imageName
+    }
+
     project.task('pullDockerImage', type: DockerPullTask)
     project.task('pushDockerImage', type: DockerPushTask)
+    project.task('buildDockerImage', type: DockerBuildTask)
   }
 }

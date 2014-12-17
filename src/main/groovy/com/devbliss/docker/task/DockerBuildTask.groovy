@@ -18,9 +18,11 @@ class DockerBuildTask extends AbstractDockerTask {
   @Input
   @Optional
   def imageName
+
   @Input
   @Optional
   def buildContext
+
   @InputDirectory
   @Optional
   File buildContextDirectory
@@ -28,7 +30,7 @@ class DockerBuildTask extends AbstractDockerTask {
   def tarOfBuildcontextTask
 
   DockerBuildTask() {
-    super("builds an image from the given build context")
+    super("Builds an image from the given build context")
   }
 
   @Override
