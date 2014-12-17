@@ -1,6 +1,9 @@
 package com.devbliss.docker
 
 import com.devbliss.docker.task.AbstractDockerTask
+import com.devbliss.docker.task.DockerBuildTask
+import com.devbliss.docker.task.DockerImagesTask
+import com.devbliss.docker.task.DockerPsTask
 import com.devbliss.docker.task.DockerPullTask
 import com.devbliss.docker.task.DockerPushTask
 import org.gradle.api.Plugin
@@ -26,10 +29,16 @@ class DockerPlugin implements Plugin<Project> {
 
     project.tasks.withType(DockerPushTask) { task ->
       task.registry = extension.registryName
+    }
+
+    project.tasks.withType(DockerBuildTask) { task ->
       task.imageName = extension.repositoryName + '/' + extension.imageName
     }
 
     project.task('pullDockerImage', type: DockerPullTask)
     project.task('pushDockerImage', type: DockerPushTask)
+    project.task('psDockerContainers', type: DockerPsTask)
+    project.task('showDockerImages', type: DockerImagesTask)
+    project.task('buildDockerImage', type: DockerBuildTask)
   }
 }
