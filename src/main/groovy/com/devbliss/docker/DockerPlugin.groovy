@@ -43,8 +43,6 @@ class DockerPlugin implements Plugin<Project> {
 
     project.task('pullDockerImage', type: DockerPullTask)
     project.task('pushDockerImage', type: DockerPushTask)
-    project.task('psDockerContainers', type: DockerPsTask)
-    project.task('showDockerImages', type: DockerImagesTask)
     project.task('buildDockerImage', type: DockerBuildTask)
   }
 }
