@@ -1,6 +1,6 @@
 
 ### Version 0.1.0-SNAPSHOT
- - [feature] moo
+ - [feature] initial fork from orign plugin
  - [feature] Added pull_request.md
  - [feature] Added changelog
  - [initial] initial commit
