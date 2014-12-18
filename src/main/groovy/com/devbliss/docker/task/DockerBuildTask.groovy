@@ -1,6 +1,7 @@
 package com.devbliss.docker.task
 
 import org.gradle.api.Task
+import org.gradle.api.UnknownTaskException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Optional
@@ -36,19 +37,28 @@ class DockerBuildTask extends AbstractDockerTask {
   @Override
   Task configure(Closure closure) {
     def configureResult = super.configure(closure)
+
     if (getBuildContextDirectory()) {
-      tarOfBuildcontextTask = project.task(["type": Tar], "tarOfBuildcontext") {
-        description = "creates a tar of the buildcontext"
-        from getBuildContextDirectory()
-        compression = GZIP
-        baseName = "buildContext_${getNormalizedImageName()}"
-        destinationDir getTemporaryDir()
+      try {
+        tarOfBuildcontextTask = project.tasks.getByName('tarOfBuildcontext')
+
+      } catch(UnknownTaskException e) {
+        tarOfBuildcontextTask = project.task(["type": Tar], "tarOfBuildcontext") {
+          description = "creates a tar of the buildcontext"
+          from getBuildContextDirectory()
+          compression = GZIP
+          baseName = "buildContext_${getNormalizedImageName()}"
+          destinationDir getTemporaryDir()
+        }
       }
+
       tarOfBuildcontextTask.exclude {
         it.file == tarOfBuildcontextTask.archivePath
       }
+
       dependsOn tarOfBuildcontextTask
     }
+
     return configureResult
   }
 
