@@ -1,5 +1,6 @@
 
 ### Version 0.1.0-SNAPSHOT
+ - [feature] implemented startContainer task
  - [feature] Implemented build docker image task
  - [feature] Implemented pull task
  - [feature] Implemented push task
@@ -8,4 +9,4 @@
  - [feature] Added changelog
  - [initial] initial commit
 
--- Last change by: Andre Dörnbrack <andre.doernbrack@devbliss.com> Wed Dec 17 12:22:49 CET 2014
+-- Last change by: Andre Dörnbrack <andre.doernbrack@devbliss.com> Thu Dec 18 12:08:36 CET 2014
