@@ -32,7 +32,7 @@ class DockerRunTask extends AbstractDockerTask {
   def envFileParser = new EnvFileParser()
 
   DockerRunTask() {
-    super("creates and starts a container")
+    super("Creates and starts a container")
   }
 
   @TaskAction
