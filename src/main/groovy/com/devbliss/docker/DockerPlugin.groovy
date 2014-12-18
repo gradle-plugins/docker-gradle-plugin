@@ -24,11 +24,10 @@ class DockerPlugin implements Plugin<Project> {
     project.task('pullDockerImage', type: DockerPullTask)
     project.task('pushDockerImage', type: DockerPushTask)
     project.task('buildDockerImage', type: DockerBuildTask)
-    def stopTask = project.task('stopContainer', type: DockerStopTask)
-    project.task('startContainer', type: DockerStartTask)
-    project.task('runContainer', type: DockerRunTask)
-    project.task('removeContainer', type: DockerRmTask).dependsOn(stopTask)
-
+    project.task('stopDockerContainer', type: DockerStopTask)
+    project.task('startDockerContainer', type: DockerStartTask)
+    project.task('runDockerContainer', type: DockerRunTask)
+    project.task('removeDockerContainer', type: DockerRmTask)
 
     project.afterEvaluate {
       project.tasks.withType(AbstractDockerTask) { task ->
