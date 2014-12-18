@@ -4,6 +4,7 @@ import com.devbliss.docker.task.AbstractDockerTask
 import com.devbliss.docker.task.DockerBuildTask
 import com.devbliss.docker.task.DockerPullTask
 import com.devbliss.docker.task.DockerPushTask
+import com.devbliss.docker.task.DockerStartTask
 import com.devbliss.docker.task.DockerStopTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -22,6 +23,7 @@ class DockerPlugin implements Plugin<Project> {
     project.task('pushDockerImage', type: DockerPushTask)
     project.task('buildDockerImage', type: DockerBuildTask)
     project.task('stopContainer', type: DockerStopTask)
+    project.task('startContainer', type: DockerStartTask)
 
     project.afterEvaluate {
       project.tasks.withType(AbstractDockerTask) { task ->
@@ -47,6 +49,10 @@ class DockerPlugin implements Plugin<Project> {
       }
 
       project.tasks.withType(DockerStopTask) { task ->
+        task.containerId = extension.imageName
+      }
+
+      project.tasks.withType(DockerStartTask) { task ->
         task.containerId = extension.imageName
       }
     }

@@ -13,7 +13,7 @@ class DockerStartTask extends AbstractDockerTask {
   def containerId
 
   DockerStartTask() {
-    super("starts a container")
+    super("Starts a container")
   }
 
   @TaskAction
