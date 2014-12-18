@@ -4,6 +4,8 @@ import com.devbliss.docker.task.AbstractDockerTask
 import com.devbliss.docker.task.DockerBuildTask
 import com.devbliss.docker.task.DockerPullTask
 import com.devbliss.docker.task.DockerPushTask
+import com.devbliss.docker.task.DockerRmTask
+import com.devbliss.docker.task.DockerRunTask
 import com.devbliss.docker.task.DockerStartTask
 import com.devbliss.docker.task.DockerStopTask
 import org.gradle.api.Plugin
@@ -22,8 +24,10 @@ class DockerPlugin implements Plugin<Project> {
     project.task('pullDockerImage', type: DockerPullTask)
     project.task('pushDockerImage', type: DockerPushTask)
     project.task('buildDockerImage', type: DockerBuildTask)
-    project.task('stopContainer', type: DockerStopTask)
-    project.task('startContainer', type: DockerStartTask)
+    project.task('stopDockerContainer', type: DockerStopTask)
+    project.task('startDockerContainer', type: DockerStartTask)
+    project.task('runDockerContainer', type: DockerRunTask)
+    project.task('removeDockerContainer', type: DockerRmTask)
 
     project.afterEvaluate {
       project.tasks.withType(AbstractDockerTask) { task ->
@@ -54,6 +58,15 @@ class DockerPlugin implements Plugin<Project> {
 
       project.tasks.withType(DockerStartTask) { task ->
         task.containerId = extension.imageName
+      }
+
+      project.tasks.withType(DockerRmTask) { task ->
+        task.containerId = extension.imageName
+      }
+
+      project.tasks.withType(DockerRunTask) { task ->
+        task.containerName = extension.imageName
+        task.imageName = extension.registryName + '/' + extension.repositoryName + '/' + extension.imageName
       }
     }
   }
