@@ -24,10 +24,10 @@ class DockerPlugin implements Plugin<Project> {
     project.task('pullDockerImage', type: DockerPullTask)
     project.task('pushDockerImage', type: DockerPushTask)
     project.task('buildDockerImage', type: DockerBuildTask)
-    project.task('stopContainer', type: DockerStopTask)
+    def stopTask = project.task('stopContainer', type: DockerStopTask)
     project.task('startContainer', type: DockerStartTask)
     project.task('runContainer', type: DockerRunTask)
-    project.task('removeContainer', type: DockerRmTask)
+    project.task('removeContainer', type: DockerRmTask).dependsOn(stopTask)
 
 
     project.afterEvaluate {
@@ -69,7 +69,6 @@ class DockerPlugin implements Plugin<Project> {
         task.containerName = extension.imageName
         task.imageName = extension.registryName + '/' + extension.repositoryName + '/' + extension.imageName
       }
-
     }
   }
 }
