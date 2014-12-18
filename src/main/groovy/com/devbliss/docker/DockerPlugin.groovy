@@ -4,12 +4,9 @@ import com.devbliss.docker.task.AbstractDockerTask
 import com.devbliss.docker.task.DockerBuildTask
 import com.devbliss.docker.task.DockerPullTask
 import com.devbliss.docker.task.DockerPushTask
-<<<<<<< Updated upstream
-=======
 import com.devbliss.docker.task.DockerRmTask
 import com.devbliss.docker.task.DockerRunTask
 import com.devbliss.docker.task.DockerStartTask
->>>>>>> Stashed changes
 import com.devbliss.docker.task.DockerStopTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
