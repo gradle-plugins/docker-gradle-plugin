@@ -2,8 +2,6 @@ package com.devbliss.docker
 
 import com.devbliss.docker.task.AbstractDockerTask
 import com.devbliss.docker.task.DockerBuildTask
-import com.devbliss.docker.task.DockerImagesTask
-import com.devbliss.docker.task.DockerPsTask
 import com.devbliss.docker.task.DockerPullTask
 import com.devbliss.docker.task.DockerPushTask
 import com.devbliss.docker.task.DockerStopTask
@@ -19,6 +17,8 @@ class DockerPlugin implements Plugin<Project> {
   @Override
   public void apply(Project project) {
     def extension = project.extensions.create('docker', DockerPluginExtension)
+
+    logger.info "Image NAme " + extension.imageName
 
     project.tasks.withType(AbstractDockerTask) { task ->
       task.dockerHost = extension.dockerHost
