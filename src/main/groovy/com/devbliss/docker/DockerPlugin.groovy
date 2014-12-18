@@ -18,37 +18,37 @@ class DockerPlugin implements Plugin<Project> {
   public void apply(Project project) {
     def extension = project.extensions.create('docker', DockerPluginExtension)
 
-    logger.info "Image NAme " + extension.imageName
-
-    project.tasks.withType(AbstractDockerTask) { task ->
-      task.dockerHost = extension.dockerHost
-      task.authConfigPlain = extension.authConfigPlain
-      task.authConfigEncoded = extension.authConfigEncoded
-    }
-
-    project.tasks.withType(DockerPullTask) { task ->
-      task.registry = extension.registryName
-      task.imageName = extension.repositoryName + '/' + extension.imageName
-      task.tag = extension.tag
-    }
-
-    project.tasks.withType(DockerPushTask) { task ->
-      task.registry = extension.registryName
-      task.imageName = extension.repositoryName + '/' + extension.imageName
-    }
-
-    project.tasks.withType(DockerBuildTask) { task ->
-      task.buildContextDirectory = extension.buildContextDirectory
-      task.imageName = extension.repositoryName + '/' + extension.imageName
-    }
-
-    project.tasks.withType(DockerStopTask) { task ->
-      task.containerId = extension.imageName
-    }
-
     project.task('pullDockerImage', type: DockerPullTask)
     project.task('pushDockerImage', type: DockerPushTask)
     project.task('buildDockerImage', type: DockerBuildTask)
     project.task('stopContainer', type: DockerStopTask)
+
+    project.afterEvaluate {
+      project.tasks.withType(AbstractDockerTask) { task ->
+        task.dockerHost = extension.dockerHost
+        task.authConfigPlain = extension.authConfigPlain
+        task.authConfigEncoded = extension.authConfigEncoded
+      }
+
+      project.tasks.withType(DockerPullTask) { task ->
+        task.registry = extension.registryName
+        task.imageName = extension.repositoryName + '/' + extension.imageName
+        task.tag = extension.tag
+      }
+
+      project.tasks.withType(DockerPushTask) { task ->
+        task.registry = extension.registryName
+        task.imageName = extension.repositoryName + '/' + extension.imageName
+      }
+
+      project.tasks.withType(DockerBuildTask) { task ->
+        task.buildContextDirectory = extension.buildContextDirectory
+        task.imageName = extension.repositoryName + '/' + extension.imageName
+      }
+
+      project.tasks.withType(DockerStopTask) { task ->
+        task.containerId = extension.imageName
+      }
+    }
   }
 }
