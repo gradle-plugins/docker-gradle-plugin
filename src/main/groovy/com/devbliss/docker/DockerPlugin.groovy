@@ -29,7 +29,6 @@ class DockerPlugin implements Plugin<Project> {
     project.task('runDockerContainer', type: DockerRunTask)
     project.task('removeDockerContainer', type: DockerRmTask)
 
-
     project.afterEvaluate {
       project.tasks.withType(AbstractDockerTask) { task ->
         task.dockerHost = extension.dockerHost
@@ -69,7 +68,6 @@ class DockerPlugin implements Plugin<Project> {
         task.containerName = extension.imageName
         task.imageName = extension.registryName + '/' + extension.repositoryName + '/' + extension.imageName
       }
-
     }
   }
 }
