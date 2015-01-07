@@ -19,6 +19,7 @@ repositories {
 dependencies {
   compile localGroovy()
   compile "de.gesellix:docker-client:$dockerClientVersion"
+  testCompile 'junit:junit:4.11'
 }
 
 sourceCompatibility = javaVersion
