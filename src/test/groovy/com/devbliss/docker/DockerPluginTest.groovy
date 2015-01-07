@@ -13,5 +13,7 @@ class DockerPluginTest extends GroovyTestCase{
   @Test
   public void test() {
     Project project = ProjectBuilder.builder().build()
+    assertTrue(true)
+
   }
 }

@@ -29,24 +29,15 @@ wrapper {
   distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
-// TODO
-publishing {
-  publications {
-    maven(MavenPublication) {
-      groupId 'com.devbliss'
-      artifactId 'docker-gradle-plugin'
-      version '0.0.1-SNAPSHOT~1418642296'
-
-      from components.java
-    }
-  }
+uploadArchives {
   repositories {
-    maven {
-      credentials {
-        username 'deployment'
-        password 'deployment'
+    mavenDeployer {
+      repository(url: 'http://nexus.devbliss.com/content/repositories/releases') {
+        authentication(userName: 'deployment', password: 'deployment');
       }
-      url "http://nexus.devbliss.com/content/repositories/releases/"
+      snapshotRepository(url: 'http://nexus.devbliss.com/content/repositories/snapshots') {
+        authentication(userName: 'deployment', password: 'deployment');
+      }
     }
   }
 }
