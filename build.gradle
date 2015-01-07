@@ -4,7 +4,6 @@ plugins {
 
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
-apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
 group = project.group
@@ -19,7 +18,7 @@ repositories {
 dependencies {
   compile localGroovy()
   compile "de.gesellix:docker-client:$dockerClientVersion"
-  testCompile 'junit:junit:4.11'
+  testCompile "junit:junit:$junitVersion"
 }
 
 sourceCompatibility = javaVersion
