@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
   compile localGroovy()
+  compile "de.gesellix:gradle-docker-plugin:2015-01-06T18-26-22"
   compile "de.gesellix:docker-client:$dockerClientVersion"
   testCompile "junit:junit:$junitVersion"
 }

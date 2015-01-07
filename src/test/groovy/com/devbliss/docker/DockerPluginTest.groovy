@@ -10,9 +10,12 @@ import org.junit.Test
 
 class DockerPluginTest extends GroovyTestCase{
 
+  private final DockerPlugin dockerPlugin = new DockerPlugin()
+
   @Test
   public void test() {
     Project project = ProjectBuilder.builder().build()
+    dockerPlugin.apply(project)
     assertTrue(true)
 
   }

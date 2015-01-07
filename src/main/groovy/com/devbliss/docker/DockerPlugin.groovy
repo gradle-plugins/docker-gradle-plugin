@@ -1,13 +1,15 @@
 package com.devbliss.docker
 
-import com.devbliss.docker.task.AbstractDockerTask
-import com.devbliss.docker.task.DockerBuildTask
-import com.devbliss.docker.task.DockerPullTask
-import com.devbliss.docker.task.DockerPushTask
-import com.devbliss.docker.task.DockerRmTask
-import com.devbliss.docker.task.DockerRunTask
-import com.devbliss.docker.task.DockerStartTask
-import com.devbliss.docker.task.DockerStopTask
+import de.gesellix.gradle.docker.DockerPlugin as ParenteDockerPlugin
+import de.gesellix.gradle.docker.tasks.AbstractDockerTask
+import de.gesellix.gradle.docker.tasks.DockerBuildTask
+import de.gesellix.gradle.docker.tasks.DockerPsTask
+import de.gesellix.gradle.docker.tasks.DockerPullTask
+import de.gesellix.gradle.docker.tasks.DockerPushTask
+import de.gesellix.gradle.docker.tasks.DockerRmTask
+import de.gesellix.gradle.docker.tasks.DockerRunTask
+import de.gesellix.gradle.docker.tasks.DockerStartTask
+import de.gesellix.gradle.docker.tasks.DockerStopTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.slf4j.Logger
@@ -19,7 +21,11 @@ class DockerPlugin implements Plugin<Project> {
 
   @Override
   public void apply(Project project) {
-    def extension = project.extensions.create('docker', DockerPluginExtension)
+
+    project.getPlugins().apply(ParenteDockerPlugin)
+
+    def extension = project.extensions.create('devblissDocker', DockerPluginExtension)
+
 
     project.task('pullDockerImage', type: DockerPullTask)
     project.task('pushDockerImage', type: DockerPushTask)
@@ -28,6 +34,7 @@ class DockerPlugin implements Plugin<Project> {
     project.task('startDockerContainer', type: DockerStartTask)
     project.task('runDockerContainer', type: DockerRunTask)
     project.task('removeDockerContainer', type: DockerRmTask)
+    project.task('startDependencies', type: DockerPsTask)
 
     project.afterEvaluate {
       project.tasks.withType(AbstractDockerTask) { task ->
@@ -44,7 +51,7 @@ class DockerPlugin implements Plugin<Project> {
 
       project.tasks.withType(DockerPushTask) { task ->
         task.registry = extension.registryName
-        task.imageName = extension.repositoryName + '/' + extension.imageName
+        //task.imageName = extension.repositoryName + '/' + extension.imageName
       }
 
       project.tasks.withType(DockerBuildTask) { task ->
@@ -68,6 +75,6 @@ class DockerPlugin implements Plugin<Project> {
         task.containerName = extension.imageName
         task.imageName = extension.registryName + '/' + extension.repositoryName + '/' + extension.imageName
       }
-    }
+      }
   }
 }
