@@ -1,8 +1,6 @@
 package com.devbliss.docker
 
-  import de.gesellix.gradle.docker.DockerPlugin as ParenteDockerPlugin
-import de.gesellix.gradle.docker.tasks.DockerPushTask
-
+import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 import de.gesellix.gradle.docker.tasks.DockerBuildTask
 import de.gesellix.gradle.docker.tasks.DockerPsTask
@@ -19,14 +17,14 @@ import org.slf4j.LoggerFactory
 
 class DockerPlugin implements Plugin<Project> {
 
-  private static Logger logger = LoggerFactory.getLogger(DockerPlugin)
+  private static Logger LOGGER = LoggerFactory.getLogger(DockerPlugin)
 
   @Override
   public void apply(Project project) {
 
-    project.getPlugins().apply(ParenteDockerPlugin)
-
-    def devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
+    project.getPlugins().apply(ParentDockerPlugin)
+    
+    def extension = project.extensions.create('devblissDocker', DockerPluginExtension)
 
 
     DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
