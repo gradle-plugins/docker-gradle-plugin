@@ -4,7 +4,6 @@ plugins {
 
 apply plugin: 'java-gradle-plugin'
 apply plugin: 'groovy'
-apply plugin: 'maven-publish'
 apply plugin: 'maven'
 
 group = project.group
@@ -19,6 +18,7 @@ repositories {
 dependencies {
   compile localGroovy()
   compile "de.gesellix:docker-client:$dockerClientVersion"
+  testCompile "junit:junit:$junitVersion"
 }
 
 sourceCompatibility = javaVersion
@@ -28,24 +28,16 @@ wrapper {
   distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
 }
 
-// TODO
-publishing {
-  publications {
-    maven(MavenPublication) {
-      groupId 'com.devbliss'
-      artifactId 'docker-gradle-plugin'
-      version '0.0.1-SNAPSHOT~1418642296'
-
-      from components.java
-    }
-  }
+uploadArchives {
   repositories {
-    maven {
-      credentials {
-        username 'deployment'
-        password 'deployment'
-      }
-      url "http://nexus.devbliss.com/content/repositories/releases/"
+    mavenDeployer {
+      def credentials = [
+              userName: username,
+              password: password
+      ]
+      repository(url: 'http://nexus.devbliss.com/content/repositories/releases', authentication: credentials)
+      snapshotRepository(url: 'http://nexus.devbliss.com/content/repositories/snapshots', authentication: credentials)
     }
   }
 }
+
