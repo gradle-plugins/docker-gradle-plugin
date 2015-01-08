@@ -31,12 +31,13 @@ wrapper {
 uploadArchives {
   repositories {
     mavenDeployer {
-      repository(url: 'http://nexus.devbliss.com/content/repositories/releases') {
-        authentication(userName: 'deployment', password: 'deployment');
-      }
-      snapshotRepository(url: 'http://nexus.devbliss.com/content/repositories/snapshots') {
-        authentication(userName: 'deployment', password: 'deployment');
-      }
+      def credentials = [
+              userName: username,
+              password: password
+      ]
+      repository(url: 'http://nexus.devbliss.com/content/repositories/releases', authentication: credentials)
+      snapshotRepository(url: 'http://nexus.devbliss.com/content/repositories/snapshots', authentication: credentials)
     }
   }
 }
+
