@@ -1,5 +1,6 @@
 
 ### Version 0.1.0-SNAPSHOT
+ - [refactor] replace copied files from gesellix plugin now inherit from plugin
  - [feature] implemented startContainer task
  - [feature] Implemented build docker image task
  - [feature] Implemented pull task
@@ -9,4 +10,4 @@
  - [feature] Added changelog
  - [initial] initial commit
 
--- Last change by: Andre Dörnbrack <andre.doernbrack@devbliss.com> Thu Dec 18 12:08:36 CET 2014
+-- Last change by: Christian Soth <christian.soth@devbliss.com> Fri Jan 09 09:16:49 CET 2015

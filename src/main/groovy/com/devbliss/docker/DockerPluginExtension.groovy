@@ -12,4 +12,6 @@ class DockerPluginExtension {
   def tag
 
   def buildContextDirectory
+
+  def dependingContainers
 }
