@@ -1,6 +1,6 @@
 
 ### Version 0.1.0-SNAPSHOT
- - [refactor] removed copied files from gesellix plugin
+ - [refactor] replace copied files from gesellix plugin now inherit from plugin
  - [feature] implemented startContainer task
  - [feature] Implemented build docker image task
  - [feature] Implemented pull task
