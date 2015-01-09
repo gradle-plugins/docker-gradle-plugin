@@ -53,7 +53,7 @@ class DockerPlugin implements Plugin<Project> {
 
       project.tasks.withType(DockerPushTask) { task ->
         task.registry = devblissDockerExtension.registryName
-        /*task.imageName = devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName*/
+        task.repositoryName = devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
       }
 
       project.tasks.withType(DockerBuildTask) { task ->
