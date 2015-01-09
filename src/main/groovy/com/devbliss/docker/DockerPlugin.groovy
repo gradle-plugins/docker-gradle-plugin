@@ -24,7 +24,7 @@ class DockerPlugin implements Plugin<Project> {
 
     project.getPlugins().apply(ParentDockerPlugin)
     
-    def extension = project.extensions.create('devblissDocker', DockerPluginExtension)
+    def devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
 
 
     DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
