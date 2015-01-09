@@ -1,5 +1,6 @@
 package com.devbliss.docker
 
+import com.devbliss.docker.task.StartDependenciesTask
 import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 import de.gesellix.gradle.docker.tasks.DockerBuildTask
@@ -22,9 +23,14 @@ class DockerPlugin implements Plugin<Project> {
   @Override
   public void apply(Project project) {
 
+
+
     project.getPlugins().apply(ParentDockerPlugin)
+
     
     def devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
+
+
 
 
     DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
@@ -36,9 +42,15 @@ class DockerPlugin implements Plugin<Project> {
     DockerRmTask dockerRmTask = project.task('removeDockerContainer', type: DockerRmTask)
     DockerPsTask dockerPsTask = project.task('startDependencies', type: DockerPsTask)
 
-    /*dockerPullTask.dependsOn()*/
+
+
+    dockerBuildTask.dependsOn('bootRepackage')
+
+
 
     project.afterEvaluate {
+      project.task("startDependenciesDevbliss", type: StartDependenciesTask)
+
       project.tasks.withType(AbstractDockerTask) { task ->
         task.dockerHost = devblissDockerExtension.dockerHost
         task.authConfigPlain = devblissDockerExtension.authConfigPlain
@@ -48,7 +60,7 @@ class DockerPlugin implements Plugin<Project> {
       project.tasks.withType(DockerPullTask) { task ->
         task.registry = devblissDockerExtension.registryName
         task.imageName = devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
-        task.tag = devblissDockerExtension.tag
+        task.tag = devblissDockerExtension.versionTag
       }
 
       project.tasks.withType(DockerPushTask) { task ->
