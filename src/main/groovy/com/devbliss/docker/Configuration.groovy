@@ -1,14 +1,7 @@
 package com.devbliss.docker
 
 import com.devbliss.docker.task.StartDependenciesTask
-import de.gesellix.gradle.docker.tasks.AbstractDockerTask
-import de.gesellix.gradle.docker.tasks.DockerBuildTask
-import de.gesellix.gradle.docker.tasks.DockerPullTask
-import de.gesellix.gradle.docker.tasks.DockerPushTask
-import de.gesellix.gradle.docker.tasks.DockerRmTask
-import de.gesellix.gradle.docker.tasks.DockerRunTask
-import de.gesellix.gradle.docker.tasks.DockerStartTask
-import de.gesellix.gradle.docker.tasks.DockerStopTask
+import de.gesellix.gradle.docker.tasks.*
 import org.gradle.api.Project
 
 /**
@@ -16,8 +9,7 @@ import org.gradle.api.Project
  */
 class Configuration {
 
-  public Configuration(Project project)
-  {
+  public Configuration(Project project) {
     def devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
 
     project.afterEvaluate {
@@ -59,7 +51,8 @@ class Configuration {
 
       project.tasks.withType(DockerRunTask) { task ->
         task.containerName = devblissDockerExtension.imageName
-        task.imageName = devblissDockerExtension.registryName + '/' + devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
+        task.imageName = devblissDockerExtension.registryName + '/' + devblissDockerExtension.repositoryName + '/' +
+                devblissDockerExtension.imageName
       }
     }
   }

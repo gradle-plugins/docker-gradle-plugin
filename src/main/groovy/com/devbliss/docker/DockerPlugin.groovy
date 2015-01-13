@@ -12,6 +12,7 @@ import de.gesellix.gradle.docker.tasks.DockerStartTask
 import de.gesellix.gradle.docker.tasks.DockerStopTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -36,7 +37,12 @@ class DockerPlugin implements Plugin<Project> {
     DockerRmTask dockerRmTask = project.task('removeDockerContainer', type: DockerRmTask)
     DockerPsTask dockerPsTask = project.task('startDependencies', type: DockerPsTask)
 
+    Task buildAndPushDockerImage = project.task('buildAndPushDockerImageDevbliss', type: Task)
+
     //Tasks that depends on other tasks
     dockerBuildTask.dependsOn('bootRepackage')
+
+    buildAndPushDockerImage.dependsOn('buildDockerImage')
+    buildAndPushDockerImage.dependsOn('pushDockerImage')
   }
 }
