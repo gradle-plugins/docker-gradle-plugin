@@ -15,10 +15,11 @@ class StopAllRunningContainerTask extends AbstractDockerTask {
     group = "Devbliss"
   }
 
-  def dockerHostStatus = dockerClient.ps()
+  def dockerHostStatus
 
   @TaskAction
   public void run() {
+    dockerHostStatus = dockerClient.ps()
     dockerHostStatus.each() { container ->
       if (container.Status.contains('Up')) {
         println "Container " + container.Names + " is runing"

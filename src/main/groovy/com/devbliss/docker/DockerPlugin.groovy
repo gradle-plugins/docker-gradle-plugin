@@ -1,5 +1,6 @@
 package com.devbliss.docker
 
+import com.devbliss.docker.task.StartDependenciesTask
 import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
 import de.gesellix.gradle.docker.tasks.*
 import org.gradle.api.Plugin
@@ -29,7 +30,5 @@ class DockerPlugin implements Plugin<Project> {
     //Tasks that depends on other tasks
     DockerBuildTask dockerBuildTask = project.task('buildDockerImage', type: DockerBuildTask)
     dockerBuildTask.dependsOn('bootRepackage')
-
-
   }
 }

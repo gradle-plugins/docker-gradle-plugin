@@ -28,7 +28,7 @@ class StartDependenciesTask extends AbstractDockerTask {
   def runningContainers = []
   def existingContainers = []
 
-  def dockerHostStatus = dockerClient.ps()
+  def dockerHostStatus
 
   @TaskAction
   public void run() {
@@ -36,6 +36,8 @@ class StartDependenciesTask extends AbstractDockerTask {
     setContainerExts()
 
     def alreadyHandled = [];
+
+    dockerHostStatus = dockerClient.ps()
 
     dockerHostStatus.each() { container ->
       dependingContainers.replaceAll("\\s", "").split(",").each() { dep ->
@@ -46,9 +48,14 @@ class StartDependenciesTask extends AbstractDockerTask {
 
             stopAndRemoveContainer(name)
 
+
+
+
             def tcpPort = "${port[1]}/tcp".toString()
             def hostConf = ["PortBindings": [:]]
             hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
+
+
             startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf)
           }
           alreadyHandled.add(name)
@@ -87,6 +94,8 @@ class StartDependenciesTask extends AbstractDockerTask {
 
   def setContainerExts() {
 
+    dockerHostStatus = dockerClient.ps()
+
     dockerHostStatus.each() { container ->
       def name = container.Names[0].substring(1, container.Names[0].length())
       existingContainers.add(name)
@@ -103,7 +112,7 @@ class StartDependenciesTask extends AbstractDockerTask {
 
   def startContainer(name, image, hostConfiguration) {
     println "Start Container: " + name + " => " + image + " => " + hostConfiguration
-    dockerClient.run(image.toString(), hostConfiguration, versionTag, name)
+    dockerClient.run(image.toString(), ["HostConfig" : hostConfiguration], versionTag, name)
   }
 
   def getPort(port) {

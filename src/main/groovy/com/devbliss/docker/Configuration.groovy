@@ -15,8 +15,9 @@ class Configuration {
     def devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
 
     project.afterEvaluate {
-      project.task("stopAllRunningsContainersDevbliss", type: StopAllRunningContainerTask)
       project.task("startDependenciesDevbliss", type: StartDependenciesTask)
+      project.task("stopAllRunningContainerDevbliss", type: StopAllRunningContainerTask)
+
 
 
       BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImageDevbliss', type:
