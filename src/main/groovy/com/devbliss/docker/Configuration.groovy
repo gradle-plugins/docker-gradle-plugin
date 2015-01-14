@@ -1,6 +1,8 @@
 package com.devbliss.docker
 
+import com.devbliss.docker.task.BuildAndPushDockerImageTask
 import com.devbliss.docker.task.StartDependenciesTask
+import com.devbliss.docker.task.StopAllRunningContainerTask
 import de.gesellix.gradle.docker.tasks.*
 import org.gradle.api.Project
 
@@ -13,7 +15,15 @@ class Configuration {
     def devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
 
     project.afterEvaluate {
+      project.task("stopAllRunningsContainersDevbliss", type: StopAllRunningContainerTask)
       project.task("startDependenciesDevbliss", type: StartDependenciesTask)
+
+
+      BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImageDevbliss', type:
+              BuildAndPushDockerImageTask)
+      buildAndPushDockerImage.dependsOn('bootRepackage')
+      buildAndPushDockerImage.dependsOn('buildDockerImage')
+      buildAndPushDockerImage.dependsOn('pushDockerImage')
 
       project.tasks.withType(AbstractDockerTask) { task ->
         task.dockerHost = devblissDockerExtension.dockerHost

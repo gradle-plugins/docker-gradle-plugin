@@ -6,11 +6,19 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
+ * This class pull and run depending containers in your host vm.
+ * The depending containers are configured in you gradle build file.
+ *
  * Created by Christian Soth <christian.soth@devbliss.com> on 09.01.15.
  */
 class StartDependenciesTask extends AbstractDockerTask {
 
   private static Logger LOGGER = LoggerFactory.getLogger(StartDependenciesTask)
+
+  StartDependenciesTask() {
+    description = "Pull images and start depending containers for this Project"
+    group = "Devbliss"
+  }
 
   def dependingContainers = project.devblissDocker.dependingContainers
   def dockerRepository = project.devblissDocker.repositoryName
@@ -21,11 +29,6 @@ class StartDependenciesTask extends AbstractDockerTask {
   def existingContainers = []
 
   def dockerHostStatus = dockerClient.ps()
-
-  StartDependenciesTask() {
-    description = "Pull images and start depending containers for this container"
-    group = "Devbliss"
-  }
 
   @TaskAction
   public void run() {
