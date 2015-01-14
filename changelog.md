@@ -1,5 +1,6 @@
 
 ### Version 0.1.0-SNAPSHOT
+ - [feature] implement three new customised tasks for docker handling
  - [refactor] replace copied files from gesellix plugin now inherit from plugin
  - [feature] implemented startContainer task
  - [feature] Implemented build docker image task
@@ -10,4 +11,4 @@
  - [feature] Added changelog
  - [initial] initial commit
 
--- Last change by: Christian Soth <christian.soth@devbliss.com> Fri Jan 09 09:16:49 CET 2015
+-- Last change by: Christian Soth <christian.soth@devbliss.com> Wed Jan 14 15:54:44 CET 2015
