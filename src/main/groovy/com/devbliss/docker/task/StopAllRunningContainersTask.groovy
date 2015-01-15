@@ -1,6 +1,7 @@
 package com.devbliss.docker.task
 
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
+import groovy.util.logging.Log
 import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -10,9 +11,8 @@ import org.slf4j.LoggerFactory
  *
  * Created by Christian Soth <christian.soth@devbliss.com> on 14.01.15.
  */
+@Log
 class StopAllRunningContainersTask extends AbstractDockerTask {
-
-  private static Logger LOGGER = LoggerFactory.getLogger(StopAllRunningContainersTask)
 
   StopAllRunningContainersTask() {
     description = "Stops all running docker containers in your host vm"
@@ -26,11 +26,11 @@ class StopAllRunningContainersTask extends AbstractDockerTask {
     dockerHostStatus = dockerClient.ps()
     dockerHostStatus.each() { container ->
       if (container.Status.contains('Up')) {
-        LOGGER.info("Container " + container.Names + " is running")
+        log.info("Container " + container.Names + " is running")
 
         def containerId = container.Names[0].substring(1, container.Names[0].length())
         dockerClient.stop(containerId)
-        LOGGER.info("Container " + container.Names + " was stopped")
+        log.info("Container " + container.Names + " was stopped")
       }
     }
   }

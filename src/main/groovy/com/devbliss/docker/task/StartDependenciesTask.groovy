@@ -1,6 +1,7 @@
 package com.devbliss.docker.task
 
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
+import groovy.util.logging.Log
 import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -11,9 +12,8 @@ import org.slf4j.LoggerFactory
  *
  * Created by Christian Soth <christian.soth@devbliss.com> on 09.01.15.
  */
+@Log
 class StartDependenciesTask extends AbstractDockerTask {
-
-  private static Logger LOGGER = LoggerFactory.getLogger(StartDependenciesTask)
 
   StartDependenciesTask() {
     description = "Pull images and start depending containers for this Project"
@@ -71,7 +71,7 @@ class StartDependenciesTask extends AbstractDockerTask {
   }
 
   def splitDependingContainersStringAndPullImage() {
-    LOGGER.info("depending container: " + dependingContainers)
+    log.info("depending container: " + dependingContainers)
 
     dependingContainers.replaceAll("\\s", "").split(",").each() { dep ->
       def (name, port) = dep.split("#").toList()
@@ -84,7 +84,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     def tag = versionTag
     def registry = dockerRegistry
 
-    LOGGER.info "docker pull"
+    log.info "docker pull"
     dockerClient.pull(imageName, tag, registry)
   }
 
@@ -107,7 +107,7 @@ class StartDependenciesTask extends AbstractDockerTask {
   }
 
   def startContainer(name, image, hostConfiguration) {
-    LOGGER.info("Start Container: " + name + " => " + image + " => " + hostConfiguration)
+    log.info("Start Container: " + name + " => " + image + " => " + hostConfiguration)
     dockerClient.run(image.toString(), ["HostConfig": hostConfiguration], versionTag, name)
   }
 

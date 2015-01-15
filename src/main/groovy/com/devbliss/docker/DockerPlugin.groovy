@@ -4,6 +4,8 @@ import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
 import de.gesellix.gradle.docker.tasks.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class DockerPlugin implements Plugin<Project> {
 
