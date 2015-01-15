@@ -22,7 +22,6 @@ class Configuration {
               BuildAndPushDockerImageTask)
       buildAndPushDockerImage.dependsOn('bootRepackage')
       buildAndPushDockerImage.dependsOn('buildDockerImage')
-      buildAndPushDockerImage.dependsOn('pushDockerImage')
 
       def dockerHost = devblissDockerExtension.dockerHost
       def authConfigPlain = devblissDockerExtension.authConfigPlain
