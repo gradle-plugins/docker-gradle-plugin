@@ -1,6 +1,8 @@
 package com.devbliss.docker.task
 
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
 /**
@@ -12,6 +14,10 @@ class BuildAndPushDockerImageTask extends AbstractDockerTask {
     description = "Build and Push your images and start depending containers for this Project"
     group = "Devbliss"
   }
+
+  @Input
+  @Optional
+  def buildContextDirectory
 
   @TaskAction
   public void run() {

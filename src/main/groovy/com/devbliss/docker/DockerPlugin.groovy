@@ -1,6 +1,5 @@
 package com.devbliss.docker
 
-import com.devbliss.docker.task.StartDependenciesTask
 import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
 import de.gesellix.gradle.docker.tasks.*
 import org.gradle.api.Plugin

@@ -19,6 +19,7 @@ dependencies {
   compile localGroovy()
   compile "de.gesellix:gradle-docker-plugin:2015-01-06T18-26-22"
   testCompile "junit:junit:$junitVersion"
+  testCompile "org.spockframework:spock-core:$spockVersion"
 }
 
 sourceCompatibility = javaVersion
