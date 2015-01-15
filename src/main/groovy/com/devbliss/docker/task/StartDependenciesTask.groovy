@@ -6,7 +6,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
- * This class pull and run depending containers in your host vm.
+ * This class pulls and run depending containers in your host vm.
  * The depending containers are configured in you gradle build file.
  *
  * Created by Christian Soth <christian.soth@devbliss.com> on 09.01.15.
@@ -32,7 +32,7 @@ class StartDependenciesTask extends AbstractDockerTask {
 
   @TaskAction
   public void run() {
-    splitDependingContainersString()
+    splitDependingContainersStringAndPullImage()
     setContainerExts()
 
     def alreadyHandled = [];
@@ -48,13 +48,9 @@ class StartDependenciesTask extends AbstractDockerTask {
 
             stopAndRemoveContainer(name)
 
-
-
-
             def tcpPort = "${port[1]}/tcp".toString()
             def hostConf = ["PortBindings": [:]]
             hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
-
 
             startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf)
           }
@@ -74,16 +70,16 @@ class StartDependenciesTask extends AbstractDockerTask {
     }
   }
 
-  def splitDependingContainersString() {
+  def splitDependingContainersStringAndPullImage() {
     LOGGER.info("depending container: " + dependingContainers)
 
     dependingContainers.replaceAll("\\s", "").split(",").each() { dep ->
       def (name, port) = dep.split("#").toList()
-      pullImage(name.split("_")[0])
+      pullImageFromRegistry(name.split("_")[0])
     }
   }
 
-  def pullImage(name) {
+  def pullImageFromRegistry(name) {
     def imageName = "${dockerRepository}/${name}"
     def tag = versionTag
     def registry = dockerRegistry
@@ -111,8 +107,8 @@ class StartDependenciesTask extends AbstractDockerTask {
   }
 
   def startContainer(name, image, hostConfiguration) {
-    println "Start Container: " + name + " => " + image + " => " + hostConfiguration
-    dockerClient.run(image.toString(), ["HostConfig" : hostConfiguration], versionTag, name)
+    LOGGER.info("Start Container: " + name + " => " + image + " => " + hostConfiguration)
+    dockerClient.run(image.toString(), ["HostConfig": hostConfiguration], versionTag, name)
   }
 
   def getPort(port) {
