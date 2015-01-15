@@ -11,7 +11,7 @@ import org.gradle.api.tasks.TaskAction
 class BuildAndPushDockerImageTask extends AbstractDockerTask {
 
   BuildAndPushDockerImageTask() {
-    description = "Build and Push your images and start depending containers for this Project"
+    description = "Build and push your images and start depending containers for this project"
     group = "Devbliss"
   }
 
