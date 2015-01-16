@@ -1,5 +1,6 @@
 
 ### Version 0.1.0-SNAPSHOT
+ - [bug] Fixed bootRepackage task not exist bug
  - [feature] implement three new customised tasks for docker handling
  - [refactor] replace copied files from gesellix plugin now inherit from plugin
  - [feature] implemented startContainer task
@@ -11,4 +12,4 @@
  - [feature] Added changelog
  - [initial] initial commit
 
--- Last change by: Christian Soth <christian.soth@devbliss.com> Wed Jan 14 15:54:44 CET 2015
+-- Last change by: Dennis Schumann <hillkorn@gmail.com> Fri Jan 16 16:58:23 CET 2015
