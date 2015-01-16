@@ -4,6 +4,7 @@ import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
 import de.gesellix.gradle.docker.tasks.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -26,6 +27,9 @@ class DockerPlugin implements Plugin<Project> {
 
     //Tasks that depend on other tasks
     DockerBuildTask dockerBuildTask = project.task('buildDockerImage', type: DockerBuildTask)
-    dockerBuildTask.dependsOn('bootRepackage')
+    Task bootRepackageTask = project.getTasks().findByPath('bootRepackage');
+    if (bootRepackageTask != null) {
+      dockerBuildTask.dependsOn('bootRepackage')
+    }
   }
 }
