@@ -4,6 +4,7 @@ import com.devbliss.docker.task.BuildAndPushDockerImageTask
 import com.devbliss.docker.task.StartDependenciesTask
 import com.devbliss.docker.task.StopAllRunningContainersTask
 import de.gesellix.gradle.docker.tasks.*
+import java.util.concurrent.Callable
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -21,9 +22,11 @@ class Configuration {
    * and buildAndPushDockerImage to publish a new image for local dev setup.
    */
   public Configuration(Project project) {
-    def devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
+    DockerPluginExtension devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
+    println "Configuration...." + devblissDockerExtension.dependingContainers
 
-    project.task("startServiceDependencies", type: StartDependenciesTask)
+    StartDependenciesTask startDependenciesTask = project.task("startServiceDependencies", type: StartDependenciesTask)
+    
     project.task("stopAllRunningContainers", type: StopAllRunningContainersTask)
 
     BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImage', type:
