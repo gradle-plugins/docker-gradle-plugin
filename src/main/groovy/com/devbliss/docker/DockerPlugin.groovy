@@ -14,8 +14,6 @@ class DockerPlugin implements Plugin<Project> {
 
     project.getPlugins().apply(ParentDockerPlugin)
 
-    Configuration configuration = new Configuration(project)
-
     DockerPsTask dockerPsTask = project.task('startDependencies', type: DockerPsTask)
     DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
     DockerPushTask dockerPushTask = project.task('pushDockerImage', type: DockerPushTask)
@@ -23,6 +21,8 @@ class DockerPlugin implements Plugin<Project> {
     DockerStartTask dockerStartTask = project.task('startDockerContainer', type: DockerStartTask)
     DockerRunTask dockerRunTask = project.task('runDockerContainer', type: DockerRunTask)
     DockerRmTask dockerRmTask = project.task('removeDockerContainer', type: DockerRmTask)
+
+    Configuration configuration = new Configuration(project)
 
     //Tasks that depend on other tasks
     DockerBuildTask dockerBuildTask = project.task('buildDockerImage', type: DockerBuildTask)

@@ -37,17 +37,12 @@ class BuildAndPushDockerImageTaskSpec extends Specification {
 
     then:
     project.getTasksByName("buildAndPushDockerImageDevbliss", false).size() == 1
-//
-//    buildAndPushDockerImage.dependsOn('bootRepackage')
-//    buildAndPushDockerImage.dependsOn('buildDockerImage')
-//    buildAndPushDockerImage.dependsOn('pushDockerImage')
+
 
     and:
     println "---" + project.getTasksByName("buildAndPushDockerImageDevbliss", false).first()
     task.dependsOn.any { it == project.getTasksByName("buildAndPushDockerImageDevbliss", false).first() }
 
-//    task.dependsOn.any { it == project.getTasksByName("tarBuildcontextForDockerBuild", false).first() }
-//    task.dependsOn.any { it == project.getTasksByName("bootRepackage",false).first()}
   }
 
 
