@@ -5,6 +5,7 @@ import com.devbliss.docker.task.StartDependenciesTask
 import com.devbliss.docker.task.StopAllRunningContainersTask
 import de.gesellix.gradle.docker.tasks.*
 import org.gradle.api.Project
+import org.gradle.api.Task
 
 /**
  * Created by Christian Soth <christian.soth@devbliss.com> on 12.01.15.
@@ -20,7 +21,10 @@ class Configuration {
 
       BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImage', type:
               BuildAndPushDockerImageTask)
-      buildAndPushDockerImage.dependsOn('bootRepackage')
+      Task bootRepackageTask = project.getTasks().findByPath('bootRepackage');
+      if (bootRepackageTask != null) {
+        buildAndPushDockerImage.dependsOn('bootRepackage')
+      }
       buildAndPushDockerImage.dependsOn('buildDockerImage')
 
       def dockerHost = devblissDockerExtension.dockerHost
