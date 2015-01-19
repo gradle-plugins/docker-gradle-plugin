@@ -64,6 +64,38 @@ Stops all running docker containers.
 ```
 
 ##Configuration
+In most cases the names are self explaining and for more information the docker api itself can be used. For example what an image name or a version tag is and how they are handled in docker.
+
+###dockerHost
+Address or socketfile where the docker daemon is running. All container are running on this machine. All actions run there.
+
+###authConfigPlain
+Contains the information for docker to find the registry where the images are retrieved from. Can contain the authentication information if necessary.
+
+###imageName
+Name of the docker image. At the ecosystem we use the name of the service to identify images.
+
+###versionTag
+Version of the docker image.
+
+###registryName
+Name of the registry where the docker images are saved.
+
+###repositoryName
+Name of the docker repository. For ecosystem images it's always ecosystem. All depending containers are automatically set with this repository name.
+
+###buildContextDirectory
+Directory of the Dockerfile or the Dockerfile itself.
+
+###dependingContainers
+Service container the project depends on. They will be started with ```startServiceDependencies```and can contain additional information.
+
+The normal pattern to set them is ```{name}#{port},{name2}#{port2}```
+Name is the name of the image and container at the same time. The port will be mapped 1:1. The services are seperated by commas.
+
+For additional configuration it's possible to set custom names or portmappings with ```{name}_{customName}#{portFrom}:{portTo}```
+
+```name```is the name of the service image. ```customName``` is name of the container. ```portFrom``` is the accessable port from outside. ```portTo``` is the port in the container the portFrom is redirected to.
 
 ###Example configuration
 
