@@ -93,7 +93,7 @@ Service container the project depends on. They will be started with ```startServ
 The normal pattern to set them is ```{name}#{port},{name2}#{port2}```
 Name is the name of the image and container at the same time. The port will be mapped 1:1. The services are seperated by commas.
 
-For additional configuration it's possible to set custom names or portmappings with ```{name}_{customName}#{portFrom}:{portTo}```
+For additional configuration it's possible to set custom names or portmappings with ```{name}_{customName}#{portFrom}-{portTo}```
 
 ```name```is the name of the service image. ```customName``` is name of the container. ```portFrom``` is the accessable port from outside. ```portTo``` is the port in the container the portFrom is redirected to.
 
