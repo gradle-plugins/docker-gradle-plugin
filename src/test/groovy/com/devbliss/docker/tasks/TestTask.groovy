@@ -11,25 +11,24 @@ import org.gradle.api.tasks.TaskAction
 class TestTask extends AbstractDockerTask {
 
   @Input
-  def imageName
+  def imageName = project.devblissDocker.imageName
 
   @Input
-  def versionTag
+  def versionTag = project.devblissDocker.versionTag
 
   @Input
-  def registryName
+  def registryName = project.devblissDocker.registryName
 
   @Input
-  def repositoryName
+  def repositoryName = project.devblissDocker.repositoryName
 
   @Input
-  def buildContextDirectory
+  def buildContextDirectory = project.devblissDocker.buildContextDirectory
 
   @Input
-  def dependingContainers
+  def dependingContainers = project.devblissDocker.dependingContainers
 
   @TaskAction
   def run() {
-
   }
 }

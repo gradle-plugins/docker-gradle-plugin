@@ -1,5 +1,7 @@
 package com.devbliss.docker
 
+import com.devbliss.docker.task.StartDependenciesTask
+import com.devbliss.docker.tasks.StartDependenciesTaskSpec
 import com.devbliss.docker.tasks.TestTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -23,6 +25,7 @@ class DockerPluginTest extends Specification {
 
     then:
     project["devblissDocker"] instanceof DockerPluginExtension
+
   }
 
   def "Configuration is passed to tasks"() {
