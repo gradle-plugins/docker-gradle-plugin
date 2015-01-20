@@ -37,7 +37,6 @@ class StartDependenciesTask extends AbstractDockerTask {
 
   @TaskAction
   public void run() {
-    println "Depending container => " + dependingContainers
     splitDependingContainersStringAndPullImage()
     setContainerExts()
 
