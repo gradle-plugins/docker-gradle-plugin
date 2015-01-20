@@ -54,7 +54,7 @@ Builds the current project as a docker image and push it to the devbliss registr
 Starts all containers the service depends on. The depending services are defined over the devblissDocker extension which is explained later.
 
 ```bash
-./gradlew startServiceDependencies
+./gradlew startDependencies
 ```
 
 Stops all running docker containers.
@@ -88,7 +88,7 @@ Name of the docker repository. For ecosystem images it's always ecosystem. All d
 Directory of the Dockerfile or the Dockerfile itself.
 
 ###dependingContainers
-Service container the project depends on. They will be started with ```startServiceDependencies```and can contain additional information.
+Service container the project depends on. They will be started with ```startDependencies```and can contain additional information.
 
 The normal pattern to set them is ```{name}#{port},{name2}#{port2}```
 Name is the name of the image and container at the same time. The port will be mapped 1:1. The services are seperated by commas.
