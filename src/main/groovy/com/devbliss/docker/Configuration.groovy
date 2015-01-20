@@ -17,38 +17,49 @@ import org.gradle.api.Task
 class Configuration {
 
   /**
-   * Adds default tasks and applies configuration to the project.
+   * Applies configuration to the project.
    * Added tasts are startServiceDependencies and stopAllRunningContainers to handle depending services
    * and buildAndPushDockerImage to publish a new image for local dev setup.
    */
   public Configuration(Project project) {
     DockerPluginExtension devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
-    println "Configuration...." + devblissDockerExtension.dependingContainers
-
-    StartDependenciesTask startDependenciesTask = project.task("startServiceDependencies", type: StartDependenciesTask)
+    StartDependenciesTask startDependenciesTask = project.getTasks().getByName('startDependencies')
     
-    project.task("stopAllRunningContainers", type: StopAllRunningContainersTask)
+    project.afterEvaluate {
+      configureStartServiceDependenciesTasks(startDependenciesTask, devblissDockerExtension)
+      configureAllAbstractTasks(project, devblissDockerExtension)
+      configurePullTasks(project, devblissDockerExtension)
+      configurePushTasks(project, devblissDockerExtension)
+      configureBuildTasks(project, devblissDockerExtension)
+      configureStopTasks(project, devblissDockerExtension)
+      configureStartTasks(project, devblissDockerExtension)
+      configureRmTasks(project, devblissDockerExtension)
+      configureRunTasks(project, devblissDockerExtension)
+    }
 
-    BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImage', type:
-      BuildAndPushDockerImageTask)
+    BuildAndPushDockerImageTask buildAndPushDockerImage = project.getTasks().getByName('buildAndPushDockerImage')
     Task bootRepackageTask = project.getTasks().findByPath('bootRepackage');
     if (bootRepackageTask != null) {
       buildAndPushDockerImage.dependsOn('bootRepackage')
     }
     buildAndPushDockerImage.dependsOn('buildDockerImage')
-
-    configureAllAbstractTasks(project, devblissDockerExtension)
-    configurePullTasks(project, devblissDockerExtension)
-    configurePushTasks(project, devblissDockerExtension)
-    configureBuildTasks(project, devblissDockerExtension)
-    configureStopTasks(project, devblissDockerExtension)
-    configureStartTasks(project, devblissDockerExtension)
-    configureRmTasks(project, devblissDockerExtension)
-    configureRunTasks(project, devblissDockerExtension)
   }
 
   /**
-   * Set configuration for all Tasks that are type of AbstractDockerTask or extend it.
+   * Set configuration for all Tasks that are type of AbstractDockerTask.
+   */
+  public void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask, DockerPluginExtension extension) {
+      startDependenciesTask.dependingContainers = extension.dependingContainers
+      startDependenciesTask.dockerHost = extension.dockerHost
+      startDependenciesTask.authConfigPlain = extension.authConfigPlain
+      startDependenciesTask.authConfigEncoded = extension.authConfigEncoded
+      startDependenciesTask.versionTag = extension.versionTag
+      startDependenciesTask.dockerRegistry = extension.registryName
+      startDependenciesTask.dockerRepository = extension.repositoryName
+  }
+  
+  /**
+   * Set configuration for all Tasks that are type of AbstractDockerTask.
    */
   public void configureAllAbstractTasks(Project project, DockerPluginExtension extension) {
     project.tasks.withType(AbstractDockerTask) { task ->

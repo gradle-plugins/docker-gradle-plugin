@@ -1,5 +1,8 @@
 package com.devbliss.docker
 
+import com.devbliss.docker.task.BuildAndPushDockerImageTask
+import com.devbliss.docker.task.StartDependenciesTask
+import com.devbliss.docker.task.StopAllRunningContainersTask
 import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
 import de.gesellix.gradle.docker.tasks.*
 import org.gradle.api.Plugin
@@ -21,18 +24,20 @@ class DockerPlugin implements Plugin<Project> {
 
     project.getPlugins().apply(ParentDockerPlugin)
 
-    DockerPsTask dockerPsTask = project.task('startDependencies', type: DockerPsTask)
+    project.task("startDependencies", type: StartDependenciesTask)
+    project.task("stopAllRunningContainers", type: StopAllRunningContainersTask)
+    project.task('buildAndPushDockerImage', type: BuildAndPushDockerImageTask)
     DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
     DockerPushTask dockerPushTask = project.task('pushDockerImage', type: DockerPushTask)
     DockerStopTask dockerStopTask = project.task('stopDockerContainer', type: DockerStopTask)
     DockerStartTask dockerStartTask = project.task('startDockerContainer', type: DockerStartTask)
     DockerRunTask dockerRunTask = project.task('runDockerContainer', type: DockerRunTask)
     DockerRmTask dockerRmTask = project.task('removeDockerContainer', type: DockerRmTask)
+    DockerBuildTask dockerBuildTask = project.task('buildDockerImage', type: DockerBuildTask)
 
     Configuration configuration = new Configuration(project)
 
     //Tasks that depend on other tasks
-    DockerBuildTask dockerBuildTask = project.task('buildDockerImage', type: DockerBuildTask)
     Task bootRepackageTask = project.getTasks().findByPath('bootRepackage');
     if (bootRepackageTask != null) {
       dockerBuildTask.dependsOn('bootRepackage')
