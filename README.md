@@ -125,3 +125,8 @@ devblissDocker {
   versionTag = dockerTag
 }
 ```
+
+##Additional docs
+In the [doc](./doc) folder there is additional documentation.
+
+* [start dependencies](./doc/start_and_update_dependencies.md)
