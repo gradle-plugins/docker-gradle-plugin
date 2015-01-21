@@ -2,6 +2,7 @@ package com.devbliss.docker.task
 
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 import groovy.util.logging.Log
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -20,10 +21,14 @@ class StartDependenciesTask extends AbstractDockerTask {
     group = "Devbliss"
   }
 
-  def dependingContainers = project.devblissDocker.dependingContainers
-  def dockerRepository = project.devblissDocker.repositoryName
-  def dockerRegistry = project.devblissDocker.registryName
-  def versionTag = project.devblissDocker.versionTag
+  @Input
+  def dependingContainers
+  @Input
+  def dockerRepository
+  @Input
+  def dockerRegistry
+  @Input
+  def versionTag
 
   def runningContainers = []
   def existingContainers = []
