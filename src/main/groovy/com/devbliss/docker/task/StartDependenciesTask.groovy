@@ -16,10 +16,7 @@ import org.slf4j.LoggerFactory
 @Log
 class StartDependenciesTask extends AbstractDockerTask {
 
-  StartDependenciesTask() {
-    description = "Pull images and start depending containers for this Project"
-    group = "Devbliss"
-  }
+  public static final dockerAlreadyHandledProperty = "docker.alreadyHandled";
 
   @Input
   def dependingContainers
@@ -35,8 +32,24 @@ class StartDependenciesTask extends AbstractDockerTask {
 
   def dockerHostStatus
 
+  List<String> dockerAlreadyHandledList
+
+  StartDependenciesTask() {
+    description = "Pull images and start depending containers for this Project"
+    group = "Devbliss"
+
+    String dockerAlreadyHandled = getProject().hasProperty(dockerAlreadyHandledProperty) ? getProject().getProperty(dockerAlreadyHandledProperty) : null;
+    if (dockerAlreadyHandled != null) {
+      dockerAlreadyHandledList = dockerAlreadyHandled.split(',')
+    } else {
+      dockerAlreadyHandledList = new ArrayList<>()
+    }
+  }
+
   @TaskAction
   public void run() {
+    println "List is " + dockerAlreadyHandledList
+    return;
     splitDependingContainersStringAndPullImage()
     setContainerExts()
 
