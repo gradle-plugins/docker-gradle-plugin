@@ -19,13 +19,13 @@ Task to push the local docker image to the devbliss registry.
 ./gradlew pushDockerImage
 ```
 
-Stop the running service container of the current service. The name of the running container will be the project name.
+Stop the ruuning service container of the current service. The name of the running container will be the project name.
 
 ```bash
 ./gradlew stopDockerContainer
 ```
 
-Start a stopped service container. The service container will be the project service. If no container with this name exists it will fail.
+Start a non-running service container. The service container will be the project service. If no container with this name exists it will fail.
 
 ```bash
 ./gradlew startDockerContainer
