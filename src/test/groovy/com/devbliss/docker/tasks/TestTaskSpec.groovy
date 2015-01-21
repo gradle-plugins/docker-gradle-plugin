@@ -8,7 +8,7 @@ import org.gradle.api.tasks.TaskAction
  * Created by Christian Soth <christian.soth@devbliss.com> on 14.01.15.
  */
 
-class TestTask extends AbstractDockerTask {
+class TestTaskSpec extends AbstractDockerTask {
 
   @Input
   def imageName = project.devblissDocker.imageName

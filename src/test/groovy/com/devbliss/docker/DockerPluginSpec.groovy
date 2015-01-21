@@ -1,8 +1,6 @@
 package com.devbliss.docker
 
-import com.devbliss.docker.task.StartDependenciesTask
-import com.devbliss.docker.tasks.StartDependenciesTaskSpec
-import com.devbliss.docker.tasks.TestTask
+import com.devbliss.docker.tasks.TestTaskSpec
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
@@ -11,7 +9,7 @@ import spock.lang.Specification
  * Created by Christian Soth <christian.soth@devbliss.com> on 07.01.15.
  */
 
-class DockerPluginTest extends Specification {
+class DockerPluginSpec extends Specification {
 
   private Project project
 
@@ -40,10 +38,10 @@ class DockerPluginTest extends Specification {
     project.devblissDocker.registryName = 'example.registry:5000'
     project.devblissDocker.repositoryName = 'example-repository'
     project.devblissDocker.buildContextDirectory = './'
-    project.devblissDocker.dependingContainers = 'service1#8080,service2#8081,service2#8082'
+    project.devblissDocker.dependingContainers = 'service1#8080,service2#8081,service3#8082'
 
     when:
-    def task = project.tasks.create("testTask", TestTask)
+    def task = project.tasks.create("testTask", TestTaskSpec)
 
     then:
     task.dockerHost == "http://example.org:2375"
@@ -54,7 +52,7 @@ class DockerPluginTest extends Specification {
     task.registryName == 'example.registry:5000'
     task.repositoryName == 'example-repository'
     task.buildContextDirectory == './'
-    task.dependingContainers == 'service1#8080,service2#8081,service2#8082'
+    task.dependingContainers == 'service1#8080,service2#8081,service3#8082'
   }
 
 }
