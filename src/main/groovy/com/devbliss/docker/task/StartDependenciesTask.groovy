@@ -49,7 +49,6 @@ class StartDependenciesTask extends AbstractDockerTask {
   @TaskAction
   public void run() {
     println "List is " + dockerAlreadyHandledList
-    return;
     splitDependingContainersStringAndPullImage()
     setContainerExts()
 
@@ -134,5 +133,9 @@ class StartDependenciesTask extends AbstractDockerTask {
       return port.split("-").toList()
     }
     return [port, port]
+  }
+  
+  def List<String> getdockerAlreadyHandledList() {
+    return dockerAlreadyHandledList
   }
 }
