@@ -43,10 +43,11 @@ class Configuration {
       buildAndPushDockerImage.dependsOn('bootRepackage')
     }
     buildAndPushDockerImage.dependsOn('buildDockerImage')
+    buildAndPushDockerImage.finalizedBy('pushDockerImage')
   }
 
   /**
-   * Set configuration for all Tasks that are type of AbstractDockerTask.
+   * Set configuration for a StartDependenciesTask.
    */
   public void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask, DockerPluginExtension extension) {
       startDependenciesTask.dependingContainers = extension.dependingContainers
