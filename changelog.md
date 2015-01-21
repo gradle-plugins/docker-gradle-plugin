@@ -1,5 +1,6 @@
 
 ### Version 0.1.0-SNAPSHOT
+ - [feature] Added documentation for transitive updates
  - [refactor] fixed doc and startServiceDep task
  - [bug] Fixed bootRepackage task not exist bug
  - [feature] implement three new customised tasks for docker handling
@@ -13,4 +14,4 @@
  - [feature] Added changelog
  - [initial] initial commit
 
--- Last change by: Dennis Schumann <hillkorn@gmail.com> Tue Jan 20 15:34:45 CET 2015
+-- Last change by: Dennis Schumann <hillkorn@gmail.com> Wed Jan 21 11:29:15 CET 2015
