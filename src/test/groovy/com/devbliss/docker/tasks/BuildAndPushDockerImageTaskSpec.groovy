@@ -1,7 +1,6 @@
 package com.devbliss.docker.tasks
 
 import com.devbliss.docker.task.BuildAndPushDockerImageTask
-import com.devbliss.docker.task.StartDependenciesTask
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
@@ -18,18 +17,11 @@ class BuildAndPushDockerImageTaskSpec extends Specification {
     task = project.task('buildAndPushDockerImage', type: BuildAndPushDockerImageTask)
   }
 
-  def "depends on bootRepackage, buildDockerImage, pushDockerImage"() {
-
+  def "add task to buildAndPushDockerImage project"() {
     when:
     task.execute()
 
     then:
     project.getTasksByName("buildAndPushDockerImage", false).size() == 1
-
-
-    and:
-    assertTrue(task instanceof BuildAndPushDockerImageTask)
-
-
   }
 }

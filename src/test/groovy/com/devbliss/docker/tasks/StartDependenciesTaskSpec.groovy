@@ -17,11 +17,11 @@ class StartDependenciesTaskSpec extends Specification {
     task = project.task('startServiceDependencies', type: StartDependenciesTask)
   }
 
-  def "split depending container string"() {
+  def "add task to startServiceDependencies project"() {
     when:
     task.execute()
 
     then:
-    task.name == "service1"
+    project.getTasksByName("startServiceDependencies", false).size() == 1
   }
 }
