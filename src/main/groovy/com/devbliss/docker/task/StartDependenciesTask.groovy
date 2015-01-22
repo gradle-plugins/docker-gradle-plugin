@@ -40,7 +40,7 @@ class StartDependenciesTask extends AbstractDockerTask {
 
     String dockerAlreadyHandled = getProject().hasProperty(dockerAlreadyHandledProperty) ? getProject().getProperty(dockerAlreadyHandledProperty) : null;
     if (dockerAlreadyHandled != null) {
-      dockerAlreadyHandledList = dockerAlreadyHandled.split(',')
+      dockerAlreadyHandledList = dockerAlreadyHandled.replaceAll("\\s", "").split(',')
     } else {
       dockerAlreadyHandledList = new ArrayList<>()
     }
@@ -64,29 +64,27 @@ class StartDependenciesTask extends AbstractDockerTask {
         port = getPort(port)
         if (name.equals(container.Names[0].substring(1, container.Names[0].length()))) {
           if (!container.Image.contains(name) || !runningContainers.contains(name)) {
-
             stopAndRemoveContainer(name)
+          }
 
             def tcpPort = "${port[1]}/tcp".toString()
             def hostConf = ["PortBindings": [:]]
             hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
 
             startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, newHandledList)
-          }
-          alreadyHandled.add(name)
         }
       }
     }
-    dependingContainersList.each() { dep ->
-      def (name, port) = dep.split("#").toList()
-      port = getPort(port)
-      if (!alreadyHandled.contains(name)) {
-        def tcpPort = "${port[0]}/tcp".toString()
-        def hostConf = ["PortBindings": [:]]
-        hostConf["PortBindings"].put(tcpPort, [["HostPort": port[1]]])
-        startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, newHandledList)
-      }
-    }
+//    dependingContainersList.each() { dep ->
+//      def (name, port) = dep.split("#").toList()
+//      port = getPort(port)
+//      if (!alreadyHandled.contains(name)) {
+//        def tcpPort = "${port[0]}/tcp".toString()
+//        def hostConf = ["PortBindings": [:]]
+//        hostConf["PortBindings"].put(tcpPort, [["HostPort": port[1]]])
+//        startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, newHandledList)
+//      }
+//    }
   }
 
   def splitDependingContainersStringAndPullImage() {
