@@ -1,5 +1,6 @@
 
-### Version 0.1.0
+### Version 0.1.0-SNAPSHOT
+ - [feature] Added tests for tasks
  - [feature] Added documentation for transitive updates
  - [refactor] fixed doc and startServiceDep task
  - [bug] Fixed bootRepackage task not exist bug
@@ -14,4 +15,4 @@
  - [feature] Added changelog
  - [initial] initial commit
 
--- Last change by: Dennis Schumann <hillkorn@gmail.com> Thu Jan 22 10:15:21 CET 2015
+-- Last change by: Christian Soth <christian.soth@devbliss.com> Thu Jan 22 10:35:13 CET 2015
