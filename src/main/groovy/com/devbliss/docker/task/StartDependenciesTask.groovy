@@ -57,20 +57,19 @@ class StartDependenciesTask extends AbstractDockerTask {
     
     cleanupOldDependencies(dependingContainersList)
     
-    String commandArgs = ["-P", "${dockerAlreadyHandledProperty}=" + newHandledList.join(",")]
-    String entryPoint = "./gradlew -i runPackagedWithDeps"
+    String commandArgs = "-P${dockerAlreadyHandledProperty}=" + newHandledList.join(",")
 
     dependingContainersList.each() { dep ->
       def (name, port) = dep.split("#").toList()
       if (!dockerAlreadyHandledList.contains(name)) {
         if (runningContainers.contains(name)) {
-          updateContainerDependencies(name, newHandledList)
+          updateContainerDependencies(name, commandArgs)
         } else {
           port = getPort(port)
           def tcpPort = "${port[0]}/tcp".toString()
           def hostConf = ["PortBindings": [:]]
           hostConf["PortBindings"].put(tcpPort, [["HostPort": port[1]]])
-          startContainer(name, "${dockerRepository}/${name.split("_")[0]}", hostConf, commandArgs, entryPoint)
+          startContainer(name, "${dockerRepository}/${name.split("_")[0]}", hostConf, commandArgs)
         }
       }
     }
@@ -129,13 +128,13 @@ class StartDependenciesTask extends AbstractDockerTask {
   }
 
   def void updateContainerDependencies(String name, commandArgs) {
-    log.info "Update " + name + "Command: "+"./gradlew startDependencies '-P${dockerAlreadyHandledProperty}=" + newHandledList.join(",") + "'"
-    dockerClient.exec(name, "./gradlew startDependencies ${commandArgs}")
+    log.info "Update " + name + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
+    dockerClient.exec(name, ["./gradlew", "startDependencies", commandArgs])
   }
 
   def void startContainer(name, image, hostConfiguration, command, entryPoint) {
     log.info("Start Container: " + name + " => " + image + " => " + hostConfiguration)
-    dockerClient.run(image.toString(), ["HostConfig": hostConfiguration, "Cmd":command, "Entrypoint" : entryPoint], versionTag, name)
+    dockerClient.run(image.toString(), ["HostConfig": hostConfiguration, "Cmd":command], versionTag, name)
   }
 
   def getPort(port) {
