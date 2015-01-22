@@ -48,49 +48,47 @@ class StartDependenciesTask extends AbstractDockerTask {
 
   @TaskAction
   public void run() {
-    println "List is " + dockerAlreadyHandledList
-    splitDependingContainersStringAndPullImage()
+    log.info "Already handled " + dockerAlreadyHandledList
+    def dependingContainersList = dependingContainers.replaceAll("\\s", "").split(",")
+    splitDependingContainersStringAndPullImage(dependingContainersList)
     setContainerExts()
 
-    def alreadyHandled = [];
-
-    dockerHostStatus = dockerClient.ps()
-
-    def dependingContainersList = dependingContainers.replaceAll("\\s", "").split(",")
     def newHandledList = prepareNewdockerAlreadyHandledList(dependingContainersList)
+    
+    cleanupOldDependencies(dependingContainersList)
+
+    dependingContainersList.each() { dep ->
+      def (name, port) = dep.split("#").toList()
+      if (!dockerAlreadyHandledList.contains(name)) {
+        if (runningContainers.contains(name)) {
+          
+        } else {
+          port = getPort(port)
+          def tcpPort = "${port[0]}/tcp".toString()
+          def hostConf = ["PortBindings": [:]]
+          hostConf["PortBindings"].put(tcpPort, [["HostPort": port[1]]])
+          startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, newHandledList)
+        }
+      }
+    }
+  }
+
+  def void cleanupOldDependencies(dependingContainersList) {
     dockerHostStatus.each() { container ->
       dependingContainersList.each() { dep ->
         def (name, port) = dep.split("#").toList()
-        port = getPort(port)
         if (name.equals(container.Names[0].substring(1, container.Names[0].length()))) {
           if (!container.Image.contains(name) || !runningContainers.contains(name)) {
             stopAndRemoveContainer(name)
           }
-
-            def tcpPort = "${port[1]}/tcp".toString()
-            def hostConf = ["PortBindings": [:]]
-            hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
-
-            startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, newHandledList)
         }
       }
     }
-//    dependingContainersList.each() { dep ->
-//      def (name, port) = dep.split("#").toList()
-//      port = getPort(port)
-//      if (!alreadyHandled.contains(name)) {
-//        def tcpPort = "${port[0]}/tcp".toString()
-//        def hostConf = ["PortBindings": [:]]
-//        hostConf["PortBindings"].put(tcpPort, [["HostPort": port[1]]])
-//        startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, newHandledList)
-//      }
-//    }
   }
 
-  def splitDependingContainersStringAndPullImage() {
-    log.info("depending container: " + dependingContainers)
-
-    dependingContainers.replaceAll("\\s", "").split(",").each() { dep ->
+  def splitDependingContainersStringAndPullImage(dependingContainersList) {
+    log.info("depending container: " + dependingContainersList)
+    dependingContainersList.each() { dep ->
       def (name, port) = dep.split("#").toList()
       pullImageFromRegistry(name.split("_")[0])
     }
@@ -121,11 +119,15 @@ class StartDependenciesTask extends AbstractDockerTask {
   def stopAndRemoveContainer(name) {
     dockerClient.stop(name)
     dockerClient.rm(name)
+    existingContainers.remove(name)
+    if (runningContainers.contains(name)) {
+      runningContainers.remove(name)
+    }
   }
 
   def startContainer(name, image, hostConfiguration, alreadyHandledList) {
     log.info("Start Container: " + name + " => " + image + " => " + hostConfiguration + " and handledList => " + alreadyHandledList)
-//    dockerClient.run(image.toString(), ["HostConfig": hostConfiguration], versionTag, name)
+    //    dockerClient.run(image.toString(), ["HostConfig": hostConfiguration], versionTag, name)
   }
 
   def getPort(port) {
@@ -145,7 +147,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     additional.each({ item ->
         def (name, port) = item.split("#").toList()
         newList.addAll(name)
-    })
+      })
     return newList
   }
 }
