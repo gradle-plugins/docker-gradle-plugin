@@ -56,18 +56,21 @@ class StartDependenciesTask extends AbstractDockerTask {
     def newHandledList = prepareNewdockerAlreadyHandledList(dependingContainersList)
     
     cleanupOldDependencies(dependingContainersList)
+    
+    String commandArgs = ["-P", "${dockerAlreadyHandledProperty}=" + newHandledList.join(",")]
+    String entryPoint = "./gradlew -i runPackagedWithDeps"
 
     dependingContainersList.each() { dep ->
       def (name, port) = dep.split("#").toList()
       if (!dockerAlreadyHandledList.contains(name)) {
         if (runningContainers.contains(name)) {
-          
+          updateContainerDependencies(name, newHandledList)
         } else {
           port = getPort(port)
           def tcpPort = "${port[0]}/tcp".toString()
           def hostConf = ["PortBindings": [:]]
           hostConf["PortBindings"].put(tcpPort, [["HostPort": port[1]]])
-          startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, newHandledList)
+          startContainer(name, "${dockerRepository}/${name.split("_")[0]}", hostConf, commandArgs, entryPoint)
         }
       }
     }
@@ -78,7 +81,7 @@ class StartDependenciesTask extends AbstractDockerTask {
       dependingContainersList.each() { dep ->
         def (name, port) = dep.split("#").toList()
         if (name.equals(container.Names[0].substring(1, container.Names[0].length()))) {
-          if (!container.Image.contains(name) || !runningContainers.contains(name)) {
+          if (!container.Image.contains(name.split("_")[0]) || !runningContainers.contains(name)) {
             stopAndRemoveContainer(name)
           }
         }
@@ -125,9 +128,14 @@ class StartDependenciesTask extends AbstractDockerTask {
     }
   }
 
-  def startContainer(name, image, hostConfiguration, alreadyHandledList) {
-    log.info("Start Container: " + name + " => " + image + " => " + hostConfiguration + " and handledList => " + alreadyHandledList)
-    //    dockerClient.run(image.toString(), ["HostConfig": hostConfiguration], versionTag, name)
+  def void updateContainerDependencies(String name, commandArgs) {
+    log.info "Update " + name + "Command: "+"./gradlew startDependencies '-P${dockerAlreadyHandledProperty}=" + newHandledList.join(",") + "'"
+    dockerClient.exec(name, "./gradlew startDependencies ${commandArgs}")
+  }
+
+  def void startContainer(name, image, hostConfiguration, command, entryPoint) {
+    log.info("Start Container: " + name + " => " + image + " => " + hostConfiguration)
+    dockerClient.run(image.toString(), ["HostConfig": hostConfiguration, "Cmd":command, "Entrypoint" : entryPoint], versionTag, name)
   }
 
   def getPort(port) {
