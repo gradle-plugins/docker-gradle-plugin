@@ -1,6 +1,7 @@
 
 ### Version 0.1.0-SNAPSHOT
  - [feature] Added tests for tasks
+ - [feature] Added documentation for transitive updates
  - [refactor] fixed doc and startServiceDep task
  - [bug] Fixed bootRepackage task not exist bug
  - [feature] implement three new customised tasks for docker handling

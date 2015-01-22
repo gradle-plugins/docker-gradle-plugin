@@ -25,7 +25,7 @@ Stop the running service container of the current service. The name of the runni
 ./gradlew stopDockerContainer
 ```
 
-Start a stopped service container. The service container will be the project service. If no container with this name exists it will fail.
+Start a non-running service container. The service container will be the project service. If no container with this name exists it will fail.
 
 ```bash
 ./gradlew startDockerContainer
@@ -125,3 +125,8 @@ devblissDocker {
   versionTag = dockerTag
 }
 ```
+
+##Additional docs
+In the [doc](./doc) folder there is additional documentation.
+
+* [start dependencies](./doc/start_and_update_dependencies.md)

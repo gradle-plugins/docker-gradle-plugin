@@ -18,7 +18,7 @@ class Configuration {
 
   /**
    * Applies configuration to the project.
-   * Added tasts are startServiceDependencies and stopAllRunningContainers to handle depending services
+   * Added tasks are startDependencies and stopAllRunningContainers to handle depending services
    * and buildAndPushDockerImage to publish a new image for local dev setup.
    */
   public Configuration(Project project) {
