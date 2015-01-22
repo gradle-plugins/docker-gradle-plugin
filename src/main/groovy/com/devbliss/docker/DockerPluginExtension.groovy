@@ -39,5 +39,6 @@ class DockerPluginExtension {
   def buildContextDirectory
 
   @Input
+  @Optional
   def dependingContainers
 }
