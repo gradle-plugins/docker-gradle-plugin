@@ -1,5 +1,6 @@
 
 ### Version 0.1.0-SNAPSHOT
+ - [feature] added transitive container updates
  - [feature] Added tests for tasks
  - [feature] Added documentation for transitive updates
  - [refactor] fixed doc and startServiceDep task
@@ -15,4 +16,4 @@
  - [feature] Added changelog
  - [initial] initial commit
 
--- Last change by: Christian Soth <christian.soth@devbliss.com> Thu Jan 22 10:35:13 CET 2015
+-- Last change by: Dennis Schumann <hillkorn@gmail.com> Fri Jan 23 10:47:04 CET 2015
