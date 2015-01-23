@@ -55,7 +55,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     if (dependingContainers == null) {
       return
     }
-    def dependingContainersList = dependingContainers.replaceAll("\\s", "").split(",")
+    List<String> dependingContainersList = dependingContainers.replaceAll("\\s", "").split(",")
     splitDependingContainersStringAndPullImage(dependingContainersList)
     setContainerExts()
 
@@ -81,7 +81,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     }
   }
 
-  def void cleanupOldDependencies(dependingContainersList) {
+  void cleanupOldDependencies(List<String> dependingContainersList) {
     dockerHostStatus.each() { container ->
       dependingContainersList.each() { dep ->
         def (name, port) = dep.split("#").toList()
@@ -94,7 +94,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     }
   }
 
-  def splitDependingContainersStringAndPullImage(dependingContainersList) {
+  void splitDependingContainersStringAndPullImage(List<String> dependingContainersList) {
     log.info("depending container: " + dependingContainersList)
     dependingContainersList.each() { dep ->
       def (name, port) = dep.split("#").toList()
@@ -102,7 +102,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     }
   }
 
-  def pullImageFromRegistry(name) {
+  void pullImageFromRegistry(String name) {
     def imageName = "${dockerRepository}/${name}"
     def tag = versionTag
     def registry = dockerRegistry
@@ -111,7 +111,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     dockerClient.pull(imageName, tag, registry)
   }
 
-  def setContainerExts() {
+  void setContainerExts() {
     dockerHostStatus = dockerClient.ps()
 
     dockerHostStatus.each() { container ->
@@ -123,7 +123,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     }
   }
 
-  def stopAndRemoveContainer(name) {
+  def stopAndRemoveContainer(String name) {
     dockerClient.stop(name)
     dockerClient.rm(name)
     existingContainers.remove(name)
@@ -132,25 +132,25 @@ class StartDependenciesTask extends AbstractDockerTask {
     }
   }
 
-  def void updateContainerDependencies(String name, commandArgs) {
+  void updateContainerDependencies(String name, String commandArgs) {
     log.info "Update " + name + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
     dockerClient.exec(name, ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArgs])
   }
 
-  def void startContainer(name, image, hostConfiguration, command) {
+  void startContainer(String name, String image, hostConfiguration, command) {
     log.info("Start Container: " + name + " => " + image + " => " + hostConfiguration)
     dockerClient.run(image.toString(), ["HostConfig": hostConfiguration, "Cmd":command], versionTag, name)
   }
 
-  def getPort(port) {
+  String[] getPort(String port) {
     if (port.contains("-")) {
       return port.split("-").toList()
     }
     return [port, port]
   }
 
-  def Set<String> prepareNewdockerAlreadyHandledList(additional) {
-    def newList = [] as Set
+  Set<String> prepareNewdockerAlreadyHandledList(List<String> additional) {
+    Set newList = [] as Set
     newList.addAll(dockerAlreadyHandledList)
     additional.each({ item ->
         def (name, port) = item.split("#").toList()

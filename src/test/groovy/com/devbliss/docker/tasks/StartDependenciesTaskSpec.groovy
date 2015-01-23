@@ -57,7 +57,7 @@ class StartDependenciesTaskSpec extends Specification {
     given:
     task.dockerHostStatus = [["Names":["_service1"], "Image":"435hi3u5h345"]]
     name = "service1"
-    def dependingContainersList = ["${name}#0000"]
+    List<String> dependingContainersList = ["${name}#0000"]
     task.existingContainers = [name]
     task.runningContainers = [name]
 
@@ -85,12 +85,12 @@ class StartDependenciesTaskSpec extends Specification {
   def "prepareNewdockerAlreadyHandledList"() {
     given:
     task.dockerAlreadyHandledList = ["test1", "test4"]
-    def additional = ["test2", "test3"]
-    def additional2 = ["test1", "test4"]
+    List additional = ["test2", "test3"]
+    List additional2 = ["test1", "test4"]
 
     when:
-    def result = task.prepareNewdockerAlreadyHandledList(additional)
-    def result2 = task.prepareNewdockerAlreadyHandledList(additional2)
+    Set result = task.prepareNewdockerAlreadyHandledList(additional)
+    Set result2 = task.prepareNewdockerAlreadyHandledList(additional2)
 
     then:
     result.size() == 4
@@ -148,12 +148,13 @@ class StartDependenciesTaskSpec extends Specification {
     def repository = "dockerRepository"
     def tag = "tag"
     def name2 = "service2"
+    List deps = ["${name}#0", "${name2}#1234"]
     task.dockerRepository = repository
     task.versionTag = tag
     task.dockerRegistry = registry
 
     when:
-    task.splitDependingContainersStringAndPullImage(["${name}#0", "${name2}#1234"])
+    task.splitDependingContainersStringAndPullImage(deps)
 
     then:
     1 * dockerClient.pull("${repository}/${name}", tag, registry)
