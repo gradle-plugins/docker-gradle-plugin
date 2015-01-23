@@ -15,7 +15,7 @@ import org.gradle.api.Task
  * Configuration class that applies the devblissDocker configuration to alle docker tasks of known type.
  */
 class Configuration {
-  
+
   public static final TASK_NAME_START_DEPENDENCIES = "startDependencies";
 
   /**
@@ -60,7 +60,7 @@ class Configuration {
       startDependenciesTask.dockerRegistry = extension.registryName
       startDependenciesTask.dockerRepository = extension.repositoryName
   }
-  
+
   /**
    * Set configuration for all Tasks that are type of AbstractDockerTask.
    */
