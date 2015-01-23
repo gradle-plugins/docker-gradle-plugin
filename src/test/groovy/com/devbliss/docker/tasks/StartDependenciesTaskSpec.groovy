@@ -31,6 +31,7 @@ class StartDependenciesTaskSpec extends Specification {
     task.dockerRegistry = 'example.registry:5000'
     task.versionTag = 'latest'
     task.dockerHostStatus = dockerClient.ps()
+    task.dockerAlreadyHandledList = ['service3']
 
     when:
     task.execute()
@@ -42,17 +43,14 @@ class StartDependenciesTaskSpec extends Specification {
     1 * dockerClient.ps()
     1 * dockerClient.run('example.registry:5000/example-repository/service1',
       ['HostConfig': ['PortBindings': ['8080/tcp': [['HostPort': '8080']]]]
-        , 'Cmd':'-Pdocker.alreadyHandled=service1,service2,service3']
+        , 'Cmd':'-Pdocker.alreadyHandled=service3,service1,service2']
       , 'latest', 'service1')
     1 * dockerClient.run('example.registry:5000/example-repository/service2',
       ['HostConfig': ['PortBindings': ['8081/tcp': [['HostPort': '8081']]]]
-        , 'Cmd':'-Pdocker.alreadyHandled=service1,service2,service3']
+        , 'Cmd':'-Pdocker.alreadyHandled=service3,service1,service2']
       , 'latest', 'service2')
-    1 * dockerClient.run('example.registry:5000/example-repository/service3',
-      ['HostConfig': ['PortBindings': ['8082/tcp': [['HostPort': '8082']]]]
-        , 'Cmd':'-Pdocker.alreadyHandled=service1,service2,service3']
-      , 'latest', 'service3')
-
+    0 * dockerClient.run('example.registry:5000/example-repository/service3', _, 'latest', 'service3')
+    0 * dockerClient.exec(_, _)
   }
 
   def "cleanupOldDependencies"() {
