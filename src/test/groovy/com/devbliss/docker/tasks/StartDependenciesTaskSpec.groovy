@@ -161,4 +161,15 @@ class StartDependenciesTaskSpec extends Specification {
     1 * dockerClient.pull("${repository}/${name}", tag, registry)
     1 * dockerClient.pull("${repository}/${name2}", tag, registry)
   }
+
+  def "taskAktion without dependencies"() {
+    given:
+    task.dependingContainers = null
+
+    when:
+    task.run()
+
+    then:
+    0 * dockerClient._
+  }
 }
