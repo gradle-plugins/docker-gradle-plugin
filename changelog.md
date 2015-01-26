@@ -1,4 +1,10 @@
 
+### Version 0.2.0-SNAPSHOT
+
+ - [feature] added transitive container updates
+
+-- Last change by: Dennis Schumann <hillkorn@gmail.com> Fri Jan 23 10:47:04 CET 2015
+
 ### Version 0.1.0-SNAPSHOT
  - [feature] Added tests for tasks
  - [feature] Added documentation for transitive updates
@@ -15,4 +21,4 @@
  - [feature] Added changelog
  - [initial] initial commit
 
--- Last change by: Christian Soth <christian.soth@devbliss.com> Thu Jan 22 10:35:13 CET 2015
+-- Last change by: Dennis Schumann <hillkorn@gmail.com> Fri Jan 23 10:47:04 CET 2015

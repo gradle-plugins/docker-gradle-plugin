@@ -15,6 +15,8 @@ import org.gradle.api.Task
  * Configuration class that applies the devblissDocker configuration to alle docker tasks of known type.
  */
 class Configuration {
+  
+  public static final TASK_NAME_START_DEPENDENCIES = "startDependencies";
 
   /**
    * Applies configuration to the project.
@@ -23,7 +25,7 @@ class Configuration {
    */
   public Configuration(Project project) {
     DockerPluginExtension devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
-    StartDependenciesTask startDependenciesTask = project.getTasks().getByName('startDependencies')
+    StartDependenciesTask startDependenciesTask = project.getTasks().getByName(TASK_NAME_START_DEPENDENCIES)
     
     project.afterEvaluate {
       configureStartServiceDependenciesTasks(startDependenciesTask, devblissDockerExtension)
