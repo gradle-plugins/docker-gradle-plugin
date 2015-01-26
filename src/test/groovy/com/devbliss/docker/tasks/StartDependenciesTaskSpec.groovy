@@ -4,59 +4,70 @@ import com.devbliss.docker.task.StartDependenciesTask
 import com.devbliss.docker.Configuration
 import de.gesellix.docker.client.DockerClient
 import de.gesellix.gradle.docker.tasks.DockerPsTask
+import groovy.util.logging.Log
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 /**
  * Created by Christian Soth <christian.soth@devbliss.com> on 19.01.15.
  */
+@Log
 class StartDependenciesTaskSpec extends Specification {
 
   def project
   def task
-  def dockerClient = Mock(DockerClient)
-  def name
+  def dockerClient
+  String name
+  String registry
+  String repository
+  String tag
+  String name2
 
   def setup() {
     project = ProjectBuilder.builder().build()
     task = project.task(Configuration.TASK_NAME_START_DEPENDENCIES, type: StartDependenciesTask)
+    dockerClient = Mock(DockerClient)
     task.dockerClient = dockerClient
     name = "service1"
+    registry = "dockerRegistry"
+    repository = "dockerRepository"
+    tag = "tag"
+    name2 = "service2"
   }
 
   def "add task to startServiceDependencies project"() {
     given:
-    task.dependingContainers = 'service1#8080,service2#8081,service3#8082'
+    task.dependingContainers = 'service1#8080,service3#8082,service2#8081'
     task.dockerRepository = 'example-repository'
     task.dockerRegistry = 'example.registry:5000'
     task.versionTag = 'latest'
-    task.dockerHostStatus = dockerClient.ps()
     task.dockerAlreadyHandledList = ['service3']
+    dockerClient.ps() >> [["Names":["_service3"], "Status":"Up", "Image":"435hi3u5h345"],
+      ["Names":["_service2"], "Status":"Up", "Image":"example-repository/service2:latest"]]
 
     when:
-    task.execute()
+    task.run()
 
     then:
-    1 * dockerClient.pull('example-repository/service3', 'latest', 'example.registry:5000')
+    0 * dockerClient.pull('example-repository/service3', 'latest', 'example.registry:5000')
     1 * dockerClient.pull('example-repository/service2', 'latest', 'example.registry:5000')
     1 * dockerClient.pull('example-repository/service1', 'latest', 'example.registry:5000')
-    1 * dockerClient.ps()
+//    1 * dockerClient.ps()
     1 * dockerClient.run('example.registry:5000/example-repository/service1',
       ['HostConfig': ['PortBindings': ['8080/tcp': [['HostPort': '8080']]]]
         , 'Cmd':'-Pdocker.alreadyHandled=service3,service1,service2']
       , 'latest', 'service1')
-    1 * dockerClient.run('example.registry:5000/example-repository/service2',
-      ['HostConfig': ['PortBindings': ['8081/tcp': [['HostPort': '8081']]]]
-        , 'Cmd':'-Pdocker.alreadyHandled=service3,service1,service2']
-      , 'latest', 'service2')
+    0 * dockerClient.stop('service2')
+    0 * dockerClient.rm('service2')
+    0 * dockerClient.run('example.registry:5000/example-repository/service2', _, 'latest', 'service2')
+    1 * dockerClient.exec('service2', _)
     0 * dockerClient.run('example.registry:5000/example-repository/service3', _, 'latest', 'service3')
-    0 * dockerClient.exec(_, _)
+    0 * dockerClient.exec('service3', _)
   }
 
   def "cleanupOldDependencies"() {
     given:
-    task.dockerHostStatus = [["Names":["_service1"], "Image":"435hi3u5h345"]]
-    name = "service1"
+    task.dockerHostStatus = [["Names":["_$name"], "Image":"435hi3u5h345"]]
     List<String> dependingContainersList = ["${name}#0000"]
     task.existingContainers = [name]
     task.runningContainers = [name]
@@ -96,6 +107,18 @@ class StartDependenciesTaskSpec extends Specification {
     result.size() == 4
     result == ["test1", "test4", "test2", "test3"] as Set
     result2.size() == 2
+    result2 == ["test1", "test4"] as Set
+  }
+
+  def "stopAndRemoveContainer"() {
+    given:
+
+    when:
+    task.stopAndRemoveContainer(name)
+
+    then:
+    1 * dockerClient.stop(name)
+    1 * dockerClient.rm(name)
   }
 
   def "getPort"() {
@@ -128,9 +151,6 @@ class StartDependenciesTaskSpec extends Specification {
 
   def "pullImageFromRegistry"() {
     given:
-    def registry = "dockerRegistry"
-    def repository = "dockerRepository"
-    def tag = "tag"
     task.dockerRepository = repository
     task.versionTag = tag
     task.dockerRegistry = registry
@@ -144,10 +164,6 @@ class StartDependenciesTaskSpec extends Specification {
 
   def "splitDependingContainersStringAndPullImage"() {
     given:
-    def registry = "dockerRegistry"
-    def repository = "dockerRepository"
-    def tag = "tag"
-    def name2 = "service2"
     List deps = ["${name}#0", "${name2}#1234"]
     task.dockerRepository = repository
     task.versionTag = tag

@@ -64,6 +64,8 @@ class StartDependenciesTask extends AbstractDockerTask {
     cleanupOldDependencies(dependingContainersList)
     
     String commandArgs = "-P${dockerAlreadyHandledProperty}=" + newHandledList.join(",")
+    
+    log.info "Running containers => " + runningContainers
 
     dependingContainersList.each() { dep ->
       def (name, port) = dep.split("#").toList()
@@ -85,9 +87,11 @@ class StartDependenciesTask extends AbstractDockerTask {
     dockerHostStatus.each() { container ->
       dependingContainersList.each() { dep ->
         def (name, port) = dep.split("#").toList()
-        if (name.equals(container.Names[0].substring(1, container.Names[0].length()))) {
-          if (!container.Image.contains(name.split("_")[0]) || !runningContainers.contains(name)) {
-            stopAndRemoveContainer(name)
+        if (!dockerAlreadyHandledList.contains(name)) {
+          if (name.equals(container.Names[0].substring(1, container.Names[0].length()))) {
+            if (!container.Image.contains(name.split("_")[0]) || !runningContainers.contains(name)) {
+              stopAndRemoveContainer(name)
+            }
           }
         }
       }
@@ -98,7 +102,9 @@ class StartDependenciesTask extends AbstractDockerTask {
     log.info("depending container: " + dependingContainersList)
     dependingContainersList.each() { dep ->
       def (name, port) = dep.split("#").toList()
-      pullImageFromRegistry(name.split("_")[0])
+      if (!dockerAlreadyHandledList.contains(name)) {
+        pullImageFromRegistry(name.split("_")[0])
+      }
     }
   }
 
@@ -113,6 +119,7 @@ class StartDependenciesTask extends AbstractDockerTask {
 
   void setContainerExts() {
     dockerHostStatus = dockerClient.ps()
+    log.info "PS => " + dockerHostStatus
 
     dockerHostStatus.each() { container ->
       def name = container.Names[0].substring(1, container.Names[0].length())
