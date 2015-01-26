@@ -67,7 +67,7 @@ class StartDependenciesTaskSpec extends Specification {
 
   def "cleanupOldDependencies"() {
     given:
-    task.dockerHostStatus = [["Names":["_$name"], "Image":"435hi3u5h345"]]
+    task.dockerHostStatus = [["Names":["_$name"], "Image":"435hi3u5h345"], ["Names":["_$name2"], "Image":"435hi3u5h345/$name2"]]
     List<String> dependingContainersList = ["${name}#0000"]
     task.existingContainers = [name]
     task.runningContainers = [name]
@@ -78,8 +78,10 @@ class StartDependenciesTaskSpec extends Specification {
     then:
     1 * dockerClient.stop(name)
     1 * dockerClient.rm(name)
-    task.existingContainers.size() == 0
-    task.runningContainers.size() == 0
+    0 * dockerClient.stop(name2)
+    0 * dockerClient.rm(name2)
+    task.existingContainers.size() == 1
+    task.runningContainers.size() == 1
   }
 
   def "updateContainerDependencies"() {
