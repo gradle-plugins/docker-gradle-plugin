@@ -73,14 +73,19 @@ class StartDependenciesTask extends AbstractDockerTask {
         if (runningContainers.contains(name)) {
           updateContainerDependencies(name, commandArgs)
         } else {
-          port = getPort(port)
-          def tcpPort = "${port[0]}/tcp".toString()
-          def hostConf = ["PortBindings": [:]]
-          hostConf["PortBindings"].put(tcpPort, [["HostPort": port[1]]])
+          Map hostConf = prepareHostConfig(port)
           startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, commandArgs)
         }
       }
     }
+  }
+
+  Map prepareHostConfig(String portConfig) {
+    def port = getPort(portConfig)
+    def tcpPort = "${port[1]}/tcp".toString()
+    def hostConf = ["PortBindings": [:]]
+    hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
+    return hostConf
   }
 
   void cleanupOldDependencies(List<String> dependingContainersList) {

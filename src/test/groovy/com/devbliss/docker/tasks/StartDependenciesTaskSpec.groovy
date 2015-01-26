@@ -68,9 +68,9 @@ class StartDependenciesTaskSpec extends Specification {
   def "cleanupOldDependencies"() {
     given:
     task.dockerHostStatus = [["Names":["_$name"], "Image":"435hi3u5h345"], ["Names":["_$name2"], "Image":"435hi3u5h345/$name2"]]
-    List<String> dependingContainersList = ["${name}#0000"]
-    task.existingContainers = [name]
-    task.runningContainers = [name]
+    List<String> dependingContainersList = ["${name}#0000,${name2}#0001"]
+    task.existingContainers = [name, name2]
+    task.runningContainers = [name, name2]
 
     when:
     task.cleanupOldDependencies(dependingContainersList)
@@ -82,6 +82,20 @@ class StartDependenciesTaskSpec extends Specification {
     0 * dockerClient.rm(name2)
     task.existingContainers.size() == 1
     task.runningContainers.size() == 1
+  }
+
+  def "prepareHostConfig"() {
+    given:
+    String port1 = "8080-9090"
+    String port2 = "1010"
+
+    when:
+    Map hostConf1 = task.prepareHostConfig(port1)
+    Map hostConf2 = task.prepareHostConfig(port2)
+
+    then:
+    hostConf1 == ['PortBindings': ['9090/tcp': [['HostPort': '8080']]]]
+    hostConf2 == ['PortBindings': ['1010/tcp': [['HostPort': '1010']]]]
   }
 
   def "updateContainerDependencies"() {
