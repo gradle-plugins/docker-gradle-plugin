@@ -1,3 +1,6 @@
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
 plugins {
   id 'com.devbliss.changelog' version '1.2.1'
 }
@@ -41,7 +44,8 @@ uploadArchives {
       slf4jLogger.error(
           '\n-- Errors found:\n' +
           ' + Some of the properties required for the upload to http://nexus.devbliss.com are missing.\n' +
-          '   Be sure your global gradle.properties file is up-to-date.\n' +
+          ' + Have a look here: https://github.com/devbliss/manuals/blob/master/4006-gradle-plugins-styleguide.md \n ' + 
+          ' + Be sure your global gradle.properties file is up-to-date.\n' +
           '--\n')
   }
 
