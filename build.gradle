@@ -30,14 +30,29 @@ wrapper {
 }
 
 uploadArchives {
+
+  try {
+      hasProperty(devbliss_nexus_releases_repo_url)
+      hasProperty(devbliss_nexus_snapshots_repo_url)
+      hasProperty(devbliss_nexus_username)
+      hasProperty(devbliss_nexus_password)
+  } catch (MissingPropertyException) {
+      Logger slf4jLogger = LoggerFactory.getLogger('gradle-plugin')
+      slf4jLogger.error(
+          '\n-- Errors found:\n' +
+          ' + Some of the properties required for the upload to http://nexus.devbliss.com are missing.\n' +
+          '   Be sure your global gradle.properties file is up-to-date.\n' +
+          '--\n')
+  }
+
   repositories {
     mavenDeployer {
       def credentials = [
-              userName: username,
-              password: password
+        userName: devbliss_nexus_username,
+        password: devbliss_nexus_password
       ]
-      repository(url: 'http://nexus.devbliss.com/content/repositories/releases', authentication: credentials)
-      snapshotRepository(url: 'http://nexus.devbliss.com/content/repositories/snapshots', authentication: credentials)
+      repository(url: devbliss_nexus_releases_repo_url, authentication: credentials)
+      snapshotRepository(url: devbliss_nexus_snapshots_repo_url, authentication: credentials)
     }
   }
 }
