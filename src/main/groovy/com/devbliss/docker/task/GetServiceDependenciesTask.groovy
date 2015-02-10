@@ -3,6 +3,7 @@ package com.devbliss.docker.task
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 import groovy.util.logging.Log
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
 /**
