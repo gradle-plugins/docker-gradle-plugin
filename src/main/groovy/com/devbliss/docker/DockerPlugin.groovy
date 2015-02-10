@@ -1,6 +1,8 @@
 package com.devbliss.docker
 
 import com.devbliss.docker.task.BuildAndPushDockerImageTask
+import com.devbliss.docker.task.CleanupOldContainersTask
+import com.devbliss.docker.task.PullDependencyImages
 import com.devbliss.docker.task.StartDependenciesTask
 import com.devbliss.docker.task.StopAllRunningContainersTask
 import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
@@ -23,7 +25,7 @@ class DockerPlugin implements Plugin<Project> {
   public void apply(Project project) {
     project.getPlugins().apply(ParentDockerPlugin)
 
-    project.task("startDependencies", type: StartDependenciesTask)
+        project.task(Configuration.TASK_NAME_START_DEPENDENCIES, type: StartDependenciesTask)
     project.task("stopAllRunningContainers", type: StopAllRunningContainersTask)
     BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImage', type: BuildAndPushDockerImageTask)
     DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
@@ -33,6 +35,8 @@ class DockerPlugin implements Plugin<Project> {
     DockerRunTask dockerRunTask = project.task('runDockerContainer', type: DockerRunTask)
     DockerRmTask dockerRmTask = project.task('removeDockerContainer', type: DockerRmTask)
     DockerBuildTask dockerBuildTask = project.task('buildDockerImage', type: DockerBuildTask)
+    PullDependencyImages pullDependencyImages = project.task('pullDependencyImages', type: PullDependencyImages)
+    CleanupOldContainersTask cleanupOldContainersTask = project.task('cleanupOldContainers', type: CleanupOldContainersTask)
     
     Configuration configuration = new Configuration(project)
 

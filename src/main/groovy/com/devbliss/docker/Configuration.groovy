@@ -1,6 +1,8 @@
 package com.devbliss.docker
 
 import com.devbliss.docker.task.BuildAndPushDockerImageTask
+import com.devbliss.docker.task.CleanupOldContainersTask
+import com.devbliss.docker.task.PullDependencyImages
 import com.devbliss.docker.task.StartDependenciesTask
 import com.devbliss.docker.task.StopAllRunningContainersTask
 import de.gesellix.gradle.docker.tasks.*
@@ -15,8 +17,9 @@ import org.gradle.api.Task
  * Configuration class that applies the devblissDocker configuration to alle docker tasks of known type.
  */
 class Configuration {
-  
-  public static final TASK_NAME_START_DEPENDENCIES = "startDependencies";
+
+  public static final String TASK_NAME_START_DEPENDENCIES = "startDependencies";
+  public static final String dockerAlreadyHandledProperty = "docker.alreadyHandled";
 
   /**
    * Applies configuration to the project.
@@ -26,7 +29,11 @@ class Configuration {
   public Configuration(Project project) {
     DockerPluginExtension devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
     StartDependenciesTask startDependenciesTask = project.getTasks().getByName(TASK_NAME_START_DEPENDENCIES)
-    
+    PullDependencyImages pullDependencyImages = project.getTasks().getByName('pullDependencyImages')
+    CleanupOldContainersTask cleanupOldContainersTask = project.getTasks().getByName('cleanupOldContainers')
+    startDependenciesTask.dependsOn cleanupOldContainersTask
+    cleanupOldContainersTask.dependsOn pullDependencyImages
+
     project.afterEvaluate {
       configureStartServiceDependenciesTasks(startDependenciesTask, devblissDockerExtension)
       configureAllAbstractTasks(project, devblissDockerExtension)
@@ -37,6 +44,8 @@ class Configuration {
       configureStartTasks(project, devblissDockerExtension)
       configureRmTasks(project, devblissDockerExtension)
       configureRunTasks(project, devblissDockerExtension)
+      configurePullDependencyImagesTasks(project, devblissDockerExtension)
+      configureCleanupOldContainersTasks(project, devblissDockerExtension)
     }
 
     BuildAndPushDockerImageTask buildAndPushDockerImage = project.getTasks().getByName('buildAndPushDockerImage')
@@ -60,7 +69,7 @@ class Configuration {
       startDependenciesTask.dockerRegistry = extension.registryName
       startDependenciesTask.dockerRepository = extension.repositoryName
   }
-  
+
   /**
    * Set configuration for all Tasks that are type of AbstractDockerTask.
    */
@@ -137,6 +146,25 @@ class Configuration {
     project.tasks.withType(DockerRunTask) { task ->
       task.containerName = extension.imageName
       task.imageName = extension.registryName + '/' + extension.repositoryName + '/' + extension.imageName
+    }
+  }
+
+  public void configurePullDependencyImagesTasks(Project project, DockerPluginExtension extension) {
+      project.tasks.withType(PullDependencyImages) { task ->
+      task.dependingContainers = extension.dependingContainers
+      task.dockerHost = extension.dockerHost
+      task.authConfigPlain = extension.authConfigPlain
+      task.authConfigEncoded = extension.authConfigEncoded
+      task.versionTag = extension.versionTag
+      task.dockerRegistry = extension.registryName
+      task.dockerRepository = extension.repositoryName
+    }
+  }
+
+  public void configureCleanupOldContainersTasks(Project project, DockerPluginExtension extension) {
+      project.tasks.withType(CleanupOldContainersTask) { task ->
+      task.dependingContainers = extension.dependingContainers
+      task.dockerHost = extension.dockerHost
     }
   }
 }
