@@ -64,7 +64,7 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
   }
 
   void getDependingServiceFromContainer(String name) {
-    def gradleProperties = dockerClient.exec(name, ["cat", "gradle.properties"])
+    String gradleProperties = dockerClient.exec(name, ["cat", "gradle.properties"])
 
     gradleProperties.eachLine {
       if (it.startsWith("dependingEcosystemServices=")) {
@@ -74,8 +74,7 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
         dependingContainersList.each() { dep ->
           def (serviceName, port) = dep.split("#").toList()
           serviceName = serviceName.split("_")[0]
-          if (!runningServiceDependencies.contains(serviceName) && !notRunningServiceDependencies.contains
-                  (serviceName)) {
+          if (!runningServiceDependencies.contains(serviceName) && !notRunningServiceDependencies.contains(serviceName)) {
             notRunningServiceDependencies.add(serviceName)
           }
         }
