@@ -1,6 +1,7 @@
 package com.devbliss.docker.task
 
 import com.devbliss.docker.Configuration
+import com.devbliss.docker.handler.ProgressHandler
 import com.devbliss.docker.util.DependencyStringUtils
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 import groovy.util.logging.Log
@@ -63,6 +64,9 @@ class StartDependenciesTask extends AbstractDockerTask {
                 startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", port, commandArgs)
             }
         }
+
+        ProgressHandler progressHandler = new ProgressHandler(dockerClient, dependingContainersList)
+        progressHandler.waitUnilDependenciesRun()
     }
 
     Map prepareHostConfig(String portConfig) {
