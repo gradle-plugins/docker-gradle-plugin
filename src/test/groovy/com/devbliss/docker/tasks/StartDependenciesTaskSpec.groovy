@@ -116,8 +116,8 @@ class StartDependenciesTaskSpec extends Specification {
     List additional2 = ["test1", "test4"]
 
     when:
-    Set result = task.prepareNewdockerAlreadyHandledList(additional)
-    Set result2 = task.prepareNewdockerAlreadyHandledList(additional2)
+    Set result = task.prepareNewDockerAlreadyHandledList(additional)
+    Set result2 = task.prepareNewDockerAlreadyHandledList(additional2)
 
     then:
     result.size() == 4

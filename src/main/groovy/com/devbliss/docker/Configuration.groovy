@@ -11,14 +11,18 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 
 /**
+ * @todo: Autor steht in Git -> Autor entfernen
  * @author Christian Soth <christian.soth@devbliss.com> on 12.01.15.
  * @author Dennis Schumann <dennis.schumann@devbliss.com>
  *
- * Configuration class that applies the devblissDocker configuration to alle docker tasks of known type.
+ * Configuration class that applies the devblissDocker configuration to all docker tasks of known type.
  */
 class Configuration {
 
+  // TODO: mein pattern für sowas ist: TASK_NAME__START_DEPENDENCIES
+  // nächste wäre dann z.B. TASK_NAME__PULL_DEPENDENCY_IMAGES
   public static final String TASK_NAME_START_DEPENDENCIES = "startDependencies";
+  // TODO: upper case und so, weißte ja schon
   public static final String dockerAlreadyHandledProperty = "docker.alreadyHandled";
 
   /**
@@ -28,12 +32,14 @@ class Configuration {
    */
   public Configuration(Project project) {
     DockerPluginExtension devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
+    // TODO: auslagern in getStartDependenciesTask
     StartDependenciesTask startDependenciesTask = project.getTasks().getByName(TASK_NAME_START_DEPENDENCIES)
     PullDependencyImages pullDependencyImages = project.getTasks().getByName('pullDependencyImages')
     CleanupOldContainersTask cleanupOldContainersTask = project.getTasks().getByName('cleanupOldContainers')
     startDependenciesTask.dependsOn cleanupOldContainersTask
     cleanupOldContainersTask.dependsOn pullDependencyImages
 
+    // TODO: auslagern in sprechende methode
     project.afterEvaluate {
       configureStartServiceDependenciesTasks(startDependenciesTask, devblissDockerExtension)
       configureAllAbstractTasks(project, devblissDockerExtension)
@@ -48,6 +54,7 @@ class Configuration {
       configureCleanupOldContainersTasks(project, devblissDockerExtension)
     }
 
+    // TODO: warum steht das hier unten und nicht da oben, wie startDeps? -> auslagern in sprechende methode
     BuildAndPushDockerImageTask buildAndPushDockerImage = project.getTasks().getByName('buildAndPushDockerImage')
     Task bootRepackageTask = project.getTasks().findByPath('bootRepackage');
     if (bootRepackageTask != null) {

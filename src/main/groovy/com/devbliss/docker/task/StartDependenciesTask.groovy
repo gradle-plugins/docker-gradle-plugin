@@ -31,8 +31,10 @@ class StartDependenciesTask extends AbstractDockerTask {
 
     StartDependenciesTask() {
         description = "Pull images and start depending containers for this Project"
+        // TODO: move group into abstract base class and rename to "Docker"
         group = "Devbliss"
 
+        // TODO: auslagern in sprechende methode
         if (getProject().hasProperty(Configuration.dockerAlreadyHandledProperty)) {
             String dockerAlreadyHandled = getProject().getProperty(Configuration.dockerAlreadyHandledProperty)
             dockerAlreadyHandledList = DependencyStringUtils.splitServiceDependenciesString(dockerAlreadyHandled)
@@ -51,7 +53,7 @@ class StartDependenciesTask extends AbstractDockerTask {
 
         List<String> runningContainers = getRunningContainers()
 
-        Set newHandledList = prepareNewdockerAlreadyHandledList(dependingContainersList)
+        Set newHandledList = prepareNewDockerAlreadyHandledList(dependingContainersList)
 
         String commandArgs = "-P${Configuration.dockerAlreadyHandledProperty}=" + newHandledList.join(",")
 
@@ -96,6 +98,7 @@ class StartDependenciesTask extends AbstractDockerTask {
         }
     }
 
+    // TODO: make static
     String[] getPort(String port) {
         if (port.contains("-")) {
             return port.split("-").toList()
@@ -103,7 +106,7 @@ class StartDependenciesTask extends AbstractDockerTask {
         return [port, port]
     }
 
-    Set<String> prepareNewdockerAlreadyHandledList(List<String> additionalDependencies) {
+    Set<String> prepareNewDockerAlreadyHandledList(List<String> additionalDependencies) {
         Set newList = [] as Set
         newList.addAll(dockerAlreadyHandledList)
         newList.addAll additionalDependencies.collect { item ->
