@@ -13,6 +13,8 @@ import org.gradle.api.tasks.TaskAction
  * @author Dennis Schumann <dennis.schumann@devbliss.com>
  */
 @Log
+// TODO: PullDependingImages wäre besseres Englisch, außerdem ist das der einzige Task der nicht Task im Namen hat
+// -> PullDependingImagesTask
 class PullDependencyImages extends AbstractDockerTask {
 
     @Input
@@ -28,6 +30,7 @@ class PullDependencyImages extends AbstractDockerTask {
     List<String> dockerAlreadyHandledList
 
     PullDependencyImages() {
+        // TODO: siehe Anmerkungen in StartDependenciesTask()
         description = "Pull all depending images for this Project"
         group = "Devbliss"
 
@@ -44,17 +47,20 @@ class PullDependencyImages extends AbstractDockerTask {
         if (dependingContainers == null) {
             return
         }
+        // TODO: auch hier wieder die List<DockerContainer> einsetzen
         List<String> dependingContainersList = DependencyStringUtils.splitServiceDependenciesString(dependingContainers)
         log.info("Pull images for services: " + dependingContainersList)
         dependingContainersList.each() { dep ->
             def (name, port) = DependencyStringUtils.getDependencyNameAndPort(dep)
             if (!dockerAlreadyHandledList.contains(name)) {
+                // TODO: Umschreiben zu -> pullImageForContainerFromRegistry(dependingContainer)
                 pullImageFromRegistry(name.split("_")[0])
             }
         }
     }
 
     void pullImageFromRegistry(String name) {
+        // TODO: sollten auch Attribute der DockerContainer-Klasse werden
         def imageName = "${dockerRepository}/${name}"
         def tag = versionTag
         def registry = dockerRegistry

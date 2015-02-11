@@ -17,6 +17,7 @@ import org.gradle.api.tasks.TaskAction
 @Log
 class StartDependenciesTask extends AbstractDockerTask {
 
+    // TODO: wäre es möglich die Typen der Variablen zu annotieren bzw. per java/groovydoc zu "hinten"?
     @Input
     @Optional
     def dependingContainers
@@ -34,7 +35,7 @@ class StartDependenciesTask extends AbstractDockerTask {
         // TODO: move group into abstract base class and rename to "Docker"
         group = "Devbliss"
 
-        // TODO: auslagern in sprechende methode
+        // TODO: auslagern in sprechende methode, ggf. in Basisklasse, da von mehreren Klassen so benutzt
         if (getProject().hasProperty(Configuration.dockerAlreadyHandledProperty)) {
             String dockerAlreadyHandled = getProject().getProperty(Configuration.dockerAlreadyHandledProperty)
             dockerAlreadyHandledList = DependencyStringUtils.splitServiceDependenciesString(dockerAlreadyHandled)
@@ -51,8 +52,10 @@ class StartDependenciesTask extends AbstractDockerTask {
         }
         List<String> dependingContainersList = DependencyStringUtils.splitServiceDependenciesString(dependingContainers)
 
+        // TODO: zusammen mit dem Logging auslagern in logListOfRunningContainers
         List<String> runningContainers = getRunningContainers()
 
+        // TODO: in getCommand oder getCommandArgs auslagern und direkt an startContainer übergeben
         Set newHandledList = prepareNewDockerAlreadyHandledList(dependingContainersList)
 
         String commandArgs = "-P${Configuration.dockerAlreadyHandledProperty}=" + newHandledList.join(",")
@@ -60,13 +63,28 @@ class StartDependenciesTask extends AbstractDockerTask {
         log.info "Running containers => " + runningContainers
 
         dependingContainersList.each() { dep ->
+            // TODO: Klasse (z.B. DockerContainer) bauen mit getName und getPort
+            // Das führt natürlich dazu, dass dependingContainersList dann nicht mehr nur List<String> ist sondern
+            // entsprechend List<DockerContainer>, was auch z.B. in prepareNewDockerAlreadyHandledList angepasst werden muss
             def (name, port) = DependencyStringUtils.getDependencyNameAndPort(dep)
             if (!dockerAlreadyHandledList.contains(name)) {
+                // TODO: "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}" -> in Methode auslagern (am besten in DependingContainer)
                 startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", port, commandArgs)
+                // TODO: am Ende sollte startContainer so aussehen:
+                /*
+                startContainer(
+                    dependingContainer.getName(),
+                    dependingContainer.getImageName(),
+                    dependingContainer.getPort(),
+                    getCommand()
+                )
+                */
             }
         }
     }
 
+    // TODO: weiter nach unten. Wird erst in startContainer() benutzt, also erst danach. Da prepareNewDockerAlreadyHandledList
+    // in run benutzt wird, kommt prepareHostConfig also auch erst danach
     Map prepareHostConfig(String portConfig) {
         def port = getPort(portConfig)
         def tcpPort = "${port[1]}/tcp".toString()
@@ -98,7 +116,6 @@ class StartDependenciesTask extends AbstractDockerTask {
         }
     }
 
-    // TODO: make static
     String[] getPort(String port) {
         if (port.contains("-")) {
             return port.split("-").toList()
