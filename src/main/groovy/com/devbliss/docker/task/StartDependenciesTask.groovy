@@ -18,156 +18,156 @@ import org.slf4j.LoggerFactory
 @Log
 class StartDependenciesTask extends AbstractDockerTask {
 
-  public static final dockerAlreadyHandledProperty = "docker.alreadyHandled";
+    public static final dockerAlreadyHandledProperty = "docker.alreadyHandled";
 
-  @Input
-  @Optional
-  def dependingContainers
-  @Input
-  def dockerRepository
-  @Input
-  def dockerRegistry
-  @Input
-  def versionTag
+    @Input
+    @Optional
+    def dependingContainers
+    @Input
+    def dockerRepository
+    @Input
+    def dockerRegistry
+    @Input
+    def versionTag
 
-  def runningContainers = []
-  def existingContainers = []
+    def runningContainers = []
+    def existingContainers = []
 
-  def dockerHostStatus
+    def dockerHostStatus
 
-  List<String> dockerAlreadyHandledList
+    List<String> dockerAlreadyHandledList
 
-  StartDependenciesTask() {
-    description = "Pull images and start depending containers for this Project"
-    group = "Devbliss"
+    StartDependenciesTask() {
+        description = "Pull images and start depending containers for this Project"
+        group = "Devbliss"
 
-    String dockerAlreadyHandled = getProject().hasProperty(dockerAlreadyHandledProperty) ? getProject().getProperty(dockerAlreadyHandledProperty) : null;
-    if (dockerAlreadyHandled != null) {
-      dockerAlreadyHandledList = dockerAlreadyHandled.replaceAll("\\s", "").split(',')
-    } else {
-      dockerAlreadyHandledList = new ArrayList<>()
-    }
-  }
-
-  @TaskAction
-  public void run() {
-    log.info "Already handled " + dockerAlreadyHandledList
-    if (dependingContainers == null) {
-      return
-    }
-    List<String> dependingContainersList = dependingContainers.replaceAll("\\s", "").split(",")
-    splitDependingContainersStringAndPullImage(dependingContainersList)
-    setContainerExts()
-
-    def newHandledList = prepareNewdockerAlreadyHandledList(dependingContainersList)
-    
-    cleanupOldDependencies(dependingContainersList)
-    
-    String commandArgs = "-P${dockerAlreadyHandledProperty}=" + newHandledList.join(",")
-    
-    log.info "Running containers => " + runningContainers
-
-    dependingContainersList.each() { dep ->
-      def (name, port) = dep.split("#").toList()
-      if (!dockerAlreadyHandledList.contains(name)) {
-        if (runningContainers.contains(name)) {
-          updateContainerDependencies(name, commandArgs)
+        String dockerAlreadyHandled = getProject().hasProperty(dockerAlreadyHandledProperty) ? getProject().getProperty(dockerAlreadyHandledProperty) : null;
+        if (dockerAlreadyHandled != null) {
+            dockerAlreadyHandledList = dockerAlreadyHandled.replaceAll("\\s", "").split(',')
         } else {
-          Map hostConf = prepareHostConfig(port)
-          startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, commandArgs)
+            dockerAlreadyHandledList = new ArrayList<>()
         }
-      }
     }
-  }
 
-  Map prepareHostConfig(String portConfig) {
-    def port = getPort(portConfig)
-    def tcpPort = "${port[1]}/tcp".toString()
-    def hostConf = ["PortBindings": [:]]
-    hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
-    return hostConf
-  }
+    @TaskAction
+    public void run() {
+        log.info "Already handled " + dockerAlreadyHandledList
+        if (dependingContainers == null) {
+            return
+        }
+        List<String> dependingContainersList = dependingContainers.replaceAll("\\s", "").split(",")
+        splitDependingContainersStringAndPullImage(dependingContainersList)
+        setContainerExts()
 
-  void cleanupOldDependencies(List<String> dependingContainersList) {
-    dockerHostStatus.each() { container ->
-      dependingContainersList.each() { dep ->
-        def (name, port) = dep.split("#").toList()
-        if (!dockerAlreadyHandledList.contains(name)) {
-          if (name.equals(container.Names[0].substring(1, container.Names[0].length()))) {
-            if (!container.Image.contains(name.split("_")[0]) || !runningContainers.contains(name)) {
-              stopAndRemoveContainer(name)
+        def newHandledList = prepareNewdockerAlreadyHandledList(dependingContainersList)
+
+        cleanupOldDependencies(dependingContainersList)
+
+        String commandArgs = "-P${dockerAlreadyHandledProperty}=" + newHandledList.join(",")
+
+        log.info "Running containers => " + runningContainers
+
+        dependingContainersList.each() { dep ->
+            def (name, port) = dep.split("#").toList()
+            if (!dockerAlreadyHandledList.contains(name)) {
+                if (runningContainers.contains(name)) {
+                    updateContainerDependencies(name, commandArgs)
+                } else {
+                    Map hostConf = prepareHostConfig(port)
+                    startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", hostConf, commandArgs)
+                }
             }
-          }
         }
-      }
     }
-  }
 
-  void splitDependingContainersStringAndPullImage(List<String> dependingContainersList) {
-    log.info("depending container: " + dependingContainersList)
-    dependingContainersList.each() { dep ->
-      def (name, port) = dep.split("#").toList()
-      if (!dockerAlreadyHandledList.contains(name)) {
-        pullImageFromRegistry(name.split("_")[0])
-      }
+    Map prepareHostConfig(String portConfig) {
+        def port = getPort(portConfig)
+        def tcpPort = "${port[1]}/tcp".toString()
+        def hostConf = ["PortBindings": [:]]
+        hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
+        return hostConf
     }
-  }
 
-  void pullImageFromRegistry(String name) {
-    def imageName = "${dockerRepository}/${name}"
-    def tag = versionTag
-    def registry = dockerRegistry
-
-    log.info "docker pull"
-    dockerClient.pull(imageName, tag, registry)
-  }
-
-  void setContainerExts() {
-    dockerHostStatus = dockerClient.ps()
-    log.info "PS => " + dockerHostStatus
-
-    dockerHostStatus.each() { container ->
-      def name = container.Names[0].substring(1, container.Names[0].length())
-      existingContainers.add(name)
-      if (container.Status.contains('Up')) {
-        runningContainers.add(name)
-      }
+    void cleanupOldDependencies(List<String> dependingContainersList) {
+        dockerHostStatus.each() { container ->
+            dependingContainersList.each() { dep ->
+                def (name, port) = dep.split("#").toList()
+                if (!dockerAlreadyHandledList.contains(name)) {
+                    if (name.equals(container.Names[0].substring(1, container.Names[0].length()))) {
+                        if (!container.Image.contains(name.split("_")[0]) || !runningContainers.contains(name)) {
+                            stopAndRemoveContainer(name)
+                        }
+                    }
+                }
+            }
+        }
     }
-  }
 
-  def stopAndRemoveContainer(String name) {
-    dockerClient.stop(name)
-    dockerClient.rm(name)
-    existingContainers.remove(name)
-    if (runningContainers.contains(name)) {
-      runningContainers.remove(name)
+    void splitDependingContainersStringAndPullImage(List<String> dependingContainersList) {
+        log.info("depending container: " + dependingContainersList)
+        dependingContainersList.each() { dep ->
+            def (name, port) = dep.split("#").toList()
+            if (!dockerAlreadyHandledList.contains(name)) {
+                pullImageFromRegistry(name.split("_")[0])
+            }
+        }
     }
-  }
 
-  void updateContainerDependencies(String name, String commandArgs) {
-    log.info "Update " + name + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
-    dockerClient.exec(name, ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArgs])
-  }
+    void pullImageFromRegistry(String name) {
+        def imageName = "${dockerRepository}/${name}"
+        def tag = versionTag
+        def registry = dockerRegistry
 
-  void startContainer(String name, String image, hostConfiguration, command) {
-    log.info("Start Container: " + name + " => " + image + " => " + hostConfiguration)
-    dockerClient.run(image.toString(), ["HostConfig": hostConfiguration, "Cmd":command], versionTag, name)
-  }
-
-  String[] getPort(String port) {
-    if (port.contains("-")) {
-      return port.split("-").toList()
+        log.info "docker pull"
+        dockerClient.pull(imageName, tag, registry)
     }
-    return [port, port]
-  }
 
-  Set<String> prepareNewdockerAlreadyHandledList(List<String> additional) {
-    Set newList = [] as Set
-    newList.addAll(dockerAlreadyHandledList)
-    additional.each({ item ->
-        def (name, port) = item.split("#").toList()
-        newList.addAll(name)
-      })
-    return newList
-  }
+    void setContainerExts() {
+        dockerHostStatus = dockerClient.ps()
+        log.info "PS => " + dockerHostStatus
+
+        dockerHostStatus.each() { container ->
+            def name = container.Names[0].substring(1, container.Names[0].length())
+            existingContainers.add(name)
+            if (container.Status.contains('Up')) {
+                runningContainers.add(name)
+            }
+        }
+    }
+
+    def stopAndRemoveContainer(String name) {
+        dockerClient.stop(name)
+        dockerClient.rm(name)
+        existingContainers.remove(name)
+        if (runningContainers.contains(name)) {
+            runningContainers.remove(name)
+        }
+    }
+
+    void updateContainerDependencies(String name, String commandArgs) {
+        log.info "Update " + name + " CommandArgs: " + "./gradlew startDependencies '" + commandArgs + "'"
+        dockerClient.exec(name, ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArgs])
+    }
+
+    void startContainer(String name, String image, hostConfiguration, command) {
+        log.info("Start Container: " + name + " => " + image + " => " + hostConfiguration)
+        dockerClient.run(image.toString(), ["HostConfig": hostConfiguration, "Cmd": command], versionTag, name)
+    }
+
+    String[] getPort(String port) {
+        if (port.contains("-")) {
+            return port.split("-").toList()
+        }
+        return [port, port]
+    }
+
+    Set<String> prepareNewdockerAlreadyHandledList(List<String> additional) {
+        Set newList = [] as Set
+        newList.addAll(dockerAlreadyHandledList)
+        additional.each({ item ->
+            def (name, port) = item.split("#").toList()
+            newList.addAll(name)
+        })
+        return newList
+    }
 }

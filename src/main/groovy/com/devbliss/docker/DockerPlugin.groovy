@@ -20,28 +20,28 @@ import org.slf4j.LoggerFactory
  */
 class DockerPlugin implements Plugin<Project> {
 
-  @Override
-  public void apply(Project project) {
-    project.getPlugins().apply(ParentDockerPlugin)
+    @Override
+    public void apply(Project project) {
+        project.getPlugins().apply(ParentDockerPlugin)
 
-    project.task("startDependencies", type: StartDependenciesTask)
-    project.task("stopAllRunningContainers", type: StopAllRunningContainersTask)
-    project.task("serviceDependencies" , type: GetServiceDependenciesTask)
-    BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImage', type: BuildAndPushDockerImageTask)
-    DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
-    DockerPushTask dockerPushTask = project.task('pushDockerImage', type: DockerPushTask)
-    DockerStopTask dockerStopTask = project.task('stopDockerContainer', type: DockerStopTask)
-    DockerStartTask dockerStartTask = project.task('startDockerContainer', type: DockerStartTask)
-    DockerRunTask dockerRunTask = project.task('runDockerContainer', type: DockerRunTask)
-    DockerRmTask dockerRmTask = project.task('removeDockerContainer', type: DockerRmTask)
-    DockerBuildTask dockerBuildTask = project.task('buildDockerImage', type: DockerBuildTask)
-    
-    Configuration configuration = new Configuration(project)
+        project.task("startDependencies", type: StartDependenciesTask)
+        project.task("stopAllRunningContainers", type: StopAllRunningContainersTask)
+        project.task("serviceDependencies", type: GetServiceDependenciesTask)
+        BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImage', type: BuildAndPushDockerImageTask)
+        DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
+        DockerPushTask dockerPushTask = project.task('pushDockerImage', type: DockerPushTask)
+        DockerStopTask dockerStopTask = project.task('stopDockerContainer', type: DockerStopTask)
+        DockerStartTask dockerStartTask = project.task('startDockerContainer', type: DockerStartTask)
+        DockerRunTask dockerRunTask = project.task('runDockerContainer', type: DockerRunTask)
+        DockerRmTask dockerRmTask = project.task('removeDockerContainer', type: DockerRmTask)
+        DockerBuildTask dockerBuildTask = project.task('buildDockerImage', type: DockerBuildTask)
 
-    //Tasks that depend on other tasks
-    Task bootRepackageTask = project.getTasks().findByPath('bootRepackage');
-    if (bootRepackageTask != null) {
-      dockerBuildTask.dependsOn('bootRepackage')
+        Configuration configuration = new Configuration(project)
+
+        //Tasks that depend on other tasks
+        Task bootRepackageTask = project.getTasks().findByPath('bootRepackage');
+        if (bootRepackageTask != null) {
+            dockerBuildTask.dependsOn('bootRepackage')
+        }
     }
-  }
 }
