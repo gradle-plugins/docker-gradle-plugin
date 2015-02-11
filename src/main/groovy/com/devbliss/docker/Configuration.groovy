@@ -3,10 +3,9 @@ package com.devbliss.docker
 import com.devbliss.docker.task.BuildAndPushDockerImageTask
 import com.devbliss.docker.task.CleanupOldContainersTask
 import com.devbliss.docker.task.PullDependencyImages
+import com.devbliss.docker.task.GetServiceDependenciesTask
 import com.devbliss.docker.task.StartDependenciesTask
-import com.devbliss.docker.task.StopAllRunningContainersTask
 import de.gesellix.gradle.docker.tasks.*
-import java.util.concurrent.Callable
 import org.gradle.api.Project
 import org.gradle.api.Task
 
@@ -20,6 +19,7 @@ class Configuration {
 
   public static final String TASK_NAME_START_DEPENDENCIES = "startDependencies";
   public static final String dockerAlreadyHandledProperty = "docker.alreadyHandled";
+  public static final TASK_NAME_GET_SERVICE_DEPENDENCIES = "serviceDependencies";
 
   /**
    * Applies configuration to the project.
@@ -28,14 +28,17 @@ class Configuration {
    */
   public Configuration(Project project) {
     DockerPluginExtension devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
+
     StartDependenciesTask startDependenciesTask = project.getTasks().getByName(TASK_NAME_START_DEPENDENCIES)
     PullDependencyImages pullDependencyImages = project.getTasks().getByName('pullDependencyImages')
     CleanupOldContainersTask cleanupOldContainersTask = project.getTasks().getByName('cleanupOldContainers')
     startDependenciesTask.dependsOn cleanupOldContainersTask
     cleanupOldContainersTask.dependsOn pullDependencyImages
+    GetServiceDependenciesTask getServiceDependenciesTask = project.getTasks().getByName(TASK_NAME_GET_SERVICE_DEPENDENCIES)
 
     project.afterEvaluate {
       configureStartServiceDependenciesTasks(startDependenciesTask, devblissDockerExtension)
+      configureGetServiceDependenciesTasks(getServiceDependenciesTask, devblissDockerExtension)
       configureAllAbstractTasks(project, devblissDockerExtension)
       configurePullTasks(project, devblissDockerExtension)
       configurePushTasks(project, devblissDockerExtension)
@@ -55,19 +58,33 @@ class Configuration {
     }
     buildAndPushDockerImage.dependsOn('buildDockerImage')
     buildAndPushDockerImage.finalizedBy('pushDockerImage')
+
+
   }
 
   /**
    * Set configuration for a StartDependenciesTask.
    */
-  public void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask, DockerPluginExtension extension) {
-      startDependenciesTask.dependingContainers = extension.dependingContainers
-      startDependenciesTask.dockerHost = extension.dockerHost
-      startDependenciesTask.authConfigPlain = extension.authConfigPlain
-      startDependenciesTask.authConfigEncoded = extension.authConfigEncoded
-      startDependenciesTask.versionTag = extension.versionTag
-      startDependenciesTask.dockerRegistry = extension.registryName
-      startDependenciesTask.dockerRepository = extension.repositoryName
+  public void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask,
+                                                     DockerPluginExtension extension) {
+    startDependenciesTask.dependingContainers = extension.dependingContainers
+    startDependenciesTask.dockerHost = extension.dockerHost
+    startDependenciesTask.authConfigPlain = extension.authConfigPlain
+    startDependenciesTask.authConfigEncoded = extension.authConfigEncoded
+    startDependenciesTask.versionTag = extension.versionTag
+    startDependenciesTask.dockerRegistry = extension.registryName
+    startDependenciesTask.dockerRepository = extension.repositoryName
+  }
+
+    /**
+   * Set configuration for a GetServiceDependenciesTask.
+   */
+  public void configureGetServiceDependenciesTasks(GetServiceDependenciesTask getServiceDependenciesTask,
+                                                   DockerPluginExtension extension) {
+    getServiceDependenciesTask.dependingContainers = extension.dependingContainers
+    getServiceDependenciesTask.versionTag = extension.versionTag
+    getServiceDependenciesTask.dockerRegistry = extension.registryName
+    getServiceDependenciesTask.dockerRepository = extension.repositoryName
   }
 
   /**

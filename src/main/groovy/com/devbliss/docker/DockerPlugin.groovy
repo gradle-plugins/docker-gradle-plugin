@@ -3,6 +3,7 @@ package com.devbliss.docker
 import com.devbliss.docker.task.BuildAndPushDockerImageTask
 import com.devbliss.docker.task.CleanupOldContainersTask
 import com.devbliss.docker.task.PullDependencyImages
+import com.devbliss.docker.task.GetServiceDependenciesTask
 import com.devbliss.docker.task.StartDependenciesTask
 import com.devbliss.docker.task.StopAllRunningContainersTask
 import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
@@ -27,6 +28,7 @@ class DockerPlugin implements Plugin<Project> {
 
         project.task(Configuration.TASK_NAME_START_DEPENDENCIES, type: StartDependenciesTask)
     project.task("stopAllRunningContainers", type: StopAllRunningContainersTask)
+    project.task("serviceDependencies" , type: GetServiceDependenciesTask)
     BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImage', type: BuildAndPushDockerImageTask)
     DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
     DockerPushTask dockerPushTask = project.task('pushDockerImage', type: DockerPushTask)
