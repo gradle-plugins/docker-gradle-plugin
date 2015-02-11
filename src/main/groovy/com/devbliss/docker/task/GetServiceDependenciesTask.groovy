@@ -33,15 +33,18 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
 
     @TaskAction
     public void run() {
-        List<String> dependingContainersList = dependingContainers.replaceAll("\\s", "").split(",")
-        splitDependingContainersString(dependingContainersList)
 
-        println "Running Container   ------>" + runningServiceDependencies
-        println "Depending Container ------>" + notRunningServiceDependencies
-
+        if (dependingContainers != null) {
+            List<String> dependingContainersList = dependingContainers.replaceAll("\\s", "").split(",")
+            splitDependingContainersString(dependingContainersList)
+            log.info("Running Container: " + runningServiceDependencies)
+            log.info("Depending Container: " + notRunningServiceDependencies)
+        } else {
+            log.info("No depending container for service.")
+        }
     }
 
-    def splitDependingContainersString(List<String> dependingContainersList) {
+    void splitDependingContainersString(List<String> dependingContainersList) {
         log.info("#### Depending container: " + dependingContainersList)
         dependingContainersList.each() { dep ->
             def (name, port) = dep.split("#").toList()
