@@ -22,6 +22,7 @@ class CleanupOldContainersTask extends AbstractDockerTask {
     List<String> dockerAlreadyHandledList
 
     public CleanupOldContainersTask() {
+        // TODO: siehe Anmerkungen in StartDependenciesTask()
         description = "Pull images and start depending containers for this Project"
         group = "Devbliss"
 
@@ -39,6 +40,9 @@ class CleanupOldContainersTask extends AbstractDockerTask {
         List existingContainers = []
         List runningContainers = []
 
+        // TODO: auch hier wäre es wieder schön die in StartDependenciesTask angesprochene DockerContainer-Klasse zu
+        // verwenden. Dafür müsste man dann wohl die Rückgabe von dockerClient.ps() entsprechend umwandeln.
+        // So wird man aber wahrscheinlich die Utils-Klasse komplett los
         dockerHostStatus.each() { container ->
             def name = DependencyStringUtils.getServiceNameFromContainer(container)
             existingContainers.add(["name":name, "image": container.Image])
@@ -47,6 +51,7 @@ class CleanupOldContainersTask extends AbstractDockerTask {
             }
         }
 
+        // TODO: wäre dann z.B. DockerContainer.getDependingContainers(), was wiederum eine Liste von DockerContainer-Objekten wäre
         List<String> dependingContainersList = DependencyStringUtils.splitServiceDependenciesString(dependingContainers)
         List existingDependencies = getExistingDependencies(existingContainers, dependingContainersList)
         List containerToClean = getOutdatedContainer(existingDependencies, runningContainers)
@@ -77,6 +82,7 @@ class CleanupOldContainersTask extends AbstractDockerTask {
         }
     }
 
+    // TODO: isImageUpToDateAndRunning, sonst gut umgesetzt
     boolean isImageUptodateAndRunning(Map container, List runningContainers) {
         return container.image.contains(container.name) && runningContainers.contains(container.name)
     }

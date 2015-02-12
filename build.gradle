@@ -2,7 +2,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 plugins {
-  id 'com.devbliss.changelog' version '1.2.1'
+  id 'com.devbliss.changelog' version '1.2.1' // TODO: warum ist das nicht in der gradle.properties?
 }
 
 apply plugin: 'java-gradle-plugin'
@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
   compile localGroovy()
-  compile "de.gesellix:gradle-docker-plugin:2015-01-06T18-26-22"
+  compile "de.gesellix:gradle-docker-plugin:2015-01-06T18-26-22" // TODO: warum ist das nicht in der gradle.properties?
   testCompile "junit:junit:$junitVersion"
   testCompile "org.spockframework:spock-core:$spockVersion"
 }

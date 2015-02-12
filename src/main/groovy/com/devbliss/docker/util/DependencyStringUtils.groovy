@@ -5,7 +5,8 @@ package com.devbliss.docker.util
  * @author Dennis Schumann <dennis.schumann@devbliss.com>
  */
 class DependencyStringUtils {
-	
+	// TODO: wie hauptsächlich in StartDependenciesTask beschrieben, sollte diese Klasse aufgelöst werden und durch eine
+    // DockerContainer-Klasse ersetzt werden
     static public List<String> splitServiceDependenciesString(String dependingContainers) {
         return dependingContainers.replaceAll("\\s", "").split(",")
     }
@@ -18,4 +19,3 @@ class DependencyStringUtils {
         return container.Names[0].substring(1, container.Names[0].length());
     }
 }
-
