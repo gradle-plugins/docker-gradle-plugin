@@ -49,8 +49,6 @@ class Configuration {
         }
         buildAndPushDockerImage.dependsOn('buildDockerImage')
         buildAndPushDockerImage.finalizedBy('pushDockerImage')
-
-
     }
 
     /**

@@ -28,7 +28,6 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
     @Input
     def versionTag
 
-    def runningServiceDependencies = []
     def notRunningServiceDependencies = []
 
     @TaskAction
@@ -37,8 +36,7 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
         if (dependingContainers != null) {
             List<String> dependingContainersList = dependingContainers.replaceAll("\\s", "").split(",")
             splitDependingContainersString(dependingContainersList)
-            log.info("Running Container: " + runningServiceDependencies)
-            log.info("Depending Container: " + notRunningServiceDependencies)
+            println("Depending Container: " + notRunningServiceDependencies)
         } else {
             log.info("No depending container for service.")
         }
@@ -49,26 +47,13 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
         dependingContainersList.each() { dep ->
             def (name, port) = dep.split("#").toList()
             log.info("#### Splitted Depending Container string " + name.split("_")[0])
-            checkIfContainerIsRunning(name)
-        }
-    }
-
-    void checkIfContainerIsRunning(String name) {
-        def inspectContainerResponse = dockerClient.inspectContainer(name)
-        log.info("#### Check running state from container: " + name + " = " + inspectContainerResponse.State.Running)
-
-        if (inspectContainerResponse.State.Running == true) {
-            println "Service running: " + name
-            runningServiceDependencies.add(name)
-            getDependingServiceFromContainer(name)
-        } else {
-            notRunningServiceDependencies.add(name)
+            getDependingServiceFromContainer(name.split("_")[0])
         }
     }
 
     void getDependingServiceFromContainer(String name) {
-        String gradleProperties = dockerClient.exec(name, ["cat", "gradle.properties"])
 
+        String gradleProperties = dockerClient.exec(name, ["cat", "gradle.properties"])
         gradleProperties.eachLine {
             if (it.startsWith("dependingEcosystemServices=")) {
                 def cleanString = it.substring(it.indexOf("=") + 1)
@@ -78,8 +63,7 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
                     def (serviceName, port) = dep.split("#").toList()
                     serviceName = serviceName.split("_")[0]
 
-                    if (!runningServiceDependencies.contains(serviceName) && !notRunningServiceDependencies.contains
-                            (serviceName)) {
+                    if (!notRunningServiceDependencies.contains(serviceName)) {
                         notRunningServiceDependencies.add(serviceName)
                         getDependingServiceFromContainer(serviceName)
                     }
