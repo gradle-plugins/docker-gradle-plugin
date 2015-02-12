@@ -124,7 +124,7 @@ class StartDependenciesTaskSpec extends Specification {
         String commandArgs= task.getCommandArgs(dependingContainersList)
 
         then:
-        commandArgs.equals "-P${Configuration.dockerAlreadyHandledProperty}=${name},${name2}".toString()
+        commandArgs.equals "-P${Configuration.DOCKER_ALREADY_HANDLED_PROPERTY}=${name},${name2}".toString()
     }
 
     def "getRunningContainers"() {

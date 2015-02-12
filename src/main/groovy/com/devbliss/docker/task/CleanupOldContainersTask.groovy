@@ -26,8 +26,8 @@ class CleanupOldContainersTask extends AbstractDockerTask {
         description = "Pull images and start depending containers for this Project"
         group = "Devbliss"
 
-        if (getProject().hasProperty(Configuration.dockerAlreadyHandledProperty)) {
-            String dockerAlreadyHandled = getProject().getProperty(Configuration.dockerAlreadyHandledProperty)
+        if (getProject().hasProperty(Configuration.DOCKER_ALREADY_HANDLED_PROPERTY)) {
+            String dockerAlreadyHandled = getProject().getProperty(Configuration.DOCKER_ALREADY_HANDLED_PROPERTY)
             dockerAlreadyHandledList = DependencyStringUtils.splitServiceDependenciesString(dockerAlreadyHandled)
         } else {
             dockerAlreadyHandledList = new ArrayList<>()
