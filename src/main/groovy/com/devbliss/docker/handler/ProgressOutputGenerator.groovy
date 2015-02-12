@@ -21,7 +21,7 @@ class ProgressOutputGenerator {
             return
         }
         lastRender = System.currentTimeMillis()
-        ansi.eraseScreen()
+        ansi.eraseScreen().cursor(0,0)
         containerList.each { container ->
             printService(container.getKey(), container.getValue().get(ProgressHandler.RUNNING))
         }

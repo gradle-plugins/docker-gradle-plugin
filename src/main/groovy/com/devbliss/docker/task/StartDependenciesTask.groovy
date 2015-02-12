@@ -89,15 +89,28 @@ class StartDependenciesTask extends AbstractDockerTask {
         return runningContainers
     }
 
-    void startContainer(String name, String image, String port, command) {
+    void startContainer(String name, String image, String port, String commandArgs) {
         if (runningContainers.contains(name)) {
-            log.info "Update " + name + " CommandArgs: "+"./gradlew startDependencies '" + command + "'"
-            dockerClient.exec(name, ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, command])
+            startDependenciesNonBlockingExec(name, commandArgs)
         } else {
             Map hostConf = prepareHostConfig(port)
             log.info("Start Container: " + name + " => " + image + " => " + hostConf)
-            dockerClient.run(image.toString(), ["HostConfig": hostConf, "Cmd":command], versionTag, name)
+            dockerClient.run(image.toString(), ["HostConfig": hostConf, "Cmd":commandArgs], versionTag, name)
         }
+    }
+
+    void startDependenciesNonBlockingExec(String containerName, String commandArgs) {
+        List command = ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArgs]
+        Map execConfig = [
+        "AttachStdin" : false,
+        "AttachStdout": true,
+        "AttachStderr": true,
+        "Detach"      : false,
+        "Tty"         : false,
+        "Cmd"         : command]
+
+        log.info "Update " + containerName + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
+        dockerClient.createExec(containerName, execConfig)
     }
 
     String[] getPort(String port) {

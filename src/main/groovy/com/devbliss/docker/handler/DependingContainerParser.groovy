@@ -13,12 +13,17 @@ class DependingContainerParser {
     }
 
     List<String> parseDepdendencies(String dependencies) {
-        int from = dependencies.indexOf("[") + 1
-        int to = dependencies.indexOf("]")
-        if ((from == (-1)).or(to == (-1))) {
-            return [];
+        List<String> parsedDependencies = []
+        dependencies.eachLine { String line ->
+            if (line.startsWith("Depending Container")) {
+                int from = line.indexOf("[") + 1
+                int to = line.indexOf("]")
+                if ((from >= (0)).or(to >= (0))) {
+                    String dependencyNames = line.substring(from, to).replaceAll("\\s", "")
+                    parsedDependencies = dependencyNames.tokenize(",")
+                }
+            }
         }
-        String dependencyNames = dependencies.substring(from, to)
-        return dependencyNames.tokenize(",")
+        return parsedDependencies
     }
 }

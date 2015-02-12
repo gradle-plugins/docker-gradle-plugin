@@ -25,12 +25,17 @@ class ProgressHandler {
         Map<String, Map<String,Boolean>> containerList = prepareStartMap()
         while(!allRun) {
             setRunningStates(containerList)
+            Map<String, Map<String,Boolean>> additionalContainer = null
             containerList.each { container ->
                 if (!container.getValue().get(RECEIVED_DEPENDENCIES)) {
                     log.info "Request dependencies of service ${container.getKey()}"
-                    checkAndAddContainerDependencies(container.getKey(), containerList)
+                    additionalContainer = getContainerDependencies(container.getKey(), containerList)
                     container.getValue().put(RECEIVED_DEPENDENCIES, true)
                 }
+            }
+            if (additionalContainer != null && additionalContainer.size() > 0) {
+                println "put in $additionalContainer"
+                containerList.putAll(additionalContainer)
             }
             progressOutputGenerator.printServices(containerList)
             allRun = checkAllRunning(containerList)
@@ -40,23 +45,29 @@ class ProgressHandler {
     void setRunningStates(Map<String, Map<String,Boolean>> containerList) {
         List containers = dockerClient.ps()
         containers.each { container ->
-            String containerName = DependencyStringUtils.getServiceNameFromContainer(container)
-            if (containerList.containsKey(containerName)) {
-                if (container.Status.contains('Up')) {
-                    log.info "Set running state true for ${containerName}"
-                    containerList.get(containerName).put(RUNNING, true)
-                }
+            setRunningStateForContainer(containerList, container)
+        }
+    }
+
+    void setRunningStateForContainer(Map<String, Map<String,Boolean>> containerList, Map container) {
+        String containerName = DependencyStringUtils.getServiceNameFromContainer(container)
+        if (containerList.containsKey(containerName)) {
+            if (isContainerRunning(container)) {
+                log.info "Set running state true for ${containerName}"
+                containerList.get(containerName).put(RUNNING, true)
             }
         }
     }
 
-    void checkAndAddContainerDependencies(String serviceName, Map<String, Map<String,Boolean>> containerList) {
+    Map<String, Map<String,Boolean>> getContainerDependencies(String serviceName, Map<String, Map<String,Boolean>> containerList) {
+        Map<String, Map<String,Boolean>> additionalContainer = new HashMap()
         List<String> dependencies = getServiceDependencies(serviceName)
         dependencies.each { dep ->
             if (!containerList.containsKey(dep)) {
-                containerList.put(dep, createNewContrainerItem())
+                additionalContainer.put(dep, createNewContrainerItem())
             }
         }
+        return additionalContainer
     }
 
     Map<String, Map<String,Boolean>> prepareStartMap() {
@@ -82,10 +93,14 @@ class ProgressHandler {
     }
 
     List<String> getServiceDependencies(String serviceName) {
-//        java.util.LinkedHashMap depsString = dockerClient.exec(serviceName, ["./gradlew", "serviceDependencies"])
-//        DependingContainerParser parser = new DependingContainerParser(depsString.plain);
-        DependingContainerParser parser = new DependingContainerParser("");
+        java.util.LinkedHashMap depsString = dockerClient.exec(serviceName, ["./gradlew", "serviceDependencies"])
+        DependingContainerParser parser = new DependingContainerParser(depsString.plain);
         List<String> deps = parser.getParsedDependencies();
+        println "Deps are => $deps"
         return deps
+    }
+
+    boolean isContainerRunning(Map container) {
+        return container.Status.contains('Up')
     }
 }
