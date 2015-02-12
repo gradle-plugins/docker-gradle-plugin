@@ -43,6 +43,7 @@ class Configuration {
         // TODO: auslagern in sprechende methode
         project.afterEvaluate {
             configureStartServiceDependenciesTasks(startDependenciesTask, devblissDockerExtension)
+            configureGetServiceDependenciesTasks(getServiceDependenciesTask, devblissDockerExtension)
             configureAllAbstractTasks(project, devblissDockerExtension)
             configurePullTasks(project, devblissDockerExtension)
             configurePushTasks(project, devblissDockerExtension)
@@ -76,6 +77,14 @@ class Configuration {
         startDependenciesTask.versionTag = extension.versionTag
         startDependenciesTask.dockerRegistry = extension.registryName
         startDependenciesTask.dockerRepository = extension.repositoryName
+    }
+
+    /**
+     * Set configuration for a GetServiceDependenciesTask.
+     */
+    public void configureGetServiceDependenciesTasks(GetServiceDependenciesTask getServiceDependenciesTask,
+        DockerPluginExtension extension) {
+        getServiceDependenciesTask.dependingContainers = extension.dependingContainers
     }
 
     /**

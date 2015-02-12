@@ -17,12 +17,6 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
     @Input
     @Optional
     def dependingContainers
-    @Input
-    def dockerRepository
-    @Input
-    def dockerRegistry
-    @Input
-    def versionTag
 
     def notRunningServiceDependencies = []
 
