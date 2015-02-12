@@ -2,6 +2,7 @@
 ### Version 0.2.0-SNAPSHOT
 
  - [refactor] Split up start dependencies task added clean code todos
+ - [feature] Added getServiceDependencies task
  - [feature] using gradle.properties now for credentials and nexus URLs
  - [feature] added transitive container updates
 

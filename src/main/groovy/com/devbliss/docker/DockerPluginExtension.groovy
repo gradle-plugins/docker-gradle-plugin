@@ -12,35 +12,35 @@ import org.gradle.api.tasks.Optional
  */
 class DockerPluginExtension {
 
-  @Input
-  def dockerHost
+    @Input
+    def dockerHost
 
-  @Input
-  @Optional
-  def authConfigPlain
-  
-  @Input
-  @Optional
-  def authConfigEncoded
+    @Input
+    @Optional
+    def authConfigPlain
 
-  @Input
-  def imageName
-  
-  @Input
-  @Optional
-  def versionTag
+    @Input
+    @Optional
+    def authConfigEncoded
 
-  @Input
-  @Optional
-  def registryName
-  
-  @Input
-  def repositoryName
+    @Input
+    def imageName
 
-  @Input
-  def buildContextDirectory
+    @Input
+    @Optional
+    def versionTag
 
-  @Input
-  @Optional
-  def dependingContainers
+    @Input
+    @Optional
+    def registryName
+
+    @Input
+    def repositoryName
+
+    @Input
+    def buildContextDirectory
+
+    @Input
+    @Optional
+    def dependingContainers
 }
