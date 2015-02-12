@@ -31,7 +31,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     List<String> dockerAlreadyHandledList
 
     StartDependenciesTask() {
-        description = "Pull images and start depending containers for this Project"
+        description = "Start depending containers for this Project"
         // TODO: move group into abstract base class and rename to "Docker"
         group = "Devbliss"
 
@@ -51,17 +51,11 @@ class StartDependenciesTask extends AbstractDockerTask {
             return
         }
         List<String> dependingContainersList = DependencyStringUtils.splitServiceDependenciesString(dependingContainers)
+        String commandArgs = getCommandArgs(dependingContainersList)
 
         // TODO: zusammen mit dem Logging auslagern in logListOfRunningContainers
         List<String> runningContainers = getRunningContainers()
-
-        // TODO: in getCommand oder getCommandArgs auslagern und direkt an startContainer übergeben
-        Set newHandledList = prepareNewDockerAlreadyHandledList(dependingContainersList)
-
-        String commandArgs = "-P${Configuration.dockerAlreadyHandledProperty}=" + newHandledList.join(",")
-
         log.info "Running containers => " + runningContainers
-
         dependingContainersList.each() { dep ->
             // TODO: Klasse (z.B. DockerContainer) bauen mit getName und getPort
             // Das führt natürlich dazu, dass dependingContainersList dann nicht mehr nur List<String> ist sondern
@@ -69,7 +63,7 @@ class StartDependenciesTask extends AbstractDockerTask {
             def (name, port) = DependencyStringUtils.getDependencyNameAndPort(dep)
             if (!dockerAlreadyHandledList.contains(name)) {
                 // TODO: "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}" -> in Methode auslagern (am besten in DependingContainer)
-                startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", port, commandArgs)
+                startContainer(name, "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}", port, commandArgs, runningContainers)
                 // TODO: am Ende sollte startContainer so aussehen:
                 /*
                 startContainer(
@@ -83,14 +77,9 @@ class StartDependenciesTask extends AbstractDockerTask {
         }
     }
 
-    // TODO: weiter nach unten. Wird erst in startContainer() benutzt, also erst danach. Da prepareNewDockerAlreadyHandledList
-    // in run benutzt wird, kommt prepareHostConfig also auch erst danach
-    Map prepareHostConfig(String portConfig) {
-        def port = getPort(portConfig)
-        def tcpPort = "${port[1]}/tcp".toString()
-        def hostConf = ["PortBindings": [:]]
-        hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
-        return hostConf
+    String getCommandArgs(List<String> dependingContainersList) {
+        Set newHandledList = prepareNewDockerAlreadyHandledList(dependingContainersList)
+        return "-P${Configuration.dockerAlreadyHandledProperty}=" + newHandledList.join(",")
     }
 
     List<String> getRunningContainers() {
@@ -105,24 +94,6 @@ class StartDependenciesTask extends AbstractDockerTask {
         return runningContainers
     }
 
-    void startContainer(String name, String image, String port, command) {
-        if (runningContainers.contains(name)) {
-            log.info "Update " + name + " CommandArgs: "+"./gradlew startDependencies '" + command + "'"
-            dockerClient.exec(name, ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, command])
-        } else {
-            Map hostConf = prepareHostConfig(port)
-            log.info("Start Container: " + name + " => " + image + " => " + hostConf)
-            dockerClient.run(image.toString(), ["HostConfig": hostConf, "Cmd":command], versionTag, name)
-        }
-    }
-
-    String[] getPort(String port) {
-        if (port.contains("-")) {
-            return port.split("-").toList()
-        }
-        return [port, port]
-    }
-
     Set<String> prepareNewDockerAlreadyHandledList(List<String> additionalDependencies) {
         Set newList = [] as Set
         newList.addAll(dockerAlreadyHandledList)
@@ -131,5 +102,31 @@ class StartDependenciesTask extends AbstractDockerTask {
             return name
         }
         return newList
+    }
+
+    void startContainer(String name, String image, String port, String commandArgs, List<String> runningContainers) {
+        if (runningContainers.contains(name)) {
+            log.info "Update " + name + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
+            dockerClient.exec(name, ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArgs])
+        } else {
+            Map hostConf = prepareHostConfig(port)
+            log.info("Start Container: " + name + " => " + image + " => " + hostConf)
+            dockerClient.run(image.toString(), ["HostConfig": hostConf, "Cmd":commandArgs], versionTag, name)
+        }
+    }
+
+    Map prepareHostConfig(String portConfig) {
+        def port = getPort(portConfig)
+        def tcpPort = "${port[1]}/tcp".toString()
+        def hostConf = ["PortBindings": [:]]
+        hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
+        return hostConf
+    }
+
+    String[] getPort(String port) {
+        if (port.contains("-")) {
+            return port.split("-").toList()
+        }
+        return [port, port]
     }
 }

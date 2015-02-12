@@ -19,4 +19,3 @@ class DependencyStringUtils {
         return container.Names[0].substring(1, container.Names[0].length());
     }
 }
-
