@@ -36,8 +36,8 @@ class StartDependenciesTask extends AbstractDockerTask {
         group = "Devbliss"
 
         // TODO: auslagern in sprechende methode, ggf. in Basisklasse, da von mehreren Klassen so benutzt
-        if (getProject().hasProperty(Configuration.dockerAlreadyHandledProperty)) {
-            String dockerAlreadyHandled = getProject().getProperty(Configuration.dockerAlreadyHandledProperty)
+        if (getProject().hasProperty(Configuration.DOCKER_ALREADY_HANDLED_PROPERTY)) {
+            String dockerAlreadyHandled = getProject().getProperty(Configuration.DOCKER_ALREADY_HANDLED_PROPERTY)
             dockerAlreadyHandledList = DependencyStringUtils.splitServiceDependenciesString(dockerAlreadyHandled)
         } else {
             dockerAlreadyHandledList = new ArrayList<>()
@@ -79,7 +79,7 @@ class StartDependenciesTask extends AbstractDockerTask {
 
     String getCommandArgs(List<String> dependingContainersList) {
         Set newHandledList = prepareNewDockerAlreadyHandledList(dependingContainersList)
-        return "-P${Configuration.dockerAlreadyHandledProperty}=" + newHandledList.join(",")
+        return "-P${Configuration.DOCKER_ALREADY_HANDLED_PROPERTY}=" + newHandledList.join(",")
     }
 
     List<String> getRunningContainers() {

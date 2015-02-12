@@ -21,8 +21,7 @@ class Configuration {
     // TODO: mein pattern für sowas ist: TASK_NAME__START_DEPENDENCIES
     // nächste wäre dann z.B. TASK_NAME__PULL_DEPENDENCY_IMAGES
     public static final String TASK_NAME_START_DEPENDENCIES = "startDependencies";
-    // TODO: upper case und so, weißte ja schon
-    public static final String dockerAlreadyHandledProperty = "docker.alreadyHandled";
+    public static final String DOCKER_ALREADY_HANDLED_PROPERTY = "docker.alreadyHandled";
 
     /**
      * Applies configuration to the project.
