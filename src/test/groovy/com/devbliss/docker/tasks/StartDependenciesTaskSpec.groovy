@@ -81,7 +81,13 @@ class StartDependenciesTaskSpec extends Specification {
         task.startContainer(name, "", "", commandArg, [name])
 
         then:
-        1 * dockerClient.exec(name, ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArg])
+        1 * dockerClient.createExec(name,
+            ["AttachStdin" : false,
+            "AttachStdout": true,
+            "AttachStderr": true,
+            "Detach"      : false,
+            "Tty"         : false,
+            "Cmd": ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArg]])
     }
 
     def "prepareNewdockerAlreadyHandledList"() {
