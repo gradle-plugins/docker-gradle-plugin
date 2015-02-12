@@ -1,10 +1,11 @@
 
 ### Version 0.2.0-SNAPSHOT
 
+ - [feature] Added getServiceDependencies task
  - [feature] using gradle.properties now for credentials and nexus URLs
  - [feature] added transitive container updates
 
--- Last change by: tumminelli <antonino.tumminelli@devbliss.com> Fri Jan 30 10:20:29 CET 2015
+-- Last change by: Christian Soth <christian.soth@devbliss.com> Wed Feb 11 11:26:01 CET 2015
 
 ### Version 0.1.0-SNAPSHOT
  - [feature] Added tests for tasks
