@@ -1,11 +1,12 @@
 
 ### Version 0.2.0-SNAPSHOT
 
+ - [feature] Added progress of start dependencies
  - [refactor] Split up start dependencies task added clean code todos
  - [feature] using gradle.properties now for credentials and nexus URLs
  - [feature] added transitive container updates
 
--- Last change by: Dennis Schumann <hillkorn@gmail.com> Thu Feb 12 14:03:49 CET 2015
+-- Last change by: Dennis Schumann <hillkorn@gmail.com> Fri Feb 13 09:58:15 CET 2015
 
 ### Version 0.1.0-SNAPSHOT
  - [feature] Added tests for tasks
