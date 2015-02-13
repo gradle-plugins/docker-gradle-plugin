@@ -57,7 +57,7 @@ class StartDependenciesTask extends AbstractDockerTask {
         dependingContainersList.each() { dep ->
             // TODO: Klasse (z.B. DockerContainer) bauen mit getName und getPort
             // Das führt natürlich dazu, dass dependingContainersList dann nicht mehr nur List<String> ist sondern
-            // entsprechend List<DockerContainer>, was auch z.B. in prepareNewDockerAlreadyHandledList angepasst werden muss
+            // entsprechend List<DockerContainer>, was auch z.B. in prepareNewContainerAlreadyHandledList angepasst werden muss
             def (name, port) = DependencyStringUtils.getDependencyNameAndPort(dep)
             if (!dockerAlreadyHandledList.contains(name)) {
                 // TODO: "${dockerRegistry}/${dockerRepository}/${name.split("_")[0]}" -> in Methode auslagern (am besten in DependingContainer)
@@ -76,7 +76,7 @@ class StartDependenciesTask extends AbstractDockerTask {
     }
 
     String getCommandArgs(List<String> dependingContainersList) {
-        Set newHandledList = prepareNewDockerAlreadyHandledList(dependingContainersList)
+        Set newHandledList = prepareNewContainerAlreadyHandledList(dependingContainersList)
         return "-P${Configuration.DOCKER_ALREADY_HANDLED_PROPERTY}=" + newHandledList.join(",")
     }
 
@@ -92,7 +92,7 @@ class StartDependenciesTask extends AbstractDockerTask {
         return runningContainers
     }
 
-    Set<String> prepareNewDockerAlreadyHandledList(List<String> additionalDependencies) {
+    Set<String> prepareNewContainerAlreadyHandledList(List<String> additionalDependencies) {
         Set newList = [] as Set
         newList.addAll(dockerAlreadyHandledList)
         newList.addAll additionalDependencies.collect { item ->
