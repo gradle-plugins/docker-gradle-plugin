@@ -19,17 +19,39 @@ BUILD SUCCESSFUL
 Total time: 22.87 secs
 '''
 
+    final String dependenciesString2 = '''
+serviceDependencies
+-Depending Container: [vandam, eureka-server]
+
+(BUILD SUCCESSFUL
+
+Total time: 8.07 secs
+'''
+
     DependingContainerParser parser
 
     def setup() {
-        parser = new DependingContainerParser(dependenciesString)
     }
 
     def "getParsedDependencies"() {
-    when:
-    List<String> parsedDeps = parser.getParsedDependencies()
+        given:
+        parser = new DependingContainerParser(dependenciesString)
 
-    then:
-    parsedDeps == ["eureka-server", "course-service", "dementity"]
-  }
+        when:
+        List<String> parsedDeps = parser.getParsedDependencies()
+
+        then:
+        parsedDeps == ["eureka-server", "course-service", "dementity"]
+    }
+
+    def "getParsedDependencies2"() {
+        given:
+        parser = new DependingContainerParser(dependenciesString2)
+
+        when:
+        List<String> parsedDeps = parser.getParsedDependencies()
+
+        then:
+        parsedDeps == ["vandam", "eureka-server"]
+    }
 }

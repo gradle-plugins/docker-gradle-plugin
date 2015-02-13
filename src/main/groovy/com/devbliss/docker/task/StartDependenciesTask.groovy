@@ -75,8 +75,10 @@ class StartDependenciesTask extends AbstractDockerTask {
             }
         }
 
-        ProgressHandler progressHandler = new ProgressHandler(dockerClient, dependingContainersList)
-        progressHandler.waitUnilDependenciesRun()
+        if (dockerAlreadyHandledList.size() == 0) {
+            ProgressHandler progressHandler = new ProgressHandler(dockerClient, dependingContainersList)
+            progressHandler.waitUnilDependenciesRun()
+        }
     }
 
     String getCommandArgs(List<String> dependingContainersList) {
@@ -120,14 +122,11 @@ class StartDependenciesTask extends AbstractDockerTask {
         List command = ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArgs]
         Map execConfig = [
         "AttachStdin" : false,
-        "AttachStdout": true,
-        "AttachStderr": true,
-        "Detach"      : false,
-        "Tty"         : false,
-        "Cmd"         : command]
+        "Detach"      : true,
+        "Tty"         : false]
 
         log.info "Update " + containerName + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
-        dockerClient.createExec(containerName, execConfig)
+        dockerClient.exec(containerName, command, execConfig)
     }
 
     Map prepareHostConfig(String portConfig) {

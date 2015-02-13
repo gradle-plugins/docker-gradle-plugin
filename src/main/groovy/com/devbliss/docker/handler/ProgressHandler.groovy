@@ -23,20 +23,24 @@ class ProgressHandler {
     public void waitUnilDependenciesRun() {
         boolean allRun = false;
         Map<String, Map<String,Boolean>> containerList = prepareStartMap()
-        println containerList
+        progressOutputGenerator.printServices(containerList)
         while(!allRun) {
             setRunningStates(containerList)
-            Map<String, Map<String,Boolean>> additionalContainer = null
+            Map<String, Map<String,Boolean>> additionalContainer = new HashMap()
             containerList.each { container ->
-                if (!container.getValue().get(RECEIVED_DEPENDENCIES)) {
+                if (!container.getValue().get(RECEIVED_DEPENDENCIES) && container.getValue().get(RUNNING)) {
                     log.info "Request dependencies of service ${container.getKey()}"
-                    additionalContainer = getContainerDependencies(container.getKey(), containerList)
+                    Map<String, Map<String,Boolean>> newDependencies = getContainerDependencies(
+                        container.getKey(), containerList)
                     container.getValue().put(RECEIVED_DEPENDENCIES, true)
+                    if (newDependencies != null && newDependencies.size() > 0) {
+                        additionalContainer.putAll(newDependencies)
+                    }
                 }
             }
             if (additionalContainer != null && additionalContainer.size() > 0) {
-                println "put in $additionalContainer"
                 containerList.putAll(additionalContainer)
+                additionalContainer = new HashMap()
             }
             progressOutputGenerator.printServices(containerList)
             allRun = checkAllRunning(containerList)
@@ -94,9 +98,7 @@ class ProgressHandler {
     }
 
     List<String> getServiceDependencies(String serviceName) {
-        println "get Service => $serviceName"
         java.util.LinkedHashMap depsMap = dockerClient.exec(serviceName, ["./gradlew", "serviceDependencies"])
-        println "depsString is $depsMap"
         DependingContainerParser parser = new DependingContainerParser(depsMap.plain);
         List<String> deps = parser.getParsedDependencies();
         return deps

@@ -15,7 +15,7 @@ class DependingContainerParser {
     List<String> parseDepdendencies(String dependencies) {
         List<String> parsedDependencies = []
         dependencies.eachLine { String line ->
-            if (line.startsWith("Depending Container")) {
+            if (line.contains("Depending Container")) {
                 int from = line.indexOf("[") + 1
                 int to = line.indexOf("]")
                 if ((from >= (0)).or(to >= (0))) {
