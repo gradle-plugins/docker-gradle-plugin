@@ -1,5 +1,6 @@
 package com.devbliss.docker.task
 
+import com.devbliss.docker.util.DependencyStringUtils
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 import groovy.util.logging.Log
 import org.gradle.api.tasks.Input
@@ -17,12 +18,6 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
     @Input
     @Optional
     def dependingContainers
-    @Input
-    def dockerRepository
-    @Input
-    def dockerRegistry
-    @Input
-    def versionTag
 
     def notRunningServiceDependencies = []
 
@@ -30,10 +25,10 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
     public void run() {
 
         if (dependingContainers != null) {
-            List<String> dependingContainersList = splitServiceDependenciesString(dependingContainers)
+            List<String> dependingContainersList = DependencyStringUtils.splitServiceDependenciesString(dependingContainers)
 
             dependingContainersList.each { dependingContainer ->
-                def (name, port) = getDependencyNameAndPort(dependingContainer)
+                def (name, port) = DependencyStringUtils.getDependencyNameAndPort(dependingContainer)
                 notRunningServiceDependencies.add(name)
             }
 
@@ -41,14 +36,6 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
         } else {
             log.info("No depending container for service.")
         }
-    }
-
-    static public List<String> splitServiceDependenciesString(String dependingContainers) {
-        return dependingContainers.replaceAll("\\s", "").split(",")
-    }
-
-    static public List getDependencyNameAndPort(String dependency) {
-        return dependency.split("#").toList()
     }
 }
 

@@ -20,7 +20,7 @@ repositories {
 
 dependencies {
     compile localGroovy()
-    compile "de.gesellix:gradle-docker-plugin:2015-01-06T18-26-22"
+    compile "de.gesellix:gradle-docker-plugin:2015-01-06T18-26-22" // TODO: warum ist das nicht in der gradle.properties?
     testCompile "junit:junit:$junitVersion"
     testCompile "org.spockframework:spock-core:$spockVersion"
 }
@@ -52,8 +52,8 @@ uploadArchives {
     repositories {
         mavenDeployer {
             def credentials = [
-                    userName: devbliss_nexus_username,
-                    password: devbliss_nexus_password
+                userName: devbliss_nexus_username,
+                password: devbliss_nexus_password
             ]
             repository(url: devbliss_nexus_releases_repo_url, authentication: credentials)
             snapshotRepository(url: devbliss_nexus_snapshots_repo_url, authentication: credentials)

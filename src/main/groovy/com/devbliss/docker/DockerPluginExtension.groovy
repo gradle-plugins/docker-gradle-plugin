@@ -4,8 +4,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 
 /**
- * @author Christian Soth <christian.soth@devbliss.com> on 12.01.15.
- *
+ * @todo Ist offensichtlich -> Kommentar entfernen
  * Configuration extension for docker tasks.
  */
 class DockerPluginExtension {

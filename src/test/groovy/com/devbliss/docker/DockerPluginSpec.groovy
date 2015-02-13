@@ -8,10 +8,6 @@ import org.gradle.api.tasks.Optional
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-/**
- * Created by Christian Soth <christian.soth@devbliss.com> on 07.01.15.
- */
-
 class DockerPluginSpec extends Specification {
 
     private Project project

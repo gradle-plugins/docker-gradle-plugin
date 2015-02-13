@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory
 
 /**
  * This class stops all running containers in your configured host vm.
- *
- * Created by Christian Soth <christian.soth@devbliss.com> on 14.01.15.
  */
 @Log
 class StopAllRunningContainersTask extends AbstractDockerTask {
