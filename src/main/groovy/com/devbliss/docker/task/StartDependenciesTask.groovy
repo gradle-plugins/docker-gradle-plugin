@@ -1,6 +1,7 @@
 package com.devbliss.docker.task
 
 import com.devbliss.docker.Configuration
+import com.devbliss.docker.handler.ProgressHandler
 import com.devbliss.docker.util.DependencyStringUtils
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 import groovy.util.logging.Log
@@ -65,13 +66,18 @@ class StartDependenciesTask extends AbstractDockerTask {
                 // TODO: am Ende sollte startContainer so aussehen:
                 /*
                 startContainer(
-                    dependingContainer.getName(),
-                    dependingContainer.getImageName(),
-                    dependingContainer.getPort(),
-                    getCommand()
+                dependingContainer.getName(),
+                dependingContainer.getImageName(),
+                dependingContainer.getPort(),
+                getCommand()
                 )
-                */
+                 */
             }
+        }
+
+        if (dockerAlreadyHandledList.size() == 0) {
+            ProgressHandler progressHandler = new ProgressHandler(dockerClient, dependingContainersList)
+            progressHandler.waitUnilDependenciesRun()
         }
     }
 
@@ -104,13 +110,23 @@ class StartDependenciesTask extends AbstractDockerTask {
 
     void startContainer(String name, String image, String port, String commandArgs, List<String> runningContainers) {
         if (runningContainers.contains(name)) {
-            log.info "Update " + name + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
-            dockerClient.exec(name, ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArgs])
+            startDependenciesNonBlockingExec(name, commandArgs)
         } else {
             Map hostConf = prepareHostConfig(port)
             log.info("Start Container: " + name + " => " + image + " => " + hostConf)
             dockerClient.run(image.toString(), ["HostConfig": hostConf, "Cmd":commandArgs], versionTag, name)
         }
+    }
+
+    void startDependenciesNonBlockingExec(String containerName, String commandArgs) {
+        List command = ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArgs]
+        Map execConfig = [
+        "AttachStdin" : false,
+        "Detach"      : true,
+        "Tty"         : false]
+
+        log.info "Update " + containerName + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
+        dockerClient.exec(containerName, command, execConfig)
     }
 
     Map prepareHostConfig(String portConfig) {

@@ -40,7 +40,11 @@ class StartDependenciesTaskSpec extends Specification {
         task.dockerRegistry = 'example.registry:5000'
         task.versionTag = 'latest'
         task.dockerAlreadyHandledList = ['service3']
-        dockerClient.ps() >> [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Up"]]
+        dockerClient.ps() >>> [
+            [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Up"]],
+            [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Up"], ["Names":["_service1"], "Status":"Up"]]
+        ]
+        dockerClient.exec(_, ["./gradlew", "serviceDependencies"]) >> ["plain": ""]
 
         when:
         task.run()
@@ -50,8 +54,10 @@ class StartDependenciesTaskSpec extends Specification {
             ['HostConfig': ['PortBindings': ['8080/tcp': [['HostPort': '8080']]]]
                 , 'Cmd':'-Pdocker.alreadyHandled=service3,service1,service2']
             , 'latest', 'service1')
+        1 * dockerClient.exec('service2',
+            ['./gradlew', 'startDependencies', '-Pdocker.alreadyHandled=service3,service1,service2'],
+            ['AttachStdin':false, 'Detach':true, 'Tty':false])
         0 * dockerClient.run(_, _, _, 'service2')
-        1 * dockerClient.exec('service2', _)
         0 * dockerClient.run(_, _, _, 'service3')
         0 * dockerClient.exec('service3', _)
     }
@@ -78,7 +84,11 @@ class StartDependenciesTaskSpec extends Specification {
         task.startContainer(name, "", "", commandArg, [name])
 
         then:
-        1 * dockerClient.exec(name, ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArg])
+        1 * dockerClient.exec(name,
+            ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArg],
+            ["AttachStdin" : false,
+            "Detach"      : true,
+            "Tty"         : false])
     }
 
     def "prepareNewdockerAlreadyHandledList"() {

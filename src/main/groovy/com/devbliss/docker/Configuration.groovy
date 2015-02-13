@@ -65,7 +65,8 @@ class Configuration {
     /**
      * Set configuration for a StartDependenciesTask.
      */
-    public void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask, DockerPluginExtension extension) {
+    public void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask,
+        DockerPluginExtension extension) {
         startDependenciesTask.dependingContainers = extension.dependingContainers
         startDependenciesTask.dockerHost = extension.dockerHost
         startDependenciesTask.authConfigPlain = extension.authConfigPlain
