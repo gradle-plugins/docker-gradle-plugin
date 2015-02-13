@@ -23,6 +23,7 @@ class ProgressHandler {
     public void waitUnilDependenciesRun() {
         boolean allRun = false;
         Map<String, Map<String,Boolean>> containerList = prepareStartMap()
+        println containerList
         while(!allRun) {
             setRunningStates(containerList)
             Map<String, Map<String,Boolean>> additionalContainer = null
@@ -93,8 +94,10 @@ class ProgressHandler {
     }
 
     List<String> getServiceDependencies(String serviceName) {
-        java.util.LinkedHashMap depsString = dockerClient.exec(serviceName, ["./gradlew", "serviceDependencies"])
-        DependingContainerParser parser = new DependingContainerParser(depsString.plain);
+        println "get Service => $serviceName"
+        java.util.LinkedHashMap depsMap = dockerClient.exec(serviceName, ["./gradlew", "serviceDependencies"])
+        println "depsString is $depsMap"
+        DependingContainerParser parser = new DependingContainerParser(depsMap.plain);
         List<String> deps = parser.getParsedDependencies();
         return deps
     }

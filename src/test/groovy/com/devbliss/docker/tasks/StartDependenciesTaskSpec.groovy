@@ -40,7 +40,11 @@ class StartDependenciesTaskSpec extends Specification {
         task.dockerRegistry = 'example.registry:5000'
         task.versionTag = 'latest'
         task.dockerAlreadyHandledList = ['service3']
-        dockerClient.ps() >> [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Up"]]
+        dockerClient.ps() >>> [
+            [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Up"]],
+            [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Up"], ["Names":["_service1"], "Status":"Up"]]
+        ]
+        dockerClient.exec(_, ["./gradlew", "serviceDependencies"]) >> ["plain": ""]
 
         when:
         task.run()
@@ -50,10 +54,14 @@ class StartDependenciesTaskSpec extends Specification {
             ['HostConfig': ['PortBindings': ['8080/tcp': [['HostPort': '8080']]]]
                 , 'Cmd':'-Pdocker.alreadyHandled=service3,service1,service2']
             , 'latest', 'service1')
+        1 * dockerClient.createExec('service2',
+            ['AttachStdin':false, 'AttachStdout':true, 'AttachStderr':true, 'Detach':false, 'Tty':false,\
+                'Cmd':['./gradlew', 'startDependencies', '-Pdocker.alreadyHandled=service3,service1,service2']
+            ])
         0 * dockerClient.run(_, _, _, 'service2')
-        1 * dockerClient.exec('service2', _)
+        //        1 * dockerClient.exec('service2', _)
         0 * dockerClient.run(_, _, _, 'service3')
-        0 * dockerClient.exec('service3', _)
+        //        0 * dockerClient.exec('service3', _)
     }
 
     def "prepareHostConfig"() {
