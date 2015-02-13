@@ -12,8 +12,6 @@ import org.gradle.api.tasks.TaskAction
 /**
  * This class pulls and run depending containers in your host vm.
  * The depending containers are configured in you gradle build file.
- *
- * Created by Christian Soth <christian.soth@devbliss.com> on 09.01.15.
  */
 @Log
 class StartDependenciesTask extends AbstractDockerTask {

@@ -8,10 +8,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
-/**
- *
- * @author Dennis Schumann <dennis.schumann@devbliss.com>
- */
 @Log
 // TODO: PullDependingImages wäre besseres Englisch, außerdem ist das der einzige Task der nicht Task im Namen hat
 // -> PullDependingImagesTask

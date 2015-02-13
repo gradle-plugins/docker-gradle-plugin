@@ -10,10 +10,6 @@ import org.gradle.api.Project
 import org.gradle.api.Task
 
 /**
- * @todo: Autor steht in Git -> Autor entfernen
- * @author Christian Soth <christian.soth@devbliss.com> on 12.01.15.
- * @author Dennis Schumann <dennis.schumann@devbliss.com>
- *
  * Configuration class that applies the devblissDocker configuration to all docker tasks of known type.
  */
 class Configuration {
