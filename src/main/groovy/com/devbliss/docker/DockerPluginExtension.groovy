@@ -4,7 +4,7 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 
 /**
- * @todo Ist offensichtlich -> Kommentar entfernen
+ * @todo Ist offensichtlich -> Kommentar entfernen. Hatten das sonst immer als best practise ein kommentar an den klassenanfang.
  * Configuration extension for docker tasks.
  */
 class DockerPluginExtension {
