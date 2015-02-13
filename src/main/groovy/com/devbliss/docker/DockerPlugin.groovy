@@ -15,8 +15,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
- * @author Christian Soth <christian.soth@devbliss.com> on 12.01.15.
- *
  * Devbliss Docker plugin to create a set of default docker tasks for a project.
  * The plugin extends the DockerPlugin from gesellix with additional tasks and configuration for devbliss needs.
  */

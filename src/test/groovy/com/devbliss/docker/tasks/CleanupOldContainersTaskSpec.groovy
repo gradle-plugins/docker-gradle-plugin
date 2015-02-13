@@ -7,9 +7,6 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-/**
- * Created by Christian Soth <christian.soth@devbliss.com> on 15.01.15.
- */
 class CleanupOldContainersTaskSpec extends Specification {
 
     Project project
