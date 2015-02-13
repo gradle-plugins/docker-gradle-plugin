@@ -30,8 +30,8 @@ class PullDependencyImages extends AbstractDockerTask {
         description = "Pull all depending images for this Project"
         group = "Devbliss"
 
-        if (getProject().hasProperty(Configuration.dockerAlreadyHandledProperty)) {
-            String dockerAlreadyHandled = getProject().getProperty(Configuration.dockerAlreadyHandledProperty)
+        if (getProject().hasProperty(Configuration.DOCKER_ALREADY_HANDLED_PROPERTY)) {
+            String dockerAlreadyHandled = getProject().getProperty(Configuration.DOCKER_ALREADY_HANDLED_PROPERTY)
             dockerAlreadyHandledList = dockerAlreadyHandled.replaceAll("\\s", "").split(',')
         } else {
             dockerAlreadyHandledList = new ArrayList<>()

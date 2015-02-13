@@ -12,24 +12,24 @@ import org.slf4j.LoggerFactory
 @Log
 class StopAllRunningContainersTask extends AbstractDockerTask {
 
-  StopAllRunningContainersTask() {
-    description = "Stops all running docker containers in your host vm"
-    group = "Devbliss"
-  }
-
-  def dockerHostStatus
-
-  @TaskAction
-  public void run() {
-    dockerHostStatus = dockerClient.ps()
-    dockerHostStatus.each() { container ->
-      if (container.Status.contains('Up')) {
-        log.info("Container " + container.Names + " is running")
-
-        def containerId = container.Names[0].substring(1, container.Names[0].length())
-        dockerClient.stop(containerId)
-        log.info("Container " + container.Names + " was stopped")
-      }
+    StopAllRunningContainersTask() {
+        description = "Stops all running docker containers in your host vm"
+        group = "Devbliss"
     }
-  }
+
+    def dockerHostStatus
+
+    @TaskAction
+    public void run() {
+        dockerHostStatus = dockerClient.ps()
+        dockerHostStatus.each() { container ->
+            if (container.Status.contains('Up')) {
+                log.info("Container " + container.Names + " is running")
+
+                def containerId = container.Names[0].substring(1, container.Names[0].length())
+                dockerClient.stop(containerId)
+                log.info("Container " + container.Names + " was stopped")
+            }
+        }
+    }
 }

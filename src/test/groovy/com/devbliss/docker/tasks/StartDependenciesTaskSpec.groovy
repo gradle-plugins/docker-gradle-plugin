@@ -9,9 +9,6 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-/**
- * Created by Christian Soth <christian.soth@devbliss.com> on 19.01.15.
- */
 @Log
 class StartDependenciesTaskSpec extends Specification {
 
@@ -97,8 +94,8 @@ class StartDependenciesTaskSpec extends Specification {
         List additional2 = ["test1", "test4"]
 
         when:
-        Set result = task.prepareNewDockerAlreadyHandledList(additional)
-        Set result2 = task.prepareNewDockerAlreadyHandledList(additional2)
+        Set result = task.prepareNewContainerAlreadyHandledList(additional)
+        Set result2 = task.prepareNewContainerAlreadyHandledList(additional2)
 
         then:
         result.size() == 4
@@ -130,7 +127,7 @@ class StartDependenciesTaskSpec extends Specification {
         String commandArgs= task.getCommandArgs(dependingContainersList)
 
         then:
-        commandArgs.equals "-P${Configuration.dockerAlreadyHandledProperty}=${name},${name2}".toString()
+        commandArgs.equals "-P${Configuration.DOCKER_ALREADY_HANDLED_PROPERTY}=${name},${name2}".toString()
     }
 
     def "getRunningContainers"() {
