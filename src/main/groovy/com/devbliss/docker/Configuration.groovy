@@ -82,9 +82,6 @@ class Configuration {
     public void configureGetServiceDependenciesTasks(GetServiceDependenciesTask getServiceDependenciesTask,
         DockerPluginExtension extension) {
         getServiceDependenciesTask.dependingContainers = extension.dependingContainers
-        getServiceDependenciesTask.versionTag = extension.versionTag
-        getServiceDependenciesTask.dockerRegistry = extension.registryName
-        getServiceDependenciesTask.dockerRepository = extension.repositoryName
     }
 
     /**
@@ -97,7 +94,7 @@ class Configuration {
             task.authConfigEncoded = extension.authConfigEncoded
         }
     }
- 
+
     /**
      * Set configuration for all Tasks that are type of DockerPullTask or extend it.
      */
