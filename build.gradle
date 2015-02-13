@@ -21,6 +21,7 @@ repositories {
 dependencies {
     compile localGroovy()
     compile "de.gesellix:gradle-docker-plugin:2015-01-06T18-26-22" // TODO: warum ist das nicht in der gradle.properties?
+    compile "org.fusesource.jansi:jansi:$jansiVersion"
     testCompile "junit:junit:$junitVersion"
     testCompile "org.spockframework:spock-core:$spockVersion"
 }
