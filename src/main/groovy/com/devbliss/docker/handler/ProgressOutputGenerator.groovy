@@ -2,10 +2,6 @@ package com.devbliss.docker.handler
 
 import org.fusesource.jansi.Ansi
 
-/**
- *
- * @author Dennis Schumann <dennis.schumann@devbliss.com>
- */
 class ProgressOutputGenerator {
 
     Ansi ansi

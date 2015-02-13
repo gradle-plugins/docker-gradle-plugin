@@ -69,7 +69,7 @@ class ProgressHandler {
         List<String> dependencies = getServiceDependencies(serviceName)
         dependencies.each { dep ->
             if (!containerList.containsKey(dep)) {
-                additionalContainer.put(dep, createNewContrainerItem())
+                additionalContainer.put(dep, createNewContainerItem())
             }
         }
         return additionalContainer
@@ -78,12 +78,12 @@ class ProgressHandler {
     Map<String, Map<String,Boolean>> prepareStartMap() {
         Map<String, Map<String,Boolean>> startList = new HashMap()
         dependingContainersList.each { dep ->
-            startList.put(DependencyStringUtils.getDependencyNameAndPort(dep)[0], createNewContrainerItem())
+            startList.put(DependencyStringUtils.getDependencyNameAndPort(dep)[0], createNewContainerItem())
         }
         return startList
     }
 
-    Map<String,Boolean> createNewContrainerItem() {
+    Map<String,Boolean> createNewContainerItem() {
         Map<String, Boolean> newDepItem = new HashMap()
         newDepItem.put(RECEIVED_DEPENDENCIES, false)
         newDepItem.put(RUNNING, false)

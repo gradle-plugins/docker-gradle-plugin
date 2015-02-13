@@ -19,21 +19,6 @@ class ProgressHandlerSpec extends Specification {
         handler = new ProgressHandler(dockerClient, dependingContainersList)
     }
 
-//    def "waitUnilDependenciesRun"() {
-//        given:
-//        dockerClient.exec(_, _) >> "Depending Container ------>[service3]"
-//        dockerClient.ps() >> [
-//            ["Names":["_service1"], "Status":"Up"],
-//            ["Names":["_service2"], "Status":"Up"],
-//            ["Names":["_service3"], "Status":"Up"]
-//        ]
-//
-//        when:
-//        handler.waitUnilDependenciesRun()
-//
-//        then:
-//    }
-
     def "setRunningStateForContainer"() {
         given:
         Map<String, Map<String,Boolean>> containerList = [
@@ -61,9 +46,9 @@ class ProgressHandlerSpec extends Specification {
         ]
     }
 
-    def "createNewContrainerItem"() {
+    def "createNewContainerItem"() {
         when:
-        Map<String,Boolean> item = handler.createNewContrainerItem()
+        Map<String,Boolean> item = handler.createNewContainerItem()
 
         then:
         item == ["checked_deps": false, "running" : false]

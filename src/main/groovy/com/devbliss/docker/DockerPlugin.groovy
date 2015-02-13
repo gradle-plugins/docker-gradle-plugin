@@ -26,7 +26,7 @@ class DockerPlugin implements Plugin<Project> {
 
         project.task(Configuration.TASK_NAME_START_DEPENDENCIES, type: StartDependenciesTask)
         project.task("stopAllRunningContainers", type: StopAllRunningContainersTask)
-        project.task(Configuration.TASK_NAME_GET_SERVICE_DEPENDENCIES , type: GetServiceDependenciesTask)
+        project.task(Configuration.TASK_NAME_GET_SERVICE_DEPENDENCIES, type: GetServiceDependenciesTask)
         BuildAndPushDockerImageTask buildAndPushDockerImage = project.task('buildAndPushDockerImage', type: BuildAndPushDockerImageTask)
         DockerPullTask dockerPullTask = project.task('pullDockerImage', type: DockerPullTask)
         DockerPushTask dockerPushTask = project.task('pushDockerImage', type: DockerPushTask)
