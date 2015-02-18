@@ -26,22 +26,7 @@ class ProgressHandler {
         progressOutputGenerator.printServices(containerList)
         while(!allRun) {
             setRunningStates(containerList)
-            Map<String, Map<String,Boolean>> additionalContainer = new HashMap()
-            containerList.each { container ->
-                if (!container.getValue().get(RECEIVED_DEPENDENCIES) && container.getValue().get(RUNNING)) {
-                    log.info "Request dependencies of service ${container.getKey()}"
-                    Map<String, Map<String,Boolean>> newDependencies = getContainerDependencies(
-                        container.getKey(), containerList)
-                    container.getValue().put(RECEIVED_DEPENDENCIES, true)
-                    if (newDependencies != null && newDependencies.size() > 0) {
-                        additionalContainer.putAll(newDependencies)
-                    }
-                }
-            }
-            if (additionalContainer != null && additionalContainer.size() > 0) {
-                containerList.putAll(additionalContainer)
-                additionalContainer = new HashMap()
-            }
+            updateDependenciesMap(containerList)
             progressOutputGenerator.printServices(containerList)
             allRun = checkAllRunning(containerList)
         }
@@ -51,6 +36,24 @@ class ProgressHandler {
         List containers = dockerClient.ps()
         containers.each { container ->
             setRunningStateForContainer(containerList, container)
+        }
+    }
+
+    void updateDependenciesMap(Map<String, Map<String,Boolean>> containerList) {
+        Map<String, Map<String,Boolean>> additionalContainer = new HashMap()
+        containerList.each { container ->
+            if (!container.getValue().get(RECEIVED_DEPENDENCIES) && container.getValue().get(RUNNING)) {
+                log.info "Request dependencies of service ${container.getKey()}"
+                Map<String, Map<String,Boolean>> newDependencies = getContainerDependencies(
+                    container.getKey(), containerList)
+                container.getValue().put(RECEIVED_DEPENDENCIES, true)
+                if (newDependencies != null && newDependencies.size() > 0) {
+                    additionalContainer.putAll(newDependencies)
+                }
+            }
+        }
+        if (additionalContainer.size() > 0) {
+            containerList.putAll(additionalContainer)
         }
     }
 

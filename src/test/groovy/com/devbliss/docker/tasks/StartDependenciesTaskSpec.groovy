@@ -1,6 +1,7 @@
 package com.devbliss.docker.tasks
 
 import com.devbliss.docker.task.StartDependenciesTask
+import com.devbliss.docker.wrapper.ServiceDependency
 import com.devbliss.docker.Configuration
 import de.gesellix.docker.client.DockerClient
 import de.gesellix.gradle.docker.tasks.DockerPsTask
@@ -79,9 +80,10 @@ class StartDependenciesTaskSpec extends Specification {
     def "startContainer"() {
         given:
         def commandArg = "testArgument"
+        ServiceDependency serviceDependency = new ServiceDependency("${name}#8080")
 
         when:
-        task.startContainer(name, "", "", commandArg, [name])
+        task.startContainer(serviceDependency, commandArg, [name])
 
         then:
         1 * dockerClient.exec(name,
@@ -94,8 +96,14 @@ class StartDependenciesTaskSpec extends Specification {
     def "prepareNewdockerAlreadyHandledList"() {
         given:
         task.dockerAlreadyHandledList = ["test1", "test4"]
-        List additional = ["test2", "test3"]
-        List additional2 = ["test1", "test4"]
+        List additional = [
+            new ServiceDependency("test2#8080"),
+            new ServiceDependency("test3#8080")
+        ]
+        List additional2 = [
+            new ServiceDependency("test1#8080"),
+            new ServiceDependency("test4#8080")
+        ]
 
         when:
         Set result = task.prepareNewContainerAlreadyHandledList(additional)
@@ -125,7 +133,10 @@ class StartDependenciesTaskSpec extends Specification {
     def "getCommandArgs"() {
         given:
         task.dockerAlreadyHandledList = [name]
-        List<String> dependingContainersList = [name, name2]
+        List<ServiceDependency> dependingContainersList = [
+            new ServiceDependency("${name}#8080"),
+            new ServiceDependency("${name2}#8080")
+        ]
 
         when:
         String commandArgs= task.getCommandArgs(dependingContainersList)
