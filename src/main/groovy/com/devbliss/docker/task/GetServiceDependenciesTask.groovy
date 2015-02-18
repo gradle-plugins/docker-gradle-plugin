@@ -37,5 +37,3 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
         }
     }
 }
-
-

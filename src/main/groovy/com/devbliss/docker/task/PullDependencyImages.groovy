@@ -49,7 +49,7 @@ class PullDependencyImages extends AbstractDockerTask {
         dependingContainersList.each() { dep ->
             def (name, port) = DependencyStringUtils.getDependencyNameAndPort(dep)
             if (!dockerAlreadyHandledList.contains(name)) {
-                // TODO: Umschreiben zu -> pullImageForContainerFromRegistry(dependingContainer)
+                // TODO: Umschreiben zu -> pullImageFromRegistry(dependingContainer)
                 pullImageFromRegistry(name.split("_")[0])
             }
         }
