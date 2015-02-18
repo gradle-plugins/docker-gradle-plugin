@@ -17,8 +17,6 @@ class CleanupOldContainersTask extends AbstractDockerClusterTask {
     @Optional
     def dependingContainers
 
-    List<String> dockerAlreadyHandledList
-
     public CleanupOldContainersTask() {
         super()
         description = "Pull images and start depending containers for this Project"
