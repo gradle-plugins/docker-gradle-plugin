@@ -2,29 +2,15 @@ Gereral
 	- group als Konstante und anderen namen (Docker Cluster oder ähnlich)
 	- Felder mit Typenangabe
 	- Util klasse ersetzen und stattdessen DockerContainer und DockerDependency Klassen
-	- Eigene Basisklasse für alle Tasks (entfernen der dublizierung vom If in den konstruktoren)
 
 ProgressHandler
 	- Noch nicht untersucht worden
 	- refactoring nötig (insbesondere waitUnilDependenciesRun methode)
 
-BuildAndPushDockerImageTask
-	- run methode entfernen wenn möglich
-	- buildContextDirectory entfernen wenn möglich
-
-CleanupOldContainersTask
-	- Keine Punkte
-
 StartDependenciesTask
 	- Fix class doc
 	- startContainer mit 3 parametern (container, command, runningContainer)
-	- use wrapper for running container
 
-StopAllRunningContainersTask
-	- use wrapper class
 
 DockerPlugin & Configuration
 	- Kosntanten definieren und nutzen
-
-DockerPluginExtension
-	- Typenangabe
