@@ -40,11 +40,9 @@ class PullDependingImagesTask extends AbstractDockerClusterTask {
     }
 
     void pullImageFromRegistry(ServiceDependency serviceDependency) {
-        def imageName = "${dockerRepository}/${serviceDependency.getImageName()}"
-        def tag = versionTag
-        def registry = dockerRegistry
+        String imageName = "${dockerRepository}/${serviceDependency.getImageName()}"
 
-        log.info "docker pull image for" + serviceDependency.getName()
-        dockerClient.pull(imageName, tag, registry)
+        log.info "docker pull image for " + serviceDependency.getName()
+        dockerClient.pull(imageName, versionTag, dockerRegistry)
     }
 }

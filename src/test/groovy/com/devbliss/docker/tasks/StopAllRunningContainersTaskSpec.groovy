@@ -8,24 +8,24 @@ import spock.lang.Specification
 class StopAllRunningContainersTaskSpec extends Specification {
 
     def project
-    def task
-    def dockerHostStatus
-    def container
+    StopAllRunningContainersTask task
     def dockerClient = Mock(DockerClient)
 
     def setup() {
         project = ProjectBuilder.builder().build()
         task = project.task('stopAllRunningContainers', type: StopAllRunningContainersTask)
+
     }
 
     def "stopAllRunningContainers in project"() {
         given:
         task.dockerClient = dockerClient
+        dockerClient.ps() >> [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Exited"]]
 
         when:
         task.execute()
 
-        then: "TODO check container"
-        println "--" + task.dockerHostStatus
+        then:
+        1 * dockerClient.stop("service2")
     }
 }

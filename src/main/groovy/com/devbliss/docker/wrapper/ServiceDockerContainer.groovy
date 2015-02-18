@@ -5,11 +5,12 @@ import de.gesellix.docker.client.DockerClient
 class ServiceDockerContainer {
 
     static public List<ServiceDockerContainer> getServiceContainers(DockerClient dockerClient) {
-        List<ServiceDockerContainer> runningServiceContainers = []
+        List<ServiceDockerContainer> runningServiceContainers = new ArrayList()
         List dockerHostStatus = dockerClient.ps()
         dockerHostStatus.each() { container ->
             runningServiceContainers << new ServiceDockerContainer(container)
         }
+        return runningServiceContainers
     }
 
 	String name
