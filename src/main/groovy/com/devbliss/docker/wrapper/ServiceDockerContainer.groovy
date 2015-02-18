@@ -15,9 +15,11 @@ class ServiceDockerContainer {
 
 	String name
 	Boolean isRunning
+    String image
 
     ServiceDockerContainer(Map container) {
         name = container.Names[0].substring(1, container.Names[0].length())
+        image = container.Image
         if (container.Status.contains('Up')) {
             isRunning = true
         } else {
@@ -29,8 +31,16 @@ class ServiceDockerContainer {
         return name
     }
 
+    String getImage() {
+        return image
+    }
+
     Boolean isRunning() {
         return isRunning
+    }
+
+    Boolean imageIsUpToDate() {
+        return image.contains(":")
     }
 }
 

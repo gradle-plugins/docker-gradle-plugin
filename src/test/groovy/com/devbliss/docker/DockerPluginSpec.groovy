@@ -35,7 +35,7 @@ class DockerPluginSpec extends Specification {
         project.devblissDocker.versionTag = 'latest'
         project.devblissDocker.registryName = 'example.registry:5000'
         project.devblissDocker.repositoryName = 'example-repository'
-        project.devblissDocker.buildContextDirectory = './'
+        project.devblissDocker.buildContextDirectory = new File('./')
         project.devblissDocker.dependingContainers = 'service1#8080,service2#8081,service3#8082'
 
         when:
@@ -49,7 +49,7 @@ class DockerPluginSpec extends Specification {
         task.versionTag == 'latest'
         task.registryName == 'example.registry:5000'
         task.repositoryName == 'example-repository'
-        task.buildContextDirectory == './'
+        task.buildContextDirectory == new File('./')
         task.dependingContainers == 'service1#8080,service2#8081,service3#8082'
     }
 
@@ -59,7 +59,7 @@ class DockerPluginSpec extends Specification {
         project.docker.dockerHost = 'http://example.org:2375'
         project.devblissDocker.imageName = 'test-service'
         project.devblissDocker.repositoryName = 'example-repository'
-        project.devblissDocker.buildContextDirectory = './'
+        project.devblissDocker.buildContextDirectory = new File('./')
         project.devblissDocker.dependingContainers = 'service1#8080,service2#8081,service3#8082'
 
         when:

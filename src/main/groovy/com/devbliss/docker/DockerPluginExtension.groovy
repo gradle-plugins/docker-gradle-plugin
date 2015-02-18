@@ -3,41 +3,37 @@ package com.devbliss.docker
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 
-/**
- * @todo Ist offensichtlich -> Kommentar entfernen. Hatten das sonst immer als best practise ein kommentar an den klassenanfang.
- * Configuration extension for docker tasks.
- */
 class DockerPluginExtension {
 
     @Input
-    def dockerHost
+    String dockerHost
 
     @Input
     @Optional
-    def authConfigPlain
+    Map authConfigPlain
 
     @Input
     @Optional
     def authConfigEncoded
 
     @Input
-    def imageName
+    String imageName
 
     @Input
     @Optional
-    def versionTag
+    String versionTag
 
     @Input
     @Optional
-    def registryName
+    String registryName
 
     @Input
-    def repositoryName
+    String repositoryName
 
     @Input
-    def buildContextDirectory
+    File buildContextDirectory
 
     @Input
     @Optional
-    def dependingContainers
+    String dependingContainers
 }

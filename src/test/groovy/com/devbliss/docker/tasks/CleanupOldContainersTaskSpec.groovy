@@ -2,6 +2,7 @@ package com.devbliss.docker.tasks
 
 import com.devbliss.docker.Configuration
 import com.devbliss.docker.task.CleanupOldContainersTask
+import com.devbliss.docker.wrapper.ServiceDockerContainer
 import de.gesellix.docker.client.DockerClient
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -31,9 +32,11 @@ class CleanupOldContainersTaskSpec extends Specification {
 
     def "cleanupOldDependencies"() {
         given:
-        dockerClient.ps() >> [["Names":["_$name"], "Image":"435hi3u5h345", "Status": "Up"],
-            ["Names":["_$name2"], "Image":"435hi3u5h345/$name2", "Status":"Exited"],
-            ["Names":["_$name3"], "Image":"435hi3u5h345", "Status":"Exited"]]
+        dockerClient.ps() >> [
+            ["Names":["_$name"], "Image":"435hi3u5h345", "Status": "Up"],
+            ["Names":["_$name2"], "Image":"435hi3u5h345/$name2:latest", "Status":"Exited"],
+            ["Names":["_$name3"], "Image":"435hi3u5h345", "Status":"Exited"]
+        ]
         task.dependingContainers = "${name}#8080,${name2}#8082,${name3}#8081"
         task.dockerAlreadyHandledList = [name3]
 
@@ -51,9 +54,10 @@ class CleanupOldContainersTaskSpec extends Specification {
 
     def "stopAndRemoveContainer"() {
     given:
+    Map container = ["Names":["/$name"], "Image":"hkhnk46", "Status":"Exited"]
 
     when:
-    task.stopAndRemoveContainer(name)
+    task.stopAndRemoveContainer(new ServiceDockerContainer(container))
 
     then:
     1 * dockerClient.stop(name)
