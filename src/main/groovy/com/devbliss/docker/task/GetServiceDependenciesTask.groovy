@@ -23,7 +23,6 @@ class GetServiceDependenciesTask extends AbstractDockerTask {
 
     @TaskAction
     public void run() {
-
         if (dependingContainers != null) {
             List<String> dependingContainersList = DependencyStringUtils.splitServiceDependenciesString(dependingContainers)
 

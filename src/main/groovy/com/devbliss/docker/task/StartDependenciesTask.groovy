@@ -66,9 +66,7 @@ class StartDependenciesTask extends AbstractDockerTask {
                 // TODO: am Ende sollte startContainer so aussehen:
                 /*
                 startContainer(
-                dependingContainer.getName(),
-                dependingContainer.getImageName(),
-                dependingContainer.getPort(),
+                dependingContainer,
                 getCommand()
                 )
                  */
