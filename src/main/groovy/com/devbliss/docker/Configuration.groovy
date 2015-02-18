@@ -2,7 +2,7 @@ package com.devbliss.docker
 
 import com.devbliss.docker.task.BuildAndPushDockerImageTask
 import com.devbliss.docker.task.CleanupOldContainersTask
-import com.devbliss.docker.task.PullDependencyImages
+import com.devbliss.docker.task.PullDependingImagesTask
 import com.devbliss.docker.task.GetServiceDependenciesTask
 import com.devbliss.docker.task.StartDependenciesTask
 import de.gesellix.gradle.docker.tasks.*
@@ -29,7 +29,7 @@ class Configuration {
         DockerPluginExtension devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
         // TODO: auslagern in getStartDependenciesTask
         StartDependenciesTask startDependenciesTask = project.getTasks().getByName(TASK_NAME_START_DEPENDENCIES)
-        PullDependencyImages pullDependencyImages = project.getTasks().getByName('pullDependencyImages')
+        PullDependingImagesTask pullDependencyImages = project.getTasks().getByName('pullDependencyImages')
         CleanupOldContainersTask cleanupOldContainersTask = project.getTasks().getByName('cleanupOldContainers')
         startDependenciesTask.dependsOn cleanupOldContainersTask
         cleanupOldContainersTask.dependsOn pullDependencyImages
@@ -48,7 +48,7 @@ class Configuration {
             configureStartTasks(project, devblissDockerExtension)
             configureRmTasks(project, devblissDockerExtension)
             configureRunTasks(project, devblissDockerExtension)
-            configurePullDependencyImagesTasks(project, devblissDockerExtension)
+            configurePullDependingImagesTasks(project, devblissDockerExtension)
             configureCleanupOldContainersTasks(project, devblissDockerExtension)
         }
 
@@ -163,8 +163,8 @@ class Configuration {
         }
     }
 
-    public void configurePullDependencyImagesTasks(Project project, DockerPluginExtension extension) {
-        project.tasks.withType(PullDependencyImages) { task ->
+    public void configurePullDependingImagesTasks(Project project, DockerPluginExtension extension) {
+        project.tasks.withType(PullDependingImagesTask) { task ->
             task.dependingContainers = extension.dependingContainers
             task.dockerHost = extension.dockerHost
             task.authConfigPlain = extension.authConfigPlain

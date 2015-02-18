@@ -24,6 +24,10 @@ class ServiceDependency {
         return port
     }
 
+    public String getImageName() {
+        return name.split("_")[0]
+    }
+
     List getDependencyNameAndPort(String dependency) {
         return dependency.split("#").toList()
     }

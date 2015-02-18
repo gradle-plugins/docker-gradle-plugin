@@ -1,17 +1,17 @@
 package com.devbliss.docker.tasks
 
 import com.devbliss.docker.Configuration
-import com.devbliss.docker.task.PullDependencyImages
+import com.devbliss.docker.task.PullDependingImagesTask
 import de.gesellix.docker.client.DockerClient
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-class PullDependencyImagesSpec extends Specification {
+class PullDependingImagesTaskSpec extends Specification {
 
     Project project
-    PullDependencyImages task
+    PullDependingImagesTask task
     DockerClient dockerClient
     String name
     String name2

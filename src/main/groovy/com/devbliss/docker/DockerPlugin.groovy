@@ -2,7 +2,7 @@ package com.devbliss.docker
 
 import com.devbliss.docker.task.BuildAndPushDockerImageTask
 import com.devbliss.docker.task.CleanupOldContainersTask
-import com.devbliss.docker.task.PullDependencyImages
+import com.devbliss.docker.task.PullDependingImagesTask
 import com.devbliss.docker.task.GetServiceDependenciesTask
 import com.devbliss.docker.task.StartDependenciesTask
 import com.devbliss.docker.task.StopAllRunningContainersTask
@@ -35,9 +35,9 @@ class DockerPlugin implements Plugin<Project> {
         DockerRunTask dockerRunTask = project.task('runDockerContainer', type: DockerRunTask)
         DockerRmTask dockerRmTask = project.task('removeDockerContainer', type: DockerRmTask)
         DockerBuildTask dockerBuildTask = project.task('buildDockerImage', type: DockerBuildTask)
-        PullDependencyImages pullDependencyImages = project.task('pullDependencyImages', type: PullDependencyImages)
+        PullDependingImagesTask pullDependencyImages = project.task('pullDependencyImages', type: PullDependingImagesTask)
         CleanupOldContainersTask cleanupOldContainersTask = project.task('cleanupOldContainers', type: CleanupOldContainersTask)
-    
+
         Configuration configuration = new Configuration(project)
 
         //Tasks that depend on other tasks
