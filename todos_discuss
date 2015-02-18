@@ -3,8 +3,6 @@ Gereral
 	- Felder mit Typenangabe
 	- Util klasse ersetzen und stattdessen DockerContainer und DockerDependency Klassen
 	- Eigene Basisklasse für alle Tasks (entfernen der dublizierung vom If in den konstruktoren)
-#	- Discuss
-		- Keine Kommentare an Klassen?
 
 ProgressHandler
 	- Noch nicht untersucht worden
@@ -17,9 +15,6 @@ BuildAndPushDockerImageTask
 CleanupOldContainersTask
 	- Keine Punkte
 
-PullDependencyImages
-#	- // TODO: Umschreiben zu -> pullImageForContainerFromRegistry(dependingContainer)
-
 StartDependenciesTask
 	- Fix class doc
 	- startContainer mit 3 parametern (container, command, runningContainer)
@@ -27,9 +22,6 @@ StartDependenciesTask
 
 StopAllRunningContainersTask
 	- use wrapper class
-
-Configuration
-#	- 2*_ was ist der vorteil? (vllt probleme mit checkstyle später)
 
 DockerPlugin & Configuration
 	- Kosntanten definieren und nutzen
