@@ -73,7 +73,39 @@ class ProgressHandlerSpec extends Specification {
         then:
         up == true
         exited == false
-        
+    }
+
+    def "waitUnilDependenciesRun"() {
+        given:
+        dockerClient.exec(_, _) >> ["plain": "Depending Container ------>[eureka-server]"]
+        dockerClient.ps() >> [
+            ["Names":["_service1"], "Status":"Up"], ["Names":["_service2"], "Status":"Up"],
+            ["Names":["_eureka-server"], "Status":"Up"]
+        ]
+
+        when:
+        handler.waitUnilDependenciesRun()
+
+        then:
+        true //waitUntil run through
+    }
+
+    def "updateDependenciesMap"() {
+        given:
+        Map stateMap = new HashMap()
+        stateMap[ProgressHandler.RUNNING] = true
+        stateMap[ProgressHandler.RECEIVED_DEPENDENCIES] = false
+        Map containerMap = ["service1": stateMap]
+        dockerClient.exec(_, _) >> ["plain": "Depending Container ------>[eureka-server, course-service, dementity]"]
+
+        when:
+        handler.updateDependenciesMap(containerMap)
+
+        then:
+        containerMap.size() == 4
+        containerMap.containsKey("eureka-server")
+        containerMap.containsKey("course-service")
+        containerMap.containsKey("dementity")
     }
 
 }
