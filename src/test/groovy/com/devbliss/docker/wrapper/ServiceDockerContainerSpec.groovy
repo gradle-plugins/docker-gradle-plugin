@@ -1,10 +1,6 @@
 package com.devbliss.docker.wrapper
 
-import com.devbliss.docker.Configuration
-import com.devbliss.docker.wrapper.ServiceDockerContainer
 import de.gesellix.docker.client.DockerClient
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 class ServiceDockerContainerSpec extends Specification {
@@ -16,8 +12,8 @@ class ServiceDockerContainerSpec extends Specification {
         serviceName = "service"
         serviceName2 = "service2"
         servicesDocker = [
-            ["Names":["_$serviceName"], "Image":"435hi3u5h345", "Status": "Up"],
-            ["Names":["_$serviceName2"], "Image":"${serviceName2}:latest", "Status": "Exited"]
+                ["Names": ["_$serviceName"], "Image": "435hi3u5h345", "Status": "Up"],
+                ["Names": ["_$serviceName2"], "Image": "${serviceName2}:latest", "Status": "Exited"]
         ]
     }
 

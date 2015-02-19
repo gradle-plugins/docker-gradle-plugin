@@ -20,7 +20,7 @@ class StopAllRunningContainersTaskSpec extends Specification {
     def "stopAllRunningContainers in project"() {
         given:
         task.dockerClient = dockerClient
-        dockerClient.ps() >> [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Exited"]]
+        dockerClient.ps() >> [["Names": ["_service2"], "Status": "Up"], ["Names": ["_service3"], "Status": "Exited"]]
 
         when:
         task.execute()

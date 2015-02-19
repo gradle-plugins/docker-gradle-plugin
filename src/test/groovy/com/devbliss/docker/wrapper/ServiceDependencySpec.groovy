@@ -1,10 +1,5 @@
 package com.devbliss.docker.wrapper
 
-import com.devbliss.docker.Configuration
-import com.devbliss.docker.wrapper.ServiceDependency
-import de.gesellix.docker.client.DockerClient
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 class ServiceDependencySpec extends Specification {

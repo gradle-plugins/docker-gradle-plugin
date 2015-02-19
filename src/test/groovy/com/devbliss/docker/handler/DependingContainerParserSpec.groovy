@@ -1,10 +1,5 @@
 package com.devbliss.docker.handler
 
-import com.devbliss.docker.Configuration
-import com.devbliss.docker.handler.DependingContainerParser
-import de.gesellix.docker.client.DockerClient
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 class DependingContainerParserSpec extends Specification {

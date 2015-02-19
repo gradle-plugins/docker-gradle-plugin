@@ -41,8 +41,8 @@ class StartDependenciesTaskSpec extends Specification {
         task.versionTag = 'latest'
         task.dockerAlreadyHandledList = ['service3']
         dockerClient.ps() >>> [
-            [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Up"]],
-            [["Names":["_service2"], "Status":"Up"], ["Names":["_service3"], "Status":"Up"], ["Names":["_service1"], "Status":"Up"]]
+                [["Names": ["_service2"], "Status": "Up"], ["Names": ["_service3"], "Status": "Up"]],
+                [["Names": ["_service2"], "Status": "Up"], ["Names": ["_service3"], "Status": "Up"], ["Names": ["_service1"], "Status": "Up"]]
         ]
         dockerClient.exec(_, ["./gradlew", "serviceDependencies"]) >> ["plain": ""]
 
@@ -51,12 +51,12 @@ class StartDependenciesTaskSpec extends Specification {
 
         then:
         1 * dockerClient.run('example.registry:5000/example-repository/service1',
-            ['HostConfig': ['PortBindings': ['8080/tcp': [['HostPort': '8080']]]]
-                , 'Cmd':'-Pdocker.alreadyHandled=service3,service1,service2']
-            , 'latest', 'service1')
+                ['HostConfig': ['PortBindings': ['8080/tcp': [['HostPort': '8080']]]]
+                 , 'Cmd'     : '-Pdocker.alreadyHandled=service3,service1,service2']
+                , 'latest', 'service1')
         1 * dockerClient.exec('service2',
-            ['./gradlew', 'startDependencies', '-Pdocker.alreadyHandled=service3,service1,service2'],
-            ['AttachStdin':false, 'Detach':true, 'Tty':false])
+                ['./gradlew', 'startDependencies', '-Pdocker.alreadyHandled=service3,service1,service2'],
+                ['AttachStdin': false, 'Detach': true, 'Tty': false])
         0 * dockerClient.run(_, _, _, 'service2')
         0 * dockerClient.run(_, _, _, 'service3')
         0 * dockerClient.exec('service3', _)
@@ -88,22 +88,22 @@ class StartDependenciesTaskSpec extends Specification {
 
         then:
         1 * dockerClient.exec(name,
-            ["./gradlew", Constant.TASK_NAME__START_DEPENDENCIES, commandArg],
-            ["AttachStdin" : false,
-            "Detach"      : true,
-            "Tty"         : false])
+                ["./gradlew", Constant.TASK_NAME__START_DEPENDENCIES, commandArg],
+                ["AttachStdin": false,
+                 "Detach"     : true,
+                 "Tty"        : false])
     }
 
     def "prepareNewdockerAlreadyHandledList"() {
         given:
         task.dockerAlreadyHandledList = ["test1", "test4"]
         List additional = [
-            new ServiceDependency("test2#8080"),
-            new ServiceDependency("test3#8080")
+                new ServiceDependency("test2#8080"),
+                new ServiceDependency("test3#8080")
         ]
         List additional2 = [
-            new ServiceDependency("test1#8080"),
-            new ServiceDependency("test4#8080")
+                new ServiceDependency("test1#8080"),
+                new ServiceDependency("test4#8080")
         ]
 
         when:
@@ -121,12 +121,12 @@ class StartDependenciesTaskSpec extends Specification {
         given:
         task.dockerAlreadyHandledList = [name]
         List<ServiceDependency> dependingContainersList = [
-            new ServiceDependency("${name}#8080"),
-            new ServiceDependency("${name2}#8080")
+                new ServiceDependency("${name}#8080"),
+                new ServiceDependency("${name2}#8080")
         ]
 
         when:
-        String commandArgs= task.getCommandArgs(dependingContainersList)
+        String commandArgs = task.getCommandArgs(dependingContainersList)
 
         then:
         commandArgs.equals "-P${Constant.DOCKER__ALREADY_HANDLED_PROPERTY}=${name},${name2}".toString()
@@ -136,7 +136,7 @@ class StartDependenciesTaskSpec extends Specification {
         given:
         def service1 = "service1"
         def service2 = "service2"
-        dockerClient.ps() >> [["Names":["_$service1"], "Status":"Up"], ["Names":["_$service2"], "Status":"Exited sinde 10 seconds"]]
+        dockerClient.ps() >> [["Names": ["_$service1"], "Status": "Up"], ["Names": ["_$service2"], "Status": "Exited sinde 10 seconds"]]
 
         when:
         List<String> runningContainers = task.getRunningContainers()

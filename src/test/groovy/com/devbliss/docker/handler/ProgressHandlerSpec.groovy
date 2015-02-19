@@ -1,10 +1,6 @@
 package com.devbliss.docker.handler
 
-import com.devbliss.docker.Configuration
-import com.devbliss.docker.handler.ProgressHandler
 import de.gesellix.docker.client.DockerClient
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 class ProgressHandlerSpec extends Specification {
@@ -21,37 +17,37 @@ class ProgressHandlerSpec extends Specification {
 
     def "setRunningStateForContainer"() {
         given:
-        Map<String, Map<String,Boolean>> containerList = [
-            "service1": ["checked_deps": false, "running" : false]
+        Map<String, Map<String, Boolean>> containerList = [
+                "service1": ["checked_deps": false, "running": false]
         ]
-        Map container = ["Names":["/service1"], "Status":"Up"]
+        Map container = ["Names": ["/service1"], "Status": "Up"]
 
         when:
         handler.setRunningStateForContainer(containerList, container)
 
         then:
         containerList == [
-            "service1": ["checked_deps": false, "running" : true]
+                "service1": ["checked_deps": false, "running": true]
         ]
     }
 
     def "prepareStartMap"() {
         when:
-        Map<String, Map<String,Boolean>> startMap = handler.prepareStartMap()
+        Map<String, Map<String, Boolean>> startMap = handler.prepareStartMap()
 
         then:
         startMap == [
-            "service1": ["checked_deps": false, "running" : false],
-            "service2": ["checked_deps": false, "running" : false]
+                "service1": ["checked_deps": false, "running": false],
+                "service2": ["checked_deps": false, "running": false]
         ]
     }
 
     def "createNewContainerItem"() {
         when:
-        Map<String,Boolean> item = handler.createNewContainerItem()
+        Map<String, Boolean> item = handler.createNewContainerItem()
 
         then:
-        item == ["checked_deps": false, "running" : false]
+        item == ["checked_deps": false, "running": false]
     }
 
     def "getServiceDependencies"() {
@@ -69,8 +65,8 @@ class ProgressHandlerSpec extends Specification {
         given:
         dockerClient.exec(_, _) >> ["plain": "Depending Container ------>[eureka-server]"]
         dockerClient.ps() >> [
-            ["Names":["_service1"], "Status":"Up"], ["Names":["_service2"], "Status":"Up"],
-            ["Names":["_eureka-server"], "Status":"Up"]
+                ["Names": ["_service1"], "Status": "Up"], ["Names": ["_service2"], "Status": "Up"],
+                ["Names": ["_eureka-server"], "Status": "Up"]
         ]
 
         when:
