@@ -1,10 +1,6 @@
 package com.devbliss.docker
 
-import com.devbliss.docker.task.BuildAndPushDockerImageTask
-import com.devbliss.docker.task.CleanupOldContainersTask
-import com.devbliss.docker.task.PullDependingImagesTask
-import com.devbliss.docker.task.GetServiceDependenciesTask
-import com.devbliss.docker.task.StartDependenciesTask
+import com.devbliss.docker.task.*
 import de.gesellix.gradle.docker.tasks.*
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -14,29 +10,35 @@ import org.gradle.api.Task
  */
 class Configuration {
 
-    // TODO: mein pattern für sowas ist: TASK_NAME__START_DEPENDENCIES
-    // nächste wäre dann z.B. TASK_NAME__PULL_DEPENDENCY_IMAGES
-    public static final String TASK_NAME_START_DEPENDENCIES = "startDependencies";
-    public static final String TASK_NAME_GET_SERVICE_DEPENDENCIES = "serviceDependencies";
-    public static final String DOCKER_ALREADY_HANDLED_PROPERTY = "docker.alreadyHandled";
+    private DockerPluginExtension devblissDockerExtension
+    private GetServiceDependenciesTask getServiceDependenciesTask
+    private StartDependenciesTask startDependenciesTask
+    private CleanupOldContainersTask cleanupOldContainersTask
+    private PullDependingImagesTask pullDependencyImages
+    private BuildAndPushDockerImageTask buildAndPushDockerImage
+    private Task bootRepackageTask
 
-    /**
-     * Applies configuration to the project.
-     * Added tasks are startDependencies and stopAllRunningContainers to handle depending services
-     * and buildAndPushDockerImage to publish a new image for local dev setup.
-     */
     public Configuration(Project project) {
-        DockerPluginExtension devblissDockerExtension = project.extensions.create('devblissDocker', DockerPluginExtension)
-        // TODO: auslagern in getStartDependenciesTask
-        StartDependenciesTask startDependenciesTask = project.getTasks().getByName(TASK_NAME_START_DEPENDENCIES)
-        PullDependingImagesTask pullDependencyImages = project.getTasks().getByName('pullDependencyImages')
-        CleanupOldContainersTask cleanupOldContainersTask = project.getTasks().getByName('cleanupOldContainers')
-        startDependenciesTask.dependsOn cleanupOldContainersTask
-        cleanupOldContainersTask.dependsOn pullDependencyImages
+        devblissDockerExtension = project.extensions.create(Constant.GRADLE_EXTENSION__DEVBLISS_DOCKER, DockerPluginExtension)
 
-        GetServiceDependenciesTask getServiceDependenciesTask = project.getTasks().getByName(TASK_NAME_GET_SERVICE_DEPENDENCIES)
+        instantiateAllTasksForConfiguration(project)
 
-        // TODO: auslagern in sprechende methode
+        configureTaskDependsOnStartDependencies()
+        configureTaskDependsOnBuildAndPushDockerImage()
+
+        setAllPropertiesWithConfigurationForTasks(project)
+    }
+
+    private void instantiateAllTasksForConfiguration(Project project) {
+        pullDependencyImages = project.getTasks().getByName(Constant.TASK_NAME__PULL_DEPENDENCY_IMAGES)
+        startDependenciesTask = project.getTasks().getByName(Constant.TASK_NAME__START_DEPENDENCIES)
+        buildAndPushDockerImage = project.getTasks().getByName(Constant.TASK_NAME__BUILD_AND_PUSH_DOCKER_IMAGE)
+        cleanupOldContainersTask = project.getTasks().getByName(Constant.TASK_NAME__CLEANUP_OLD_CONTAINERS)
+        getServiceDependenciesTask = project.getTasks().getByName(Constant.TASK_NAME__GET_SERVICE_DEPENDENCIES)
+        bootRepackageTask = project.getTasks().findByPath(Constant.TASK_NAME__BOOT_REPACKAGE);
+    }
+
+    private void setAllPropertiesWithConfigurationForTasks(Project project) {
         project.afterEvaluate {
             configureStartServiceDependenciesTasks(startDependenciesTask, devblissDockerExtension)
             configureGetServiceDependenciesTasks(getServiceDependenciesTask, devblissDockerExtension)
@@ -51,22 +53,23 @@ class Configuration {
             configurePullDependingImagesTasks(project, devblissDockerExtension)
             configureCleanupOldContainersTasks(project, devblissDockerExtension)
         }
-
-        // TODO: warum steht das hier unten und nicht da oben, wie startDeps? -> auslagern in sprechende methode
-        BuildAndPushDockerImageTask buildAndPushDockerImage = project.getTasks().getByName('buildAndPushDockerImage')
-        Task bootRepackageTask = project.getTasks().findByPath('bootRepackage');
-        if (bootRepackageTask != null) {
-            buildAndPushDockerImage.dependsOn('bootRepackage')
-        }
-        buildAndPushDockerImage.dependsOn('buildDockerImage')
-        buildAndPushDockerImage.finalizedBy('pushDockerImage')
     }
 
-    /**
-     * Set configuration for a StartDependenciesTask.
-     */
-    public void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask,
-        DockerPluginExtension extension) {
+    private void configureTaskDependsOnStartDependencies() {
+        startDependenciesTask.dependsOn cleanupOldContainersTask
+        cleanupOldContainersTask.dependsOn pullDependencyImages
+    }
+
+    private void configureTaskDependsOnBuildAndPushDockerImage() {
+        if (bootRepackageTask != null) {
+            buildAndPushDockerImage.dependsOn(Constant.TASK_NAME__BOOT_REPACKAGE)
+        }
+        buildAndPushDockerImage.dependsOn(Constant.TASK_NAME__BUILD_DOCKER_IMAGE)
+        buildAndPushDockerImage.finalizedBy(Constant.TASK_NAME__PUSH_DOCKER_IMAGE)
+    }
+
+    private void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask,
+                                                        DockerPluginExtension extension) {
         startDependenciesTask.dependingContainers = extension.dependingContainers
         startDependenciesTask.dockerHost = extension.dockerHost
         startDependenciesTask.authConfigPlain = extension.authConfigPlain
@@ -76,18 +79,12 @@ class Configuration {
         startDependenciesTask.dockerRepository = extension.repositoryName
     }
 
-    /**
-     * Set configuration for a GetServiceDependenciesTask.
-     */
-    public void configureGetServiceDependenciesTasks(GetServiceDependenciesTask getServiceDependenciesTask,
-        DockerPluginExtension extension) {
+    private void configureGetServiceDependenciesTasks(GetServiceDependenciesTask getServiceDependenciesTask,
+                                                      DockerPluginExtension extension) {
         getServiceDependenciesTask.dependingContainers = extension.dependingContainers
     }
 
-    /**
-     * Set configuration for all Tasks that are type of AbstractDockerTask.
-     */
-    public void configureAllAbstractTasks(Project project, DockerPluginExtension extension) {
+    private void configureAllAbstractTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(AbstractDockerTask) { task ->
             task.dockerHost = extension.dockerHost
             task.authConfigPlain = extension.authConfigPlain
@@ -95,10 +92,7 @@ class Configuration {
         }
     }
 
-    /**
-     * Set configuration for all Tasks that are type of DockerPullTask or extend it.
-     */
-    public void configurePullTasks(Project project, DockerPluginExtension extension) {
+    private void configurePullTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(DockerPullTask) { task ->
             task.registry = extension.registryName
             task.imageName = extension.repositoryName + '/' + extension.imageName
@@ -106,64 +100,46 @@ class Configuration {
         }
     }
 
-    /**
-     * Set configuration for all Tasks that are type of DockerPushTask or extend it.
-     */
-    public void configurePushTasks(Project project, DockerPluginExtension extension) {
+    private void configurePushTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(DockerPushTask) { task ->
             task.registry = extension.registryName
             task.repositoryName = extension.repositoryName + '/' + extension.imageName
         }
     }
 
-    /**
-     * Set configuration for all Tasks that are type of DockerBuildTask or extend it.
-     */
-    public void configureBuildTasks(Project project, DockerPluginExtension extension) {
+    private void configureBuildTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(DockerBuildTask) { task ->
             task.buildContextDirectory = extension.buildContextDirectory
             task.imageName = extension.repositoryName + '/' + extension.imageName
         }
     }
 
-    /**
-     * Set configuration for all Tasks that are type of DockerStopTask or extend it.
-     */
-    public void configureStopTasks(Project project, DockerPluginExtension extension) {
+    private void configureStopTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(DockerStopTask) { task ->
             task.containerId = extension.imageName
         }
     }
 
-    /**
-     * Set configuration for all Tasks that are type of DockerStartTask or extend it.
-     */
-    public void configureStartTasks(Project project, DockerPluginExtension extension) {
+    private void configureStartTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(DockerStartTask) { task ->
             task.containerId = extension.imageName
         }
     }
 
-    /**
-     * Set configuration for all Tasks that are type of DockerRmTask or extend it.
-     */
-    public void configureRmTasks(Project project, DockerPluginExtension extension) {
+    private void configureRmTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(DockerRmTask) { task ->
             task.containerId = extension.imageName
         }
     }
 
-    /**
-     * Set configuration for all Tasks that are type of DockerRunTask or extend it.
-     */
-    public void configureRunTasks(Project project, DockerPluginExtension extension) {
+    private void configureRunTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(DockerRunTask) { task ->
             task.containerName = extension.imageName
             task.imageName = extension.registryName + '/' + extension.repositoryName + '/' + extension.imageName
         }
     }
 
-    public void configurePullDependingImagesTasks(Project project, DockerPluginExtension extension) {
+    private void configurePullDependingImagesTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(PullDependingImagesTask) { task ->
             task.dependingContainers = extension.dependingContainers
             task.dockerHost = extension.dockerHost
@@ -175,7 +151,7 @@ class Configuration {
         }
     }
 
-    public void configureCleanupOldContainersTasks(Project project, DockerPluginExtension extension) {
+    private void configureCleanupOldContainersTasks(Project project, DockerPluginExtension extension) {
         project.tasks.withType(CleanupOldContainersTask) { task ->
             task.dependingContainers = extension.dependingContainers
             task.dockerHost = extension.dockerHost

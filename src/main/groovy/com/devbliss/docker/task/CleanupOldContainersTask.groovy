@@ -1,10 +1,7 @@
 package com.devbliss.docker.task
 
-import com.devbliss.docker.Configuration
-import com.devbliss.docker.util.DependencyStringUtils
 import com.devbliss.docker.wrapper.ServiceDependency
 import com.devbliss.docker.wrapper.ServiceDockerContainer
-import com.devbliss.docker.task.AbstractDockerClusterTask
 import groovy.util.logging.Log
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
@@ -42,7 +39,7 @@ class CleanupOldContainersTask extends AbstractDockerClusterTask {
     }
 
     List<ServiceDockerContainer> getOutdatedContainer(List<ServiceDockerContainer> containerList, List<String> runningContainers) {
-        return containerList.findAll{ container ->
+        return containerList.findAll { container ->
             !isImageUptodateAndRunning(container, runningContainers)
         }
     }

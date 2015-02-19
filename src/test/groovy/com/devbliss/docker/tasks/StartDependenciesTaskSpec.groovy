@@ -1,10 +1,9 @@
 package com.devbliss.docker.tasks
 
+import com.devbliss.docker.Constant
 import com.devbliss.docker.task.StartDependenciesTask
 import com.devbliss.docker.wrapper.ServiceDependency
-import com.devbliss.docker.Configuration
 import de.gesellix.docker.client.DockerClient
-import de.gesellix.gradle.docker.tasks.DockerPsTask
 import groovy.util.logging.Log
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
@@ -24,7 +23,7 @@ class StartDependenciesTaskSpec extends Specification {
 
     def setup() {
         project = ProjectBuilder.builder().build()
-        task = project.task(Configuration.TASK_NAME_START_DEPENDENCIES, type: StartDependenciesTask)
+        task = project.task(Constant.TASK_NAME__START_DEPENDENCIES, type: StartDependenciesTask)
         dockerClient = Mock(DockerClient)
         task.dockerClient = dockerClient
         name = "service1"
@@ -87,7 +86,7 @@ class StartDependenciesTaskSpec extends Specification {
 
         then:
         1 * dockerClient.exec(name,
-            ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArg],
+            ["./gradlew", Constant.TASK_NAME__START_DEPENDENCIES, commandArg],
             ["AttachStdin" : false,
             "Detach"      : true,
             "Tty"         : false])
@@ -142,7 +141,7 @@ class StartDependenciesTaskSpec extends Specification {
         String commandArgs= task.getCommandArgs(dependingContainersList)
 
         then:
-        commandArgs.equals "-P${Configuration.DOCKER_ALREADY_HANDLED_PROPERTY}=${name},${name2}".toString()
+        commandArgs.equals "-P${Constant.DOCKER__ALREADY_HANDLED_PROPERTY}=${name},${name2}".toString()
     }
 
     def "getRunningContainers"() {

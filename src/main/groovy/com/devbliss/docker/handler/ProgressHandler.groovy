@@ -1,6 +1,7 @@
 package com.devbliss.docker.handler
 
 import com.devbliss.docker.util.DependencyStringUtils
+import com.devbliss.docker.wrapper.ServiceDependency
 import de.gesellix.docker.client.DockerClient
 import groovy.util.logging.Log
 
@@ -22,9 +23,9 @@ class ProgressHandler {
 
     public void waitUnilDependenciesRun() {
         boolean allRun = false;
-        Map<String, Map<String,Boolean>> containerList = prepareStartMap()
+        Map<String, Map<String, Boolean>> containerList = prepareStartMap()
         progressOutputGenerator.printServices(containerList)
-        while(!allRun) {
+        while (!allRun) {
             setRunningStates(containerList)
             updateDependenciesMap(containerList)
             progressOutputGenerator.printServices(containerList)
@@ -32,20 +33,20 @@ class ProgressHandler {
         }
     }
 
-    void setRunningStates(Map<String, Map<String,Boolean>> containerList) {
+    void setRunningStates(Map<String, Map<String, Boolean>> containerList) {
         List containers = dockerClient.ps()
         containers.each { container ->
             setRunningStateForContainer(containerList, container)
         }
     }
 
-    void updateDependenciesMap(Map<String, Map<String,Boolean>> containerList) {
-        Map<String, Map<String,Boolean>> additionalContainer = new HashMap()
+    void updateDependenciesMap(Map<String, Map<String, Boolean>> containerList) {
+        Map<String, Map<String, Boolean>> additionalContainer = new HashMap()
         containerList.each { container ->
             if (!container.getValue().get(RECEIVED_DEPENDENCIES) && container.getValue().get(RUNNING)) {
                 log.info "Request dependencies of service ${container.getKey()}"
-                Map<String, Map<String,Boolean>> newDependencies = getContainerDependencies(
-                    container.getKey(), containerList)
+                Map<String, Map<String, Boolean>> newDependencies = getContainerDependencies(
+                        container.getKey(), containerList)
                 container.getValue().put(RECEIVED_DEPENDENCIES, true)
                 if (newDependencies != null && newDependencies.size() > 0) {
                     additionalContainer.putAll(newDependencies)
@@ -57,7 +58,7 @@ class ProgressHandler {
         }
     }
 
-    void setRunningStateForContainer(Map<String, Map<String,Boolean>> containerList, Map container) {
+    void setRunningStateForContainer(Map<String, Map<String, Boolean>> containerList, Map container) {
         String containerName = DependencyStringUtils.getServiceNameFromContainer(container)
         if (containerList.containsKey(containerName)) {
             if (isContainerRunning(container)) {
@@ -67,8 +68,8 @@ class ProgressHandler {
         }
     }
 
-    Map<String, Map<String,Boolean>> getContainerDependencies(String serviceName, Map<String, Map<String,Boolean>> containerList) {
-        Map<String, Map<String,Boolean>> additionalContainer = new HashMap()
+    Map<String, Map<String, Boolean>> getContainerDependencies(String serviceName, Map<String, Map<String, Boolean>> containerList) {
+        Map<String, Map<String, Boolean>> additionalContainer = new HashMap()
         List<String> dependencies = getServiceDependencies(serviceName)
         dependencies.each { dep ->
             if (!containerList.containsKey(dep)) {
@@ -78,22 +79,21 @@ class ProgressHandler {
         return additionalContainer
     }
 
-    Map<String, Map<String,Boolean>> prepareStartMap() {
-        Map<String, Map<String,Boolean>> startList = new HashMap()
-        dependingContainersList.each { dep ->
-            startList.put(DependencyStringUtils.getDependencyNameAndPort(dep)[0], createNewContainerItem())
+    Map<String, Map<String, Boolean>> prepareStartMap() {
+        Map<String, Map<String, Boolean>> startList = new HashMap()
+        dependingContainersList.each { ServiceDependency dep -> startList.put(dep.getName(), createNewContainerItem())
         }
         return startList
     }
 
-    Map<String,Boolean> createNewContainerItem() {
+    Map<String, Boolean> createNewContainerItem() {
         Map<String, Boolean> newDepItem = new HashMap()
         newDepItem.put(RECEIVED_DEPENDENCIES, false)
         newDepItem.put(RUNNING, false)
         return newDepItem
     }
 
-    boolean checkAllRunning(Map<String, Map<String,Boolean>> containerList) {
+    boolean checkAllRunning(Map<String, Map<String, Boolean>> containerList) {
         return containerList.findAll { container ->
             Map<String, Boolean> value = container.getValue()
             !value.get(RUNNING).and(value.get(RECEIVED_DEPENDENCIES))

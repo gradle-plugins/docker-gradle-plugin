@@ -1,8 +1,7 @@
 package com.devbliss.docker.task
 
-import com.devbliss.docker.Configuration
+import com.devbliss.docker.Constant
 import com.devbliss.docker.handler.ProgressHandler
-import com.devbliss.docker.util.DependencyStringUtils
 import com.devbliss.docker.wrapper.ServiceDependency
 import com.devbliss.docker.wrapper.ServiceDockerContainer
 import groovy.util.logging.Log
@@ -59,7 +58,7 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
 
     String getCommandArgs(List<ServiceDependency> dependingContainersList) {
         Set newHandledSet = prepareNewContainerAlreadyHandledList(dependingContainersList)
-        return "-P${Configuration.DOCKER_ALREADY_HANDLED_PROPERTY}=" + newHandledSet.join(",")
+        return "-P${Constant.DOCKER__ALREADY_HANDLED_PROPERTY}=" + newHandledSet.join(",")
     }
 
     List<String> getRunningContainers() {
@@ -95,7 +94,7 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
     }
 
     void startDependenciesNonBlockingExec(String containerName, String commandArgs) {
-        List command = ["./gradlew", Configuration.TASK_NAME_START_DEPENDENCIES, commandArgs]
+        List command = ["./gradlew", Constant.TASK_NAME__START_DEPENDENCIES, commandArgs]
         Map execConfig = [
         "AttachStdin" : false,
         "Detach"      : true,
