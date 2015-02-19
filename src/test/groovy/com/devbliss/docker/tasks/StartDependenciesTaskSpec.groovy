@@ -65,12 +65,14 @@ class StartDependenciesTaskSpec extends Specification {
 
     def "prepareHostConfig"() {
         given:
-        String port1 = "8080-9090"
-        String port2 = "1010"
+        String conf1 = "service#8080-9090"
+        String conf2 = "service#1010"
+        ServiceDependency serviceDependency1 = new ServiceDependency(conf1)
+        ServiceDependency serviceDependency2 = new ServiceDependency(conf2)
 
         when:
-        Map hostConf1 = task.prepareHostConfig(port1)
-        Map hostConf2 = task.prepareHostConfig(port2)
+        Map hostConf1 = task.prepareHostConfig(serviceDependency1)
+        Map hostConf2 = task.prepareHostConfig(serviceDependency2)
 
         then:
         hostConf1 == ['PortBindings': ['9090/tcp': [['HostPort': '8080']]]]
@@ -114,20 +116,6 @@ class StartDependenciesTaskSpec extends Specification {
         result == ["test1", "test4", "test2", "test3"] as Set
         result2.size() == 2
         result2 == ["test1", "test4"] as Set
-    }
-
-    def "getPort"() {
-        given:
-        def from = "20"
-        def to = "40"
-        def port = "${from}-${to}"
-
-        when:
-        def (resultFrom, resultTo) = task.getPort(port)
-
-        then:
-        resultFrom == from
-        resultTo == to
     }
 
     def "getCommandArgs"() {

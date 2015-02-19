@@ -10,10 +10,12 @@ class ServiceDependency {
     }
 
     String name
-    String port
+    String[] port
 
     public ServiceDependency(String dependency) {
-        (name, port) = getDependencyNameAndPort(dependency)
+        String portString
+        (name, portString) = getDependencyNameAndPort(dependency)
+        setPortConfiguration(portString)
     }
 
     public String getName() {
@@ -21,11 +23,23 @@ class ServiceDependency {
     }
 
     public String getPort() {
+        return port[0]
+    }
+
+    String[] getPortConfiguration() {
         return port
     }
 
     public String getImageName() {
         return name.split("_")[0]
+    }
+
+    void setPortConfiguration(String portConfig) {
+        if (portConfig.contains("-")) {
+            port = portConfig.split("-").toList()
+        } else {
+            port = [portConfig, portConfig]
+        }
     }
 
     List getDependencyNameAndPort(String dependency) {
