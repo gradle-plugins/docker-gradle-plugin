@@ -1,7 +1,7 @@
 package com.devbliss.docker.handler
 
-import com.devbliss.docker.util.DependencyStringUtils
 import com.devbliss.docker.wrapper.ServiceDependency
+import com.devbliss.docker.wrapper.ServiceDockerContainer
 import de.gesellix.docker.client.DockerClient
 import groovy.util.logging.Log
 
@@ -15,9 +15,9 @@ class ProgressHandler {
     List<String> dependingContainersList
     ProgressOutputGenerator progressOutputGenerator
 
-    ProgressHandler(DockerClient dockerClient, List<String> dependingContainersList) {
+    ProgressHandler(DockerClient dockerClient, List<ServiceDependency> dependingContainersList) {
         this.dockerClient = dockerClient
-        this.dependingContainersList = dependingContainersList
+        this.dependingContainersList = dependingContainersList.collect { dep -> dep.getName() }
         this.progressOutputGenerator = new ProgressOutputGenerator()
     }
 
@@ -59,11 +59,11 @@ class ProgressHandler {
     }
 
     void setRunningStateForContainer(Map<String, Map<String, Boolean>> containerList, Map container) {
-        String containerName = DependencyStringUtils.getServiceNameFromContainer(container)
-        if (containerList.containsKey(containerName)) {
-            if (isContainerRunning(container)) {
-                log.info "Set running state true for ${containerName}"
-                containerList.get(containerName).put(RUNNING, true)
+        ServiceDockerContainer serviceDockerContainer = new ServiceDockerContainer(container)
+        if (containerList.containsKey(serviceDockerContainer.getName())) {
+            if (serviceDockerContainer.isRunning()) {
+                log.info "Set running state true for ${serviceDockerContainer.getName()}"
+                containerList.get(serviceDockerContainer.getName()).put(RUNNING, true)
             }
         }
     }
@@ -81,7 +81,8 @@ class ProgressHandler {
 
     Map<String, Map<String, Boolean>> prepareStartMap() {
         Map<String, Map<String, Boolean>> startList = new HashMap()
-        dependingContainersList.each { ServiceDependency dep -> startList.put(dep.getName(), createNewContainerItem())
+        dependingContainersList.each { String dep ->
+            startList.put(dep, createNewContainerItem())
         }
         return startList
     }
@@ -105,9 +106,5 @@ class ProgressHandler {
         DependingContainerParser parser = new DependingContainerParser(depsMap.plain);
         List<String> deps = parser.getParsedDependencies();
         return deps
-    }
-
-    boolean isContainerRunning(Map container) {
-        return container.Status.contains('Up')
     }
 }

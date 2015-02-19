@@ -65,16 +65,6 @@ class ProgressHandlerSpec extends Specification {
         deps == ["eureka-server", "course-service", "dementity"]
     }
 
-    def "isContainerRunning"() {
-        when:
-        boolean up = handler.isContainerRunning(["Status":"Up"])
-        boolean exited = handler.isContainerRunning(["Status":"Exited"])
-
-        then:
-        up == true
-        exited == false
-    }
-
     def "waitUnilDependenciesRun"() {
         given:
         dockerClient.exec(_, _) >> ["plain": "Depending Container ------>[eureka-server]"]
