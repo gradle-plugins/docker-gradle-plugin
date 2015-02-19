@@ -10,8 +10,7 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
 /**
- * This class pulls and run depending containers in your host vm.
- * The depending containers are configured in you gradle build file.
+ * This task starts other containers recursively.
  */
 @Log
 class StartDependenciesTask extends AbstractDockerClusterTask {
