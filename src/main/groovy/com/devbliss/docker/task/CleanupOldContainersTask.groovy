@@ -1,5 +1,6 @@
 package com.devbliss.docker.task
 
+import com.devbliss.docker.Configuration
 import com.devbliss.docker.wrapper.ServiceDependency
 import com.devbliss.docker.wrapper.ServiceDockerContainer
 import groovy.util.logging.Log

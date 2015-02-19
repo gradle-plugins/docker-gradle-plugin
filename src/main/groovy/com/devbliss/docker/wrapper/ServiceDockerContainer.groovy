@@ -7,7 +7,6 @@ class ServiceDockerContainer {
     static public List<ServiceDockerContainer> getServiceContainers(DockerClient dockerClient) {
         List<ServiceDockerContainer> runningServiceContainers = new ArrayList()
         List dockerHostStatus = dockerClient.ps()
-        println dockerHostStatus
         dockerHostStatus.each() { container ->
             runningServiceContainers << new ServiceDockerContainer(container)
         }

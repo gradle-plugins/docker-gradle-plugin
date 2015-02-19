@@ -10,13 +10,11 @@ import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.TaskAction
 
 /**
- * This class pulls and run depending containers in your host vm.
- * The depending containers are configured in you gradle build file.
+ * This task starts other containers recursively.
  */
 @Log
 class StartDependenciesTask extends AbstractDockerClusterTask {
 
-    // TODO: wäre es möglich die Typen der Variablen zu annotieren bzw. per java/groovydoc zu "hinten"?
     @Input
     @Optional
     String dependingContainers
@@ -39,16 +37,7 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
             return
         }
         List<ServiceDependency> dependingContainersList = ServiceDependency.parseServiceDependencies(dependingContainers)
-        String commandArgs = getCommandArgs(dependingContainersList)
-
-        // TODO: zusammen mit dem Logging auslagern in logListOfRunningContainers
-        List<String> runningContainers = getRunningContainers()
-        log.info "Running containers => " + runningContainers
-        dependingContainersList.each() { ServiceDependency dep ->
-            if (!dockerAlreadyHandledList.contains(dep.getName())) {
-                startContainer(dep, commandArgs, runningContainers)
-            }
-        }
+        startAndUpdateDepedendencies(dependingContainersList)
 
         if (dockerAlreadyHandledList.size() == 0) {
             ProgressHandler progressHandler = new ProgressHandler(dockerClient, dependingContainersList)
@@ -59,6 +48,17 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
     String getCommandArgs(List<ServiceDependency> dependingContainersList) {
         Set newHandledSet = prepareNewContainerAlreadyHandledList(dependingContainersList)
         return "-P${Constant.DOCKER__ALREADY_HANDLED_PROPERTY}=" + newHandledSet.join(",")
+    }
+
+    void startAndUpdateDepedendencies(List<ServiceDependency> dependingContainersList) {
+        String commandArgs = getCommandArgs(dependingContainersList)
+        List<String> runningContainers = getRunningContainers()
+        log.info "Running containers => " + runningContainers
+        dependingContainersList.each() { ServiceDependency dep ->
+            if (!dockerAlreadyHandledList.contains(dep.getName())) {
+                startContainer(dep, commandArgs, runningContainers)
+            }
+        }
     }
 
     List<String> getRunningContainers() {
@@ -87,7 +87,7 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
         if (runningContainers.contains(name)) {
             startDependenciesNonBlockingExec(name, commandArgs)
         } else {
-            Map hostConf = prepareHostConfig(serviceDependency.getPort())
+            Map hostConf = prepareHostConfig(serviceDependency)
             log.info("Start Container: " + name + " => " + image + " => " + hostConf)
             dockerClient.run(image.toString(), ["HostConfig": hostConf, "Cmd":commandArgs], versionTag, name)
         }
@@ -104,19 +104,11 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
         dockerClient.exec(containerName, command, execConfig)
     }
 
-    Map prepareHostConfig(String portConfig) {
-        def port = getPort(portConfig)
-        def tcpPort = "${port[1]}/tcp".toString()
-        def hostConf = ["PortBindings": [:]]
+    Map prepareHostConfig(ServiceDependency serviceDependency) {
+        String[] port = serviceDependency.getPortConfiguration()
+        String tcpPort = "${port[1]}/tcp".toString()
+        Map hostConf = ["PortBindings": [:]]
         hostConf["PortBindings"].put(tcpPort, [["HostPort": port[0]]])
         return hostConf
-    }
-
-    // TODO: move to ServiceDependency!
-    String[] getPort(String port) {
-        if (port.contains("-")) {
-            return port.split("-").toList()
-        }
-        return [port, port]
     }
 }
