@@ -1,5 +1,6 @@
 package com.devbliss.docker.handler
 
+import com.devbliss.docker.wrapper.ServiceDependency
 import de.gesellix.docker.client.DockerClient
 import spock.lang.Specification
 
@@ -7,10 +8,13 @@ class ProgressHandlerSpec extends Specification {
 
     ProgressHandler handler
     DockerClient dockerClient
-    List<String> dependingContainersList
+    List<ServiceDependency> dependingContainersList
 
     def setup() {
-        dependingContainersList = ["service1", "service2"]
+        dependingContainersList = [
+            new ServiceDependency("service1#8080"),
+            new ServiceDependency("service2#8082")
+        ]
         dockerClient = Mock(DockerClient)
         handler = new ProgressHandler(dockerClient, dependingContainersList)
     }
@@ -55,7 +59,7 @@ class ProgressHandlerSpec extends Specification {
         dockerClient.exec(_, _) >> ["plain": "Depending Container ------>[eureka-server, course-service, dementity]"]
 
         when:
-        List<String> deps = handler.getServiceDependencies(dependingContainersList[0])
+        List<String> deps = handler.getServiceDependencies(dependingContainersList[0].getName())
 
         then:
         deps == ["eureka-server", "course-service", "dementity"]
