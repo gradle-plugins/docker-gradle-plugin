@@ -1,13 +1,14 @@
 
 ### Version 0.2.0-SNAPSHOT
 
+ - [refactor] Cleanup classes and refactor for better code reading
  - [feature] Added progress of start dependencies
  - [refactor] Split up start dependencies task added clean code todos
  - [feature] Added getServiceDependencies task
  - [feature] using gradle.properties now for credentials and nexus URLs
  - [feature] added transitive container updates
 
--- Last change by: Dennis Schumann <hillkorn@gmail.com> Fri Feb 13 09:58:15 CET 2015
+-- Last change by: Christian Soth <christian.soth@devbliss.com> Thu Feb 19 15:07:39 CET 2015
 
 ### Version 0.1.0-SNAPSHOT
  - [feature] Added tests for tasks
