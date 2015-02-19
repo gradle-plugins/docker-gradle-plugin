@@ -11,12 +11,12 @@ class Constant {
     public static final String TASK_NAME__RUN_DOCKER_CONTAINER = "runDockerContainer"
     public static final String TASK_NAME__STOP_DOCKER_CONTAINER = "stopDockerContainer"
     public static final String TASK_NAME__START_DOCKER_CONTAINER = "startDockerContainer"
-    public static final String TASK_NAME__REMOVE_DOCKER_CONTAINER = "removeDockerContainer"
-    public static final String TASK_NAME__STOP_ALL_RUNNING_CONTAINERS = "stopAllRunningContainers"
-    public static final String TASK_NAME__PULL_DEPENDENCY_IMAGES = "pullDependencyImages"
     public static final String TASK_NAME__CLEANUP_OLD_CONTAINERS = "cleanupOldContainers"
+    public static final String TASK_NAME__PULL_DEPENDENCY_IMAGES = "pullDependencyImages"
+    public static final String TASK_NAME__REMOVE_DOCKER_CONTAINER = "removeDockerContainer"
     public static final String TASK_NAME__GET_SERVICE_DEPENDENCIES = "serviceDependencies"
     public static final String TASK_NAME__BUILD_AND_PUSH_DOCKER_IMAGE = "buildAndPushDockerImage"
+    public static final String TASK_NAME__STOP_ALL_RUNNING_CONTAINERS = "stopAllRunningContainers"
 
     public static final String DOCKER__ALREADY_HANDLED_PROPERTY = "docker.alreadyHandled"
 
