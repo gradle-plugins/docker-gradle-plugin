@@ -40,15 +40,8 @@ class DockerPlugin implements Plugin<Project> {
 
         devblissDockerExtension = project.extensions.create(Constant.GRADLE_EXTENSION__DEVBLISS_DOCKER, DockerPluginExtension)
 
-        bootRepackageTask = project.getTasks().findByPath(Constant.TASK_NAME__BOOT_REPACKAGE)
-
         createDefaultTasks(project)
-
-
-
-        configureTaskDependsOnStartDependencies()
-        configureTaskDependsOnBuildAndPushDockerImage()
-        configureTaskDependsOnBuildDockerImage()
+        configureDependsOn(project)
 
         setAllPropertiesWithConfigurationForTasks(project)
     }
@@ -68,6 +61,14 @@ class DockerPlugin implements Plugin<Project> {
         project.task(Constant.TASK_NAME__START_DOCKER_CONTAINER, type: DockerStartTask)
         project.task(Constant.TASK_NAME__RUN_DOCKER_CONTAINER, type: DockerRunTask)
         project.task(Constant.TASK_NAME__REMOVE_DOCKER_CONTAINER, type: DockerRmTask)
+    }
+
+    private void configureDependsOn(Project project) {
+        bootRepackageTask = project.getTasks().findByPath(Constant.TASK_NAME__BOOT_REPACKAGE)
+
+        configureTaskDependsOnStartDependencies()
+        configureTaskDependsOnBuildAndPushDockerImage()
+        configureTaskDependsOnBuildDockerImage()
     }
 
     private void setAllPropertiesWithConfigurationForTasks(Project project) {
