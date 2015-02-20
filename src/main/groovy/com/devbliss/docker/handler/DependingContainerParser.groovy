@@ -5,14 +5,14 @@ class DependingContainerParser {
     private final List<String> parsedDependencies
 
     DependingContainerParser(String dependencies) {
-        parsedDependencies = parseDepdendencies(dependencies)
+        parsedDependencies = parseDependencies(dependencies)
     }
 
     public List<String> getParsedDependencies() {
         return parsedDependencies
     }
 
-    List<String> parseDepdendencies(String dependencies) {
+    List<String> parseDependencies(String dependencies) {
         List<String> parsedDependencies = []
         dependencies.eachLine { String line ->
             if (line.contains("Depending Container")) {

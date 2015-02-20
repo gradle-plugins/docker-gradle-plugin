@@ -37,11 +37,11 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
             return
         }
         List<ServiceDependency> dependingContainersList = ServiceDependency.parseServiceDependencies(dependingContainers)
-        startAndUpdateDepedendencies(dependingContainersList)
+        startAndUpdateDependencies(dependingContainersList)
 
         if (dockerAlreadyHandledList.size() == 0) {
             ProgressHandler progressHandler = new ProgressHandler(dockerClient, dependingContainersList)
-            progressHandler.waitUnilDependenciesRun()
+            progressHandler.waitUntilDependenciesRun()
         }
     }
 
@@ -50,7 +50,7 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
         return "-P${Constant.DOCKER__ALREADY_HANDLED_PROPERTY}=" + newHandledSet.join(",")
     }
 
-    void startAndUpdateDepedendencies(List<ServiceDependency> dependingContainersList) {
+    void startAndUpdateDependencies(List<ServiceDependency> dependingContainersList) {
         String commandArgs = getCommandArgs(dependingContainersList)
         List<String> runningContainers = getRunningContainers()
         log.info "Running containers => " + runningContainers

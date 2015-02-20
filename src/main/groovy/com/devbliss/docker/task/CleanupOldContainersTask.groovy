@@ -39,7 +39,7 @@ class CleanupOldContainersTask extends AbstractDockerClusterTask {
 
     List<ServiceDockerContainer> getOutdatedContainer(List<ServiceDockerContainer> containerList, List<String> runningContainers) {
         return containerList.findAll { container ->
-            !isImageUptodateAndRunning(container, runningContainers)
+            !isImageUpToDateAndRunning(container, runningContainers)
         }
     }
 
@@ -59,7 +59,7 @@ class CleanupOldContainersTask extends AbstractDockerClusterTask {
         }
     }
 
-    boolean isImageUptodateAndRunning(ServiceDockerContainer container, List<String> runningContainers) {
+    boolean isImageUpToDateAndRunning(ServiceDockerContainer container, List<String> runningContainers) {
         return container.imageIsUpToDate() && runningContainers.contains(container.getName())
     }
 

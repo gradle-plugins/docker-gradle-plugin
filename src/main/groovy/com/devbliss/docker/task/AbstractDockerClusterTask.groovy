@@ -3,15 +3,11 @@ package com.devbliss.docker.task
 import com.devbliss.docker.Constant
 import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 
-/**
- *
- * @author Dennis Schumann <dennis.schumann@devbliss.com>
- */
 abstract class AbstractDockerClusterTask extends AbstractDockerTask {
 
     List<String> dockerAlreadyHandledList
 
-	AbstractDockerClusterTask() {
+    AbstractDockerClusterTask() {
         group = "DockerCluster"
 
         if (getProject().hasProperty(Constant.DOCKER__ALREADY_HANDLED_PROPERTY)) {

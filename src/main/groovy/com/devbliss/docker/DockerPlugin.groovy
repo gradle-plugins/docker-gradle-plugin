@@ -1,8 +1,20 @@
 package com.devbliss.docker
 
-import com.devbliss.docker.task.*
+import com.devbliss.docker.task.BuildAndPushDockerImageTask
+import com.devbliss.docker.task.CleanupOldContainersTask
+import com.devbliss.docker.task.GetServiceDependenciesTask
+import com.devbliss.docker.task.PullDependingImagesTask
+import com.devbliss.docker.task.StartDependenciesTask
+import com.devbliss.docker.task.StopAllRunningContainersTask
 import de.gesellix.gradle.docker.DockerPlugin as ParentDockerPlugin
-import de.gesellix.gradle.docker.tasks.*
+import de.gesellix.gradle.docker.tasks.AbstractDockerTask
+import de.gesellix.gradle.docker.tasks.DockerBuildTask
+import de.gesellix.gradle.docker.tasks.DockerPullTask
+import de.gesellix.gradle.docker.tasks.DockerPushTask
+import de.gesellix.gradle.docker.tasks.DockerRmTask
+import de.gesellix.gradle.docker.tasks.DockerRunTask
+import de.gesellix.gradle.docker.tasks.DockerStartTask
+import de.gesellix.gradle.docker.tasks.DockerStopTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -30,6 +42,18 @@ class DockerPlugin implements Plugin<Project> {
 
         bootRepackageTask = project.getTasks().findByPath(Constant.TASK_NAME__BOOT_REPACKAGE)
 
+        createDefaultTasks(project)
+
+
+
+        configureTaskDependsOnStartDependencies()
+        configureTaskDependsOnBuildAndPushDockerImage()
+        configureTaskDependsOnBuildDockerImage()
+
+        setAllPropertiesWithConfigurationForTasks(project)
+    }
+
+    private void createDefaultTasks(Project project) {
         dockerBuildTask = project.task(Constant.TASK_NAME__BUILD_DOCKER_IMAGE, type: DockerBuildTask)
         pullDependencyImages = project.task(Constant.TASK_NAME__PULL_DEPENDENCY_IMAGES, type: PullDependingImagesTask)
         startDependenciesTask = project.task(Constant.TASK_NAME__START_DEPENDENCIES, type: StartDependenciesTask)
@@ -44,28 +68,22 @@ class DockerPlugin implements Plugin<Project> {
         project.task(Constant.TASK_NAME__START_DOCKER_CONTAINER, type: DockerStartTask)
         project.task(Constant.TASK_NAME__RUN_DOCKER_CONTAINER, type: DockerRunTask)
         project.task(Constant.TASK_NAME__REMOVE_DOCKER_CONTAINER, type: DockerRmTask)
-
-        configureTaskDependsOnStartDependencies()
-        configureTaskDependsOnBuildAndPushDockerImage()
-        configureTaskDependsOnBuildDockerImage()
-
-        setAllPropertiesWithConfigurationForTasks(project)
     }
 
     private void setAllPropertiesWithConfigurationForTasks(Project project) {
         project.afterEvaluate {
-            configureStartServiceDependenciesTasks(startDependenciesTask, devblissDockerExtension)
-            configureGetServiceDependenciesTasks(getServiceDependenciesTask, devblissDockerExtension)
-            configureAllAbstractTasks(project, devblissDockerExtension)
-            configurePullTasks(project, devblissDockerExtension)
-            configurePushTasks(project, devblissDockerExtension)
-            configureBuildTasks(project, devblissDockerExtension)
-            configureStopTasks(project, devblissDockerExtension)
-            configureStartTasks(project, devblissDockerExtension)
-            configureRmTasks(project, devblissDockerExtension)
-            configureRunTasks(project, devblissDockerExtension)
-            configurePullDependingImagesTasks(project, devblissDockerExtension)
-            configureCleanupOldContainersTasks(project, devblissDockerExtension)
+            configureStartServiceDependenciesTasks(startDependenciesTask)
+            configureGetServiceDependenciesTasks(getServiceDependenciesTask)
+            configureAllAbstractTasks(project)
+            configurePullTasks(project)
+            configurePushTasks(project)
+            configureBuildTasks(project)
+            configureStopTasks(project)
+            configureStartTasks(project)
+            configureRmTasks(project)
+            configureRunTasks(project)
+            configurePullDependingImagesTasks(project)
+            configureCleanupOldContainersTasks(project)
         }
     }
 
@@ -88,93 +106,91 @@ class DockerPlugin implements Plugin<Project> {
         buildAndPushDockerImage.finalizedBy(Constant.TASK_NAME__PUSH_DOCKER_IMAGE)
     }
 
-    private void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask,
-                                                        DockerPluginExtension extension) {
-        startDependenciesTask.dependingContainers = extension.dependingContainers
-        startDependenciesTask.dockerHost = extension.dockerHost
-        startDependenciesTask.authConfigPlain = extension.authConfigPlain
-        startDependenciesTask.authConfigEncoded = extension.authConfigEncoded
-        startDependenciesTask.versionTag = extension.versionTag
-        startDependenciesTask.dockerRegistry = extension.registryName
-        startDependenciesTask.dockerRepository = extension.repositoryName
+    private void configureStartServiceDependenciesTasks(StartDependenciesTask startDependenciesTask) {
+        startDependenciesTask.dependingContainers = devblissDockerExtension.dependingContainers
+        startDependenciesTask.dockerHost = devblissDockerExtension.dockerHost
+        startDependenciesTask.authConfigPlain = devblissDockerExtension.authConfigPlain
+        startDependenciesTask.authConfigEncoded = devblissDockerExtension.authConfigEncoded
+        startDependenciesTask.versionTag = devblissDockerExtension.versionTag
+        startDependenciesTask.dockerRegistry = devblissDockerExtension.registryName
+        startDependenciesTask.dockerRepository = devblissDockerExtension.repositoryName
     }
 
-    private void configureGetServiceDependenciesTasks(GetServiceDependenciesTask getServiceDependenciesTask,
-                                                      DockerPluginExtension extension) {
-        getServiceDependenciesTask.dependingContainers = extension.dependingContainers
+    private void configureGetServiceDependenciesTasks(GetServiceDependenciesTask getServiceDependenciesTask) {
+        getServiceDependenciesTask.dependingContainers = devblissDockerExtension.dependingContainers
     }
 
-    private void configureAllAbstractTasks(Project project, DockerPluginExtension extension) {
+    private void configureAllAbstractTasks(Project project) {
         project.tasks.withType(AbstractDockerTask) { task ->
-            task.dockerHost = extension.dockerHost
-            task.authConfigPlain = extension.authConfigPlain
-            task.authConfigEncoded = extension.authConfigEncoded
+            task.dockerHost = devblissDockerExtension.dockerHost
+            task.authConfigPlain = devblissDockerExtension.authConfigPlain
+            task.authConfigEncoded = devblissDockerExtension.authConfigEncoded
         }
     }
 
-    private void configurePullTasks(Project project, DockerPluginExtension extension) {
+    private void configurePullTasks(Project project) {
         project.tasks.withType(DockerPullTask) { task ->
-            task.registry = extension.registryName
-            task.imageName = extension.repositoryName + '/' + extension.imageName
-            task.tag = extension.versionTag
+            task.registry = devblissDockerExtension.registryName
+            task.imageName = devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
+            task.tag = devblissDockerExtension.versionTag
         }
     }
 
-    private void configurePushTasks(Project project, DockerPluginExtension extension) {
+    private void configurePushTasks(Project project) {
         project.tasks.withType(DockerPushTask) { task ->
-            task.registry = extension.registryName
-            task.repositoryName = extension.repositoryName + '/' + extension.imageName
+            task.registry = devblissDockerExtension.registryName
+            task.repositoryName = devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
         }
     }
 
-    private void configureBuildTasks(Project project, DockerPluginExtension extension) {
+    private void configureBuildTasks(Project project) {
         project.tasks.withType(DockerBuildTask) { task ->
-            task.buildContextDirectory = extension.buildContextDirectory
-            task.imageName = extension.repositoryName + '/' + extension.imageName
+            task.buildContextDirectory = devblissDockerExtension.buildContextDirectory
+            task.imageName = devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
         }
     }
 
-    private void configureStopTasks(Project project, DockerPluginExtension extension) {
+    private void configureStopTasks(Project project) {
         project.tasks.withType(DockerStopTask) { task ->
-            task.containerId = extension.imageName
+            task.containerId = devblissDockerExtension.imageName
         }
     }
 
-    private void configureStartTasks(Project project, DockerPluginExtension extension) {
+    private void configureStartTasks(Project project) {
         project.tasks.withType(DockerStartTask) { task ->
-            task.containerId = extension.imageName
+            task.containerId = devblissDockerExtension.imageName
         }
     }
 
-    private void configureRmTasks(Project project, DockerPluginExtension extension) {
+    private void configureRmTasks(Project project) {
         project.tasks.withType(DockerRmTask) { task ->
-            task.containerId = extension.imageName
+            task.containerId = devblissDockerExtension.imageName
         }
     }
 
-    private void configureRunTasks(Project project, DockerPluginExtension extension) {
+    private void configureRunTasks(Project project) {
         project.tasks.withType(DockerRunTask) { task ->
-            task.containerName = extension.imageName
-            task.imageName = extension.registryName + '/' + extension.repositoryName + '/' + extension.imageName
+            task.containerName = devblissDockerExtension.imageName
+            task.imageName = devblissDockerExtension.registryName + '/' + devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
         }
     }
 
-    private void configurePullDependingImagesTasks(Project project, DockerPluginExtension extension) {
+    private void configurePullDependingImagesTasks(Project project) {
         project.tasks.withType(PullDependingImagesTask) { task ->
-            task.dependingContainers = extension.dependingContainers
-            task.dockerHost = extension.dockerHost
-            task.authConfigPlain = extension.authConfigPlain
-            task.authConfigEncoded = extension.authConfigEncoded
-            task.versionTag = extension.versionTag
-            task.dockerRegistry = extension.registryName
-            task.dockerRepository = extension.repositoryName
+            task.dependingContainers = devblissDockerExtension.dependingContainers
+            task.dockerHost = devblissDockerExtension.dockerHost
+            task.authConfigPlain = devblissDockerExtension.authConfigPlain
+            task.authConfigEncoded = devblissDockerExtension.authConfigEncoded
+            task.versionTag = devblissDockerExtension.versionTag
+            task.dockerRegistry = devblissDockerExtension.registryName
+            task.dockerRepository = devblissDockerExtension.repositoryName
         }
     }
 
-    private void configureCleanupOldContainersTasks(Project project, DockerPluginExtension extension) {
+    private void configureCleanupOldContainersTasks(Project project) {
         project.tasks.withType(CleanupOldContainersTask) { task ->
-            task.dependingContainers = extension.dependingContainers
-            task.dockerHost = extension.dockerHost
+            task.dependingContainers = devblissDockerExtension.dependingContainers
+            task.dockerHost = devblissDockerExtension.dockerHost
         }
     }
 }

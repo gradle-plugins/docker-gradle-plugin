@@ -74,7 +74,7 @@ class ProgressHandlerSpec extends Specification {
         ]
 
         when:
-        handler.waitUnilDependenciesRun()
+        handler.waitUntilDependenciesRun()
 
         then:
         true //waitUntil run through

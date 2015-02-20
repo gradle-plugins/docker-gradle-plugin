@@ -21,7 +21,7 @@ class ProgressHandler {
         this.progressOutputGenerator = new ProgressOutputGenerator()
     }
 
-    public void waitUnilDependenciesRun() {
+    public void waitUntilDependenciesRun() {
         boolean allRun = false;
         Map<String, Map<String, Boolean>> containerList = prepareStartMap()
         progressOutputGenerator.printServices(containerList)
@@ -102,7 +102,7 @@ class ProgressHandler {
     }
 
     List<String> getServiceDependencies(String serviceName) {
-        java.util.LinkedHashMap depsMap = dockerClient.exec(serviceName, ["./gradlew", "serviceDependencies"])
+        LinkedHashMap depsMap = dockerClient.exec(serviceName, ["./gradlew", "serviceDependencies"])
         DependingContainerParser parser = new DependingContainerParser(depsMap.plain);
         List<String> deps = parser.getParsedDependencies();
         return deps

@@ -29,9 +29,9 @@ class PullDependingImagesTask extends AbstractDockerClusterTask {
         if (dependingContainers == null) {
             return
         }
-        List<ServiceDependency> serviceDependenyList = ServiceDependency.parseServiceDependencies(dependingContainers)
-        log.info("Pull images for services: " + serviceDependenyList)
-        serviceDependenyList.each() { ServiceDependency dep ->
+        List<ServiceDependency> serviceDependencyList = ServiceDependency.parseServiceDependencies(dependingContainers)
+        log.info("Pull images for services: " + serviceDependencyList)
+        serviceDependencyList.each() { ServiceDependency dep ->
             if (!dockerAlreadyHandledList.contains(dep.getName())) {
                 pullImageFromRegistry(dep)
             }

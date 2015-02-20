@@ -13,8 +13,8 @@ class ServiceDockerContainer {
         return runningServiceContainers
     }
 
-	String name
-	Boolean isRunning
+    String name
+    Boolean isRunning
     String image
 
     ServiceDockerContainer(Map container) {
