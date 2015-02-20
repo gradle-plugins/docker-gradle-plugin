@@ -1,17 +1,16 @@
 package com.devbliss.docker.tasks
 
-import com.devbliss.docker.Configuration
-import com.devbliss.docker.task.PullDependencyImages
+import com.devbliss.docker.task.PullDependingImagesTask
+import com.devbliss.docker.wrapper.ServiceDependency
 import de.gesellix.docker.client.DockerClient
-import de.gesellix.gradle.docker.tasks.AbstractDockerTask
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
-class PullDependencyImagesSpec extends Specification {
+class PullDependingImagesTaskSpec extends Specification {
 
     Project project
-    PullDependencyImages task
+    PullDependingImagesTask task
     DockerClient dockerClient
     String name
     String name2
@@ -22,7 +21,7 @@ class PullDependencyImagesSpec extends Specification {
 
     def setup() {
         project = ProjectBuilder.builder().build()
-        task = project.task('cleanupOldContainers', type: PullDependencyImages)
+        task = project.task('cleanupOldContainers', type: PullDependingImagesTask)
         dockerClient = Mock(DockerClient)
         task.dockerClient = dockerClient
         name = "service1"
@@ -38,9 +37,10 @@ class PullDependencyImagesSpec extends Specification {
         task.dockerRepository = repository
         task.versionTag = tag
         task.dockerRegistry = registry
+        ServiceDependency serviceDependency = new ServiceDependency("${name}#8080");
 
         when:
-        task.pullImageFromRegistry(name)
+        task.pullImageFromRegistry(serviceDependency)
 
         then:
         1 * dockerClient.pull("${repository}/${name}", tag, registry)
@@ -55,7 +55,7 @@ class PullDependencyImagesSpec extends Specification {
         task.dockerAlreadyHandledList = [name3]
 
         when:
-        task.run()
+        task.execute()
 
         then:
         1 * dockerClient.pull("${repository}/${name}", tag, registry)

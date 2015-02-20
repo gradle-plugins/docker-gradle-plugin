@@ -1,57 +1,57 @@
 package com.devbliss.docker.handler
 
-import com.devbliss.docker.Configuration
-import com.devbliss.docker.handler.ProgressHandler
+import com.devbliss.docker.wrapper.ServiceDependency
 import de.gesellix.docker.client.DockerClient
-import org.gradle.api.Project
-import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
 
 class ProgressHandlerSpec extends Specification {
 
     ProgressHandler handler
     DockerClient dockerClient
-    List<String> dependingContainersList
+    List<ServiceDependency> dependingContainersList
 
     def setup() {
-        dependingContainersList = ["service1", "service2"]
+        dependingContainersList = [
+            new ServiceDependency("service1#8080"),
+            new ServiceDependency("service2#8082")
+        ]
         dockerClient = Mock(DockerClient)
         handler = new ProgressHandler(dockerClient, dependingContainersList)
     }
 
     def "setRunningStateForContainer"() {
         given:
-        Map<String, Map<String,Boolean>> containerList = [
-            "service1": ["checked_deps": false, "running" : false]
+        Map<String, Map<String, Boolean>> containerList = [
+                "service1": ["checked_deps": false, "running": false]
         ]
-        Map container = ["Names":["/service1"], "Status":"Up"]
+        Map container = ["Names": ["/service1"], "Status": "Up"]
 
         when:
         handler.setRunningStateForContainer(containerList, container)
 
         then:
         containerList == [
-            "service1": ["checked_deps": false, "running" : true]
+                "service1": ["checked_deps": false, "running": true]
         ]
     }
 
     def "prepareStartMap"() {
         when:
-        Map<String, Map<String,Boolean>> startMap = handler.prepareStartMap()
+        Map<String, Map<String, Boolean>> startMap = handler.prepareStartMap()
 
         then:
         startMap == [
-            "service1": ["checked_deps": false, "running" : false],
-            "service2": ["checked_deps": false, "running" : false]
+                "service1": ["checked_deps": false, "running": false],
+                "service2": ["checked_deps": false, "running": false]
         ]
     }
 
     def "createNewContainerItem"() {
         when:
-        Map<String,Boolean> item = handler.createNewContainerItem()
+        Map<String, Boolean> item = handler.createNewContainerItem()
 
         then:
-        item == ["checked_deps": false, "running" : false]
+        item == ["checked_deps": false, "running": false]
     }
 
     def "getServiceDependencies"() {
@@ -59,21 +59,43 @@ class ProgressHandlerSpec extends Specification {
         dockerClient.exec(_, _) >> ["plain": "Depending Container ------>[eureka-server, course-service, dementity]"]
 
         when:
-        List<String> deps = handler.getServiceDependencies(dependingContainersList[0])
+        List<String> deps = handler.getServiceDependencies(dependingContainersList[0].getName())
 
         then:
         deps == ["eureka-server", "course-service", "dementity"]
     }
 
-    def "isContainerRunning"() {
+    def "waitUnilDependenciesRun"() {
+        given:
+        dockerClient.exec(_, _) >> ["plain": "Depending Container ------>[eureka-server]"]
+        dockerClient.ps() >> [
+                ["Names": ["_service1"], "Status": "Up"], ["Names": ["_service2"], "Status": "Up"],
+                ["Names": ["_eureka-server"], "Status": "Up"]
+        ]
+
         when:
-        boolean up = handler.isContainerRunning(["Status":"Up"])
-        boolean exited = handler.isContainerRunning(["Status":"Exited"])
+        handler.waitUntilDependenciesRun()
 
         then:
-        up == true
-        exited == false
-        
+        true //waitUntil run through
+    }
+
+    def "updateDependenciesMap"() {
+        given:
+        Map stateMap = new HashMap()
+        stateMap[ProgressHandler.RUNNING] = true
+        stateMap[ProgressHandler.RECEIVED_DEPENDENCIES] = false
+        Map containerMap = ["service1": stateMap]
+        dockerClient.exec(_, _) >> ["plain": "Depending Container ------>[eureka-server, course-service, dementity]"]
+
+        when:
+        handler.updateDependenciesMap(containerMap)
+
+        then:
+        containerMap.size() == 4
+        containerMap.containsKey("eureka-server")
+        containerMap.containsKey("course-service")
+        containerMap.containsKey("dementity")
     }
 
 }
