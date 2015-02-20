@@ -12,7 +12,7 @@ class CleanupOldContainersTask extends AbstractDockerClusterTask {
 
     @Input
     @Optional
-    def dependingContainers
+    String dependingContainers
 
     public CleanupOldContainersTask() {
         super()
