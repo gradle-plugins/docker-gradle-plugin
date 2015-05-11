@@ -1,6 +1,7 @@
 
 ### Version 0.2.0-SNAPSHOT
 
+ - [feature] Update of gradle and docker. Improved get dependencies time
  - [refactor] Cleanup classes and refactor for better code reading
  - [feature] Added progress of start dependencies
  - [refactor] Split up start dependencies task added clean code todos
@@ -8,7 +9,7 @@
  - [feature] using gradle.properties now for credentials and nexus URLs
  - [feature] added transitive container updates
 
--- Last change by: Christian Soth <christian.soth@devbliss.com> Thu Feb 19 15:07:39 CET 2015
+-- Last change by: Dennis Schumann <hillkorn@gmail.com> Mon May 11 16:56:29 CEST 2015
 
 ### Version 0.1.0-SNAPSHOT
  - [feature] Added tests for tasks
