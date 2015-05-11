@@ -15,12 +15,13 @@ class DependingContainerParser {
     List<String> parseDependencies(String dependencies) {
         List<String> parsedDependencies = []
         dependencies.eachLine { String line ->
-            if (line.contains("Depending Container")) {
-                int from = line.indexOf("[") + 1
-                int to = line.indexOf("]")
+            if (line.contains("dependingEcosystemServices")) {
+                int from = line.indexOf("=") + 1
+                int to = line.size()-1
                 if ((from >= (0)).or(to >= (0))) {
                     String dependencyNames = line.substring(from, to).replaceAll("\\s", "")
                     parsedDependencies = dependencyNames.tokenize(",")
+                    parsedDependencies = parsedDependencies.collect { it.tokenize("#")[0] }
                 }
             }
         }

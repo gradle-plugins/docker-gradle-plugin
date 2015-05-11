@@ -31,6 +31,7 @@ class ProgressHandler {
             progressOutputGenerator.printServices(containerList)
             allRun = checkAllRunning(containerList)
         }
+        progressOutputGenerator.printServices(containerList, true)
     }
 
     void setRunningStates(Map<String, Map<String, Boolean>> containerList) {
@@ -102,7 +103,7 @@ class ProgressHandler {
     }
 
     List<String> getServiceDependencies(String serviceName) {
-        LinkedHashMap depsMap = dockerClient.exec(serviceName, ["./gradlew", "serviceDependencies"])
+        LinkedHashMap depsMap = dockerClient.exec(serviceName, ["cat", "gradle.properties"])
         DependingContainerParser parser = new DependingContainerParser(depsMap.plain);
         List<String> deps = parser.getParsedDependencies();
         return deps

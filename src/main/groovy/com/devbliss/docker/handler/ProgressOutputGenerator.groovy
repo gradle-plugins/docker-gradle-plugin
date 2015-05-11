@@ -12,8 +12,8 @@ class ProgressOutputGenerator {
         lastRender = 0l
     }
 
-    public void printServices(Map<String, Map<String,Boolean>> containerList) {
-        if (System.currentTimeMillis() - lastRender < 1000 && lastRender != 0) {
+    public void printServices(Map<String, Map<String,Boolean>> containerList, Boolean force=false) {
+        if (System.currentTimeMillis() - lastRender < 1000 && lastRender != 0 && !force) {
             return
         }
         lastRender = System.currentTimeMillis()

@@ -101,7 +101,12 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
         "Tty"         : false]
 
         log.info "Update " + containerName + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
-        dockerClient.exec(containerName, command, execConfig)
+        try {
+            dockerClient.exec(containerName, command, execConfig)
+        } catch (Exception ex) {
+            log.warning "Error on update dependencies of " + containerName + ". This happens to dependencies that have no gradle setup or docker plugin inside."
+            //Is not a gradle project
+        }
     }
 
     Map prepareHostConfig(ServiceDependency serviceDependency) {

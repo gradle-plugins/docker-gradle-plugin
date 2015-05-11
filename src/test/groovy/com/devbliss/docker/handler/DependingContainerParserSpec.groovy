@@ -5,22 +5,23 @@ import spock.lang.Specification
 class DependingContainerParserSpec extends Specification {
 
     final String dependenciesString = '''
-:serviceDependencies
-Running Container   ------>[]
-Depending Container ------>[eureka-server, course-service, dementity]
-
-BUILD SUCCESSFUL
-
-Total time: 22.87 secs
+#Project docker settings
+dockerDaemonHost=http://172.17.42.1:2375
+dockerRegistry=d-v229-xen:5000
+dockerRepository=ecosystem
+dockerImage=dementity
+dependingEcosystemServices=,eureka-server#8080,course-service#1002,dementity#8081
+dockerTag=latest
 '''
 
     final String dependenciesString2 = '''
-serviceDependencies
--Depending Container: [vandam, eureka-server]
-
-(BUILD SUCCESSFUL
-
-Total time: 8.07 secs
+#Project docker settings
+dockerDaemonHost=http://172.17.42.1:2375
+dockerRegistry=d-v229-xen:5000
+dockerRepository=ecosystem
+dockerImage=dementity
+dependingEcosystemServices=vandam#8083,eureka-server#8080
+dockerTag=latest
 '''
 
     DependingContainerParser parser
