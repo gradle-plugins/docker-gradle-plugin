@@ -56,7 +56,7 @@ class ProgressHandlerSpec extends Specification {
 
     def "getServiceDependencies"() {
         given:
-        dockerClient.exec(_, _) >> ["plain": "dependingEcosystemServices=,eureka-server#8080,course-service#1002,dementity#8081"]
+        dockerClient.exec(_, _) >> ["plain": "dependingEcosystemServices=eureka-server#8080,course-service#1002,dementity#8081"]
 
         when:
         List<String> deps = handler.getServiceDependencies(dependingContainersList[0].getName())
