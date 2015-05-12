@@ -113,7 +113,7 @@ class DockerPlugin implements Plugin<Project> {
         startDependenciesTask.authConfigPlain = devblissDockerExtension.authConfigPlain
         startDependenciesTask.authConfigEncoded = devblissDockerExtension.authConfigEncoded
         startDependenciesTask.versionTag = devblissDockerExtension.versionTag
-        startDependenciesTask.dockerRegistry = devblissDockerExtension.registryName
+        startDependenciesTask.dockerRegistry = devblissDockerExtension.registry
         startDependenciesTask.dockerRepository = devblissDockerExtension.repositoryName
     }
 
@@ -131,7 +131,7 @@ class DockerPlugin implements Plugin<Project> {
 
     private void configurePullTasks(Project project) {
         project.tasks.withType(DockerPullTask) { task ->
-            task.registry = devblissDockerExtension.registryName
+            task.registry = devblissDockerExtension.registry
             task.imageName = devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
             task.tag = devblissDockerExtension.versionTag
         }
@@ -139,7 +139,7 @@ class DockerPlugin implements Plugin<Project> {
 
     private void configurePushTasks(Project project) {
         project.tasks.withType(DockerPushTask) { task ->
-            task.registry = devblissDockerExtension.registryName
+            task.registry = devblissDockerExtension.registry
             task.repositoryName = devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
         }
     }
@@ -172,7 +172,7 @@ class DockerPlugin implements Plugin<Project> {
     private void configureRunTasks(Project project) {
         project.tasks.withType(DockerRunTask) { task ->
             task.containerName = devblissDockerExtension.imageName
-            task.imageName = devblissDockerExtension.registryName + '/' + devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
+            task.imageName = devblissDockerExtension.registry + '/' + devblissDockerExtension.repositoryName + '/' + devblissDockerExtension.imageName
         }
     }
 
@@ -183,7 +183,7 @@ class DockerPlugin implements Plugin<Project> {
             task.authConfigPlain = devblissDockerExtension.authConfigPlain
             task.authConfigEncoded = devblissDockerExtension.authConfigEncoded
             task.versionTag = devblissDockerExtension.versionTag
-            task.dockerRegistry = devblissDockerExtension.registryName
+            task.dockerRegistry = devblissDockerExtension.registry
             task.dockerRepository = devblissDockerExtension.repositoryName
         }
     }

@@ -104,7 +104,7 @@ class ProgressHandler {
 
     List<String> getServiceDependencies(String serviceName) {
         LinkedHashMap depsMap = dockerClient.exec(serviceName, ["cat", "gradle.properties"])
-        DependingContainerParser parser = new DependingContainerParser(depsMap.plain);
+        DependingContainerParser parser = new DependingContainerParser(depsMap.plain, true);
         List<String> deps = parser.getParsedDependencies();
         return deps
     }

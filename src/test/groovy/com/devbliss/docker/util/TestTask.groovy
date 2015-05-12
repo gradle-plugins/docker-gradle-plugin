@@ -16,7 +16,7 @@ class TestTask extends AbstractDockerTask {
 
     @Input
     @Optional
-    def registryName = project.devblissDocker.registryName
+    def registry = project.devblissDocker.registry
 
     @Input
     def repositoryName = project.devblissDocker.repositoryName

@@ -30,7 +30,7 @@ class DockerPluginSpec extends Specification {
         project.docker.authConfigEncoded = ["encoded auth"]
         project.devblissDocker.imageName = 'test-service'
         project.devblissDocker.versionTag = 'latest'
-        project.devblissDocker.registryName = 'example.registry:5000'
+        project.devblissDocker.registry = 'example.registry:5000'
         project.devblissDocker.repositoryName = 'example-repository'
         project.devblissDocker.buildContextDirectory = new File('./')
         project.devblissDocker.dependingContainers = 'service1#8080,service2#8081,service3#8082'
@@ -44,7 +44,7 @@ class DockerPluginSpec extends Specification {
         task.authConfigEncoded == ["encoded auth"]
         task.imageName == 'test-service'
         task.versionTag == 'latest'
-        task.registryName == 'example.registry:5000'
+        task.registry == 'example.registry:5000'
         task.repositoryName == 'example-repository'
         task.buildContextDirectory == new File('./')
         task.dependingContainers == 'service1#8080,service2#8081,service3#8082'
@@ -66,6 +66,6 @@ class DockerPluginSpec extends Specification {
         task.authConfigPlain == null
         task.authConfigEncoded == null
         task.versionTag == null
-        task.registryName == null
+        task.registry == null
     }
 }

@@ -25,7 +25,7 @@ class DockerPluginExtension {
 
     @Input
     @Optional
-    String registryName
+    String registry
 
     @Input
     String repositoryName

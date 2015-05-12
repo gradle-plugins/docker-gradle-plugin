@@ -86,7 +86,7 @@ class ProgressHandlerSpec extends Specification {
         stateMap[ProgressHandler.RUNNING] = true
         stateMap[ProgressHandler.RECEIVED_DEPENDENCIES] = false
         Map containerMap = ["service1": stateMap]
-        dockerClient.exec(_, _) >> ["plain": "dependingEcosystemServices=,eureka-server#8080,course-service#1002,dementity#8081"]
+        dockerClient.exec(_, _) >> ["plain": "dependingEcosystemServices=eureka-server#8080,course-service#1002,dementity#8081"]
 
         when:
         handler.updateDependenciesMap(containerMap)
