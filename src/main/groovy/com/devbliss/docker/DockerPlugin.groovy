@@ -113,7 +113,7 @@ class DockerPlugin implements Plugin<Project> {
         startDependenciesTask.authConfigPlain = devblissDockerExtension.authConfigPlain
         startDependenciesTask.authConfigEncoded = devblissDockerExtension.authConfigEncoded
         startDependenciesTask.versionTag = devblissDockerExtension.versionTag
-        startDependenciesTask.dockerRegistry = devblissDockerExtension.registry
+        startDependenciesTask.registry = devblissDockerExtension.registry
         startDependenciesTask.dockerRepository = devblissDockerExtension.repositoryName
     }
 
@@ -183,7 +183,7 @@ class DockerPlugin implements Plugin<Project> {
             task.authConfigPlain = devblissDockerExtension.authConfigPlain
             task.authConfigEncoded = devblissDockerExtension.authConfigEncoded
             task.versionTag = devblissDockerExtension.versionTag
-            task.dockerRegistry = devblissDockerExtension.registry
+            task.registry = devblissDockerExtension.registry
             task.dockerRepository = devblissDockerExtension.repositoryName
         }
     }

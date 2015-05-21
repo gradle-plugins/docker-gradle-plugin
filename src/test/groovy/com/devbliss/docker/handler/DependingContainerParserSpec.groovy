@@ -39,6 +39,8 @@ serviceDependencies
 Total time: 8.07 secs
 '''
 
+    final String emtpyDependenciesString = ""
+
     DependingContainerParser parser
 
     def setup() {
@@ -86,5 +88,27 @@ Total time: 8.07 secs
 
         then:
         parsedDeps == ["vandam", "eureka-server"]
+    }
+
+    def "emtpyPropertiesDependenciesString"() {
+        given:
+        parser = new DependingContainerParser(emtpyDependenciesString, false)
+
+        when:
+        List<String> parsedDeps = parser.getParsedDependencies()
+
+        then:
+        parsedDeps == []
+    }
+
+    def "emtpyTaskDependenciesString"() {
+        given:
+        parser = new DependingContainerParser(emtpyDependenciesString, true)
+
+        when:
+        List<String> parsedDeps = parser.getParsedDependencies()
+
+        then:
+        parsedDeps == []
     }
 }
