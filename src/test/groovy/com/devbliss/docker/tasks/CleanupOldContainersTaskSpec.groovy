@@ -31,10 +31,11 @@ class CleanupOldContainersTaskSpec extends Specification {
 
     def "cleanupOldDependencies"() {
         given:
-        dockerClient.ps() >> [
+        dockerClient.ps() >> ["content": [
                 ["Names": ["_$name"], "Image": "435hi3u5h345", "Status": "Up"],
                 ["Names": ["_$name2"], "Image": "435hi3u5h345/$name2:latest", "Status": "Exited"],
                 ["Names": ["_$name3"], "Image": "435hi3u5h345", "Status": "Exited"]
+            ]
         ]
         task.dependingContainers = "${name}#8080,${name2}#8082,${name3}#8081"
         task.dockerAlreadyHandledList = [name3]

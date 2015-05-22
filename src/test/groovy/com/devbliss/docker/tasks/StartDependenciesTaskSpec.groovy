@@ -5,6 +5,7 @@ import com.devbliss.docker.task.StartDependenciesTask
 import com.devbliss.docker.wrapper.ServiceDependency
 import de.gesellix.docker.client.DockerClient
 import groovy.util.logging.Log
+import org.apache.commons.io.IOUtils
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import spock.lang.Specification
@@ -37,14 +38,17 @@ class StartDependenciesTaskSpec extends Specification {
         given:
         task.dependingContainers = 'service1#8080,service3#8082,service2#8081'
         task.dockerRepository = 'example-repository'
-        task.dockerRegistry = 'example.registry:5000'
+        task.registry = 'example.registry:5000'
         task.versionTag = 'latest'
         task.dockerAlreadyHandledList = ['service3']
         dockerClient.ps() >>> [
-                [["Names": ["_service2"], "Status": "Up"], ["Names": ["_service3"], "Status": "Up"]],
+            ["content":
+                    [["Names": ["_service2"], "Status": "Up"], ["Names": ["_service3"], "Status": "Up"]]],
+            ["content":
                 [["Names": ["_service2"], "Status": "Up"], ["Names": ["_service3"], "Status": "Up"], ["Names": ["_service1"], "Status": "Up"]]
+            ]
         ]
-        dockerClient.exec(_, ["./gradlew", "serviceDependencies"]) >> ["plain": ""]
+        dockerClient.exec(_, ["./gradlew", "serviceDependencies"]) >> ["stream": IOUtils.toInputStream("")]
 
         when:
         task.run()
@@ -136,7 +140,7 @@ class StartDependenciesTaskSpec extends Specification {
         given:
         def service1 = "service1"
         def service2 = "service2"
-        dockerClient.ps() >> [["Names": ["_$service1"], "Status": "Up"], ["Names": ["_$service2"], "Status": "Exited sinde 10 seconds"]]
+        dockerClient.ps() >> ["content": [["Names": ["_$service1"], "Status": "Up"], ["Names": ["_$service2"], "Status": "Exited sinde 10 seconds"]]]
 
         when:
         List<String> runningContainers = task.getRunningContainers()

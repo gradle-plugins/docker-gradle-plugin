@@ -36,14 +36,14 @@ class PullDependingImagesTaskSpec extends Specification {
         given:
         task.dockerRepository = repository
         task.versionTag = tag
-        task.dockerRegistry = registry
+        task.registry = registry
         ServiceDependency serviceDependency = new ServiceDependency("${name}#8080");
 
         when:
         task.pullImageFromRegistry(serviceDependency)
 
         then:
-        1 * dockerClient.pull("${repository}/${name}", tag, registry)
+        1 * dockerClient.pull("${repository}/${name}", tag, ".", registry)
     }
 
     def "splitDependingContainersStringAndPullImage"() {
@@ -51,15 +51,15 @@ class PullDependingImagesTaskSpec extends Specification {
         task.dependingContainers = "${name}#8080,${name2}#8082,${name3}#8081"
         task.dockerRepository = repository
         task.versionTag = tag
-        task.dockerRegistry = registry
+        task.registry = registry
         task.dockerAlreadyHandledList = [name3]
 
         when:
         task.execute()
 
         then:
-        1 * dockerClient.pull("${repository}/${name}", tag, registry)
-        1 * dockerClient.pull("${repository}/${name2}", tag, registry)
-        0 * dockerClient.pull("${repository}/${name3}", tag, registry)
+        1 * dockerClient.pull("${repository}/${name}", tag, ".", registry)
+        1 * dockerClient.pull("${repository}/${name2}", tag, ".", registry)
+        0 * dockerClient.pull("${repository}/${name3}", tag, ".", registry)
     }
 }

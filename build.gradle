@@ -24,6 +24,7 @@ dependencies {
     compile "org.fusesource.jansi:jansi:$jansiVersion"
     testCompile "junit:junit:$junitVersion"
     testCompile "org.spockframework:spock-core:$spockVersion"
+    testCompile "cglib:cglib-nodep:$cgLibVersion"
 }
 
 sourceCompatibility = javaVersion

@@ -20,7 +20,7 @@ class ServiceDockerContainerSpec extends Specification {
     def "getServiceContainers"() {
         setup:
         DockerClient dockerClient = Mock(DockerClient)
-        dockerClient.ps() >> servicesDocker
+        dockerClient.ps() >> ["content": servicesDocker]
 
         when:
         List<ServiceDockerContainer> services = ServiceDockerContainer.getServiceContainers(dockerClient)

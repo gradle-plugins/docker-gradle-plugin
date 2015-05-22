@@ -2,6 +2,7 @@ package com.devbliss.docker.handler
 
 import com.devbliss.docker.wrapper.ServiceDependency
 import de.gesellix.docker.client.DockerClient
+import org.apache.commons.io.IOUtils
 import spock.lang.Specification
 
 class ProgressHandlerSpec extends Specification {
@@ -56,7 +57,7 @@ class ProgressHandlerSpec extends Specification {
 
     def "getServiceDependencies"() {
         given:
-        dockerClient.exec(_, _) >> ["plain": "dependingEcosystemServices=eureka-server#8080,course-service#1002,dementity#8081"]
+        dockerClient.exec(_, _) >> ["stream": IOUtils.toInputStream("dependingEcosystemServices=eureka-server#8080,course-service#1002,dementity#8081")]
 
         when:
         List<String> deps = handler.getServiceDependencies(dependingContainersList[0].getName())
@@ -67,11 +68,11 @@ class ProgressHandlerSpec extends Specification {
 
     def "waitUnilDependenciesRun"() {
         given:
-        dockerClient.exec(_, _) >> ["plain": "Depending Container ------>[eureka-server]"]
-        dockerClient.ps() >> [
+        dockerClient.exec(_, _) >> ["stream": IOUtils.toInputStream("Depending Container ------>[eureka-server]")]
+        dockerClient.ps() >> ["content": [
                 ["Names": ["_service1"], "Status": "Up"], ["Names": ["_service2"], "Status": "Up"],
                 ["Names": ["_eureka-server"], "Status": "Up"]
-        ]
+            ]]
 
         when:
         handler.waitUntilDependenciesRun()
@@ -86,7 +87,7 @@ class ProgressHandlerSpec extends Specification {
         stateMap[ProgressHandler.RUNNING] = true
         stateMap[ProgressHandler.RECEIVED_DEPENDENCIES] = false
         Map containerMap = ["service1": stateMap]
-        dockerClient.exec(_, _) >> ["plain": "dependingEcosystemServices=eureka-server#8080,course-service#1002,dementity#8081"]
+        dockerClient.exec(_, _) >> ["stream": IOUtils.toInputStream("dependingEcosystemServices=eureka-server#8080,course-service#1002,dementity#8081")]
 
         when:
         handler.updateDependenciesMap(containerMap)
