@@ -8,15 +8,19 @@ class ProgressOutputGenerator {
     Long lastRender
 
     ProgressOutputGenerator() {
-        this.ansi = Ansi.ansi()
-        lastRender = 0l
+        this.ansi = Ansi.ansi()c
+       lastRender = 0l
     }
 
-    public void printServices(Map<String, Map<String,Boolean>> containerList, Boolean force=false) {
-        if (System.currentTimeMillis() - lastRender < 1000 && lastRender != 0 && !force) {
+    public void printServices(Map<String, Map<String,Boolean>> containerList) {
+        if (System.currentTimeMillis() - lastRender < 1000 && lastRender != 0) {
             return
         }
         lastRender = System.currentTimeMillis()
+        printServicesForce(containerList)
+    }
+
+    public printServicesForce(Map<String, Map<String,Boolean>> containerList) {
         ansi.eraseScreen().cursor(0,0)
         containerList.each { container ->
             printService(container.getKey(), container.getValue().get(ProgressHandler.RUNNING))

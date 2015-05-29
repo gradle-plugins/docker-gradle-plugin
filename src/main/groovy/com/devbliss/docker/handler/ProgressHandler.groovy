@@ -3,7 +3,6 @@ package com.devbliss.docker.handler
 import com.devbliss.docker.wrapper.ServiceDependency
 import com.devbliss.docker.wrapper.ServiceDockerContainer
 import de.gesellix.docker.client.DockerClient
-import de.gesellix.docker.client.protocolhandler.RawInputStream
 import groovy.util.logging.Log
 import org.apache.commons.io.IOUtils
 
@@ -33,7 +32,7 @@ class ProgressHandler {
             progressOutputGenerator.printServices(containerList)
             allRun = checkAllRunning(containerList)
         }
-        progressOutputGenerator.printServices(containerList, true)
+        progressOutputGenerator.printServicesForce(containerList)
     }
 
     void setRunningStates(Map<String, Map<String, Boolean>> containerList) {

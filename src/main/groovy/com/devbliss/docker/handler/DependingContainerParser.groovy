@@ -23,9 +23,7 @@ class DependingContainerParser {
                 int from = line.indexOf("=") + 1
                 int to = line.size()-1
                 if (from > (0)) {
-                    String dependencyNames = line.substring(from, to).replaceAll("\\s", "")
-                    parsedDependencies = dependencyNames.tokenize(",")
-                    parsedDependencies = parsedDependencies.collect { it.tokenize("#")[0] }
+                    parsedDependencies = parseDependencyString(line.substring(from, to).replaceAll("\\s", ""))
                 }
             }
         }
@@ -38,13 +36,16 @@ class DependingContainerParser {
             if (line.contains("Depending Container")) {
                 int from = line.indexOf("[") + 1
                 int to = line.indexOf("]")
-                if ((from > (0)).and(to >= (0))) {
-                    String dependencyNames = line.substring(from, to).replaceAll("\\s", "")
-                    parsedDependencies = dependencyNames.tokenize(",")
-                    parsedDependencies = parsedDependencies.collect { it.tokenize("#")[0] }
+                if ((from > (0)).and(to > from)) {
+                    parsedDependencies = parseDependencyString(line.substring(from, to).replaceAll("\\s", ""))
                 }
             }
         }
         return parsedDependencies
+    }
+
+    List<String> parseDependencyString(String dependencyString) {
+        List<String> parsedDependencies = dependencyString.tokenize(",")
+        return parsedDependencies.collect { it.tokenize("#")[0] }
     }
 }

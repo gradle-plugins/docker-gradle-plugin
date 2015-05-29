@@ -106,7 +106,7 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
             dockerClient.exec(containerName, command, execConfig)
         } catch (DockerClientException dcx) {
             log.warning "Error on update dependencies of " + containerName + ". This happens to dependencies that have no gradle setup or docker plugin inside."
-            //Is not a gradle project
+            //Is not a gradle project or doesn't use this docker plugin
         }
     }
 
