@@ -9,7 +9,7 @@ class ProgressOutputGenerator {
 
     ProgressOutputGenerator() {
         this.ansi = Ansi.ansi()
-        lastRender = 0l
+       lastRender = 0l
     }
 
     public void printServices(Map<String, Map<String,Boolean>> containerList) {
@@ -17,6 +17,10 @@ class ProgressOutputGenerator {
             return
         }
         lastRender = System.currentTimeMillis()
+        printServicesForce(containerList)
+    }
+
+    public printServicesForce(Map<String, Map<String,Boolean>> containerList) {
         ansi.eraseScreen().cursor(0,0)
         containerList.each { container ->
             printService(container.getKey(), container.getValue().get(ProgressHandler.RUNNING))

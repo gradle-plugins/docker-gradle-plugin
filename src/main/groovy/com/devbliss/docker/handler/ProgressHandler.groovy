@@ -4,6 +4,7 @@ import com.devbliss.docker.wrapper.ServiceDependency
 import com.devbliss.docker.wrapper.ServiceDockerContainer
 import de.gesellix.docker.client.DockerClient
 import groovy.util.logging.Log
+import org.apache.commons.io.IOUtils
 
 @Log
 class ProgressHandler {
@@ -31,10 +32,11 @@ class ProgressHandler {
             progressOutputGenerator.printServices(containerList)
             allRun = checkAllRunning(containerList)
         }
+        progressOutputGenerator.printServicesForce(containerList)
     }
 
     void setRunningStates(Map<String, Map<String, Boolean>> containerList) {
-        List containers = dockerClient.ps()
+        List containers = dockerClient.ps().content
         containers.each { container ->
             setRunningStateForContainer(containerList, container)
         }
@@ -102,8 +104,8 @@ class ProgressHandler {
     }
 
     List<String> getServiceDependencies(String serviceName) {
-        LinkedHashMap depsMap = dockerClient.exec(serviceName, ["./gradlew", "serviceDependencies"])
-        DependingContainerParser parser = new DependingContainerParser(depsMap.plain);
+        InputStream stream = dockerClient.exec(serviceName, ["cat", "gradle.properties"]).stream as InputStream
+        DependingContainerParser parser = new DependingContainerParser(IOUtils.toString(stream), true);
         List<String> deps = parser.getParsedDependencies();
         return deps
     }

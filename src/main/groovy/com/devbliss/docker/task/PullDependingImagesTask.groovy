@@ -15,7 +15,7 @@ class PullDependingImagesTask extends AbstractDockerClusterTask {
     @Input
     String dockerRepository
     @Input
-    String dockerRegistry
+    String registry
     @Input
     String versionTag
 
@@ -42,6 +42,6 @@ class PullDependingImagesTask extends AbstractDockerClusterTask {
         String imageName = "${dockerRepository}/${serviceDependency.getImageName()}"
 
         log.info "docker pull image for " + serviceDependency.getName()
-        dockerClient.pull(imageName, versionTag, dockerRegistry)
+        dockerClient.pull(imageName, versionTag, ".", registry)
     }
 }

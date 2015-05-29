@@ -4,6 +4,7 @@ import com.devbliss.docker.Constant
 import com.devbliss.docker.handler.ProgressHandler
 import com.devbliss.docker.wrapper.ServiceDependency
 import com.devbliss.docker.wrapper.ServiceDockerContainer
+import de.gesellix.docker.client.DockerClientException
 import groovy.util.logging.Log
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
@@ -21,7 +22,7 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
     @Input
     String dockerRepository
     @Input
-    String dockerRegistry
+    String registry
     @Input
     String versionTag
 
@@ -82,7 +83,7 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
     }
 
     void startContainer(ServiceDependency serviceDependency, String commandArgs, List<String> runningContainers) {
-        String image = "${dockerRegistry}/${dockerRepository}/${serviceDependency.getImageName()}"
+        String image = "${registry}/${dockerRepository}/${serviceDependency.getImageName()}"
         String name = serviceDependency.getName()
         if (runningContainers.contains(name)) {
             startDependenciesNonBlockingExec(name, commandArgs)
@@ -101,7 +102,12 @@ class StartDependenciesTask extends AbstractDockerClusterTask {
         "Tty"         : false]
 
         log.info "Update " + containerName + " CommandArgs: "+"./gradlew startDependencies '" + commandArgs + "'"
-        dockerClient.exec(containerName, command, execConfig)
+        try {
+            dockerClient.exec(containerName, command, execConfig)
+        } catch (DockerClientException dcx) {
+            log.warning "Error on update dependencies of " + containerName + ". This happens to dependencies that have no gradle setup or docker plugin inside."
+            //Is not a gradle project or doesn't use this docker plugin
+        }
     }
 
     Map prepareHostConfig(ServiceDependency serviceDependency) {
