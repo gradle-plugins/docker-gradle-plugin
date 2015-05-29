@@ -8,7 +8,7 @@ class ProgressOutputGenerator {
     Long lastRender
 
     ProgressOutputGenerator() {
-        this.ansi = Ansi.ansi()c
+        this.ansi = Ansi.ansi()
        lastRender = 0l
     }
 
