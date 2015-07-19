@@ -1,8 +1,6 @@
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-
 plugins {
-    id 'com.devbliss.changelog' version '1.2.1'
+  id 'com.devbliss.changelog' version '1.2.1'
+  id 'com.jfrog.bintray' version '1.2'
 }
 
 apply plugin: 'java-gradle-plugin'
@@ -32,34 +30,47 @@ sourceCompatibility = javaVersion
 wrapper {
     gradleVersion = gradleVersion
     distributionUrl = "http://services.gradle.org/distributions/gradle-${gradleVersion}-all.zip"
+  }
+
+ext {
+  project_website = "https://github.com/{$orgId}/${projectId}"
+  project_scm = "scm:git@github.com:${orgId}/${projectId}.git"
+  license_url = "https://raw.github.com/${orgId}/${projectId}/master/license.txt"
 }
 
-uploadArchives {
+bintray {
+  user = bintrayUser
+  key = bintrayKey
 
-    try {
-        hasProperty(devbliss_nexus_releases_repo_url)
-        hasProperty(devbliss_nexus_snapshots_repo_url)
-        hasProperty(devbliss_nexus_username)
-        hasProperty(devbliss_nexus_password)
-    } catch (MissingPropertyException) {
-        Logger slf4jLogger = LoggerFactory.getLogger('gradle-plugin')
-        slf4jLogger.error(
-                '\n-- Errors found:\n' +
-                        ' + Some of the properties required for the upload to http://nexus.devbliss.com are missing.\n' +
-                        ' + Have a look here: https://github.com/devbliss/manuals/blob/master/4006-gradle-plugins-styleguide.md \n ' +
-                        ' + Be sure your global gradle.properties file is up-to-date.\n' +
-                        '--\n')
-    }
+  configurations = ['archives']
 
-    repositories {
-        mavenDeployer {
-            def credentials = [
-                userName: devbliss_nexus_username,
-                password: devbliss_nexus_password
-            ]
-            repository(url: devbliss_nexus_releases_repo_url, authentication: credentials)
-            snapshotRepository(url: devbliss_nexus_snapshots_repo_url, authentication: credentials)
-        }
+  dryRun = false //Whether to run this as dry-run, without deploying
+  publish = false //If version should be auto published after an upload
+  pkg {
+    repo = 'gradle-plugin-repository'
+    userOrg = orgId
+    name = 'docker-gradle-plugin'
+    desc = 'Gradle changelog plugin. A plugin for the gradle build system to write changelogs painlessly.'
+    websiteUrl = project.project_website
+    issueTrackerUrl = "https://github.com/{$orgId}/${projectId}/issues"
+    vcsUrl = project.project_scm
+    licenses = ['Apache-2.0']
+    labels = [
+      'changelog',
+      'gradle',
+      'plugin',
+      'snapshot',
+      'release',
+      'releasenote'
+    ]
+    publicDownloadNumbers = true
+    version {
+      name = project.version
+      userOrg = orgId
+      vcsUrl = "https://github.com//{$orgId}/${projectId}.git"
+      vcsTag = project.version
+      attributes = ['gradle-plugin': 'org.gradliss.docker:org.gradliss.docker:docker-gradle-plugin']
     }
+  }
 }
 
